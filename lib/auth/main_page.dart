@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tcc_app/pages/login_page.dart';
-import 'home_page.dart';
+import 'package:tcc_app/auth/auth_page.dart';
+import '../pages/home_page.dart';
 
-class AuthPage extends StatelessWidget {
-  const AuthPage({super.key});
+class MainPage extends StatelessWidget {
+  const MainPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class AuthPage extends StatelessWidget {
 
           // user is NOT logged in
           else {
-            return LoginPage();
+            return const AuthPage();
           }
         },
       ),
