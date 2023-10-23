@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "318352968435",
+    "project_id": "todeolhomeninas",
+    "storage_bucket": "todeolhomeninas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:318352968435:android:9b178b4801237b0be14586",
+        "android_client_info": {
+          "package_name": "com.example.tcc_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "318352968435-ri9jq4ndgg0i9kgh3tvrp8uh7n5fvfem.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqWjxquXxGX3iFhH3gLfEPDSLQ4_rqG40"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "318352968435-ri9jq4ndgg0i9kgh3tvrp8uh7n5fvfem.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "318352968435-fqli3h5vivhmjdeimdcvhpnkngr9u5qr.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.newAppTodeolho"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
