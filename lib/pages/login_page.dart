@@ -41,52 +41,31 @@ class _LoginPageState extends State<LoginPage> {
       // pop the loading circle
       Navigator.pop(context);
       // WRONG EMAIL
-      if (e.code == 'user-not-found') {
+      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
         // show error to user
-        wrongEmailMessage();
+        wrongEmailOrPasswordMessage();
       }
 
-      // WRONG PASSWORD
-      else if (e.code == 'wrong-password') {
-        // show error to user
-        wrongPasswordMessage();
-      }
     }
   }
 
-  // wrong email message popup
-  void wrongEmailMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
-          title: Center(
-            child: Text(
-              'Incorrect Email',
-              style: TextStyle(color: Colors.white),
-            ),
+  // wrong email or password message popup
+  void wrongEmailOrPasswordMessage() {
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+        content: const Text('Email ou senha incorretos', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 14),),
+        leading: const Icon(Icons.error_outline, color: Colors.white),
+        backgroundColor: Colors.redAccent,
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+            },
+            child: const Text('FECHAR', style: TextStyle(color: Colors.white),),
           ),
-        );
-      },
-    );
-  }
-
-  // wrong password message popup
-  void wrongPasswordMessage() {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
-          title: Center(
-            child: Text(
-              'Incorrect Password',
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -157,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                         onTap:(){
                           Navigator.push(context, 
                             MaterialPageRoute(builder: (context) {
-                              return ForgotPasswordPage();
+                              return const ForgotPasswordPage();
                             }
                             )
                           );
@@ -179,55 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                   buttonText: "Sign In",
                 ),
         
-                const SizedBox(height: 50),
+                const SizedBox(height: 15),
         
-                // or continue with
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                        child: Text(
-                          'Or continue with',
-                          style: TextStyle(color: Colors.grey[700]),
-                        ),
-                      ),
-                      Expanded(
-                        child: Divider(
-                          thickness: 0.5,
-                          color: Colors.grey[400],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-        
-                const SizedBox(height: 50),
-        
-                // google + apple sign in buttons
-                // Row(
-                //   mainAxisAlignment: MainAxisAlignment.center,
-                //   children: const [
-                //     // google button
-                //     SquareTile(imagePath: 'lib/images/google.png'),
-        
-                //     SizedBox(width: 25),
-        
-                //     // apple button
-                //     SquareTile(imagePath: 'lib/images/apple.png')
-                //   ],
-                // ),
-        
-                // const SizedBox(height: 50),
-        
-                // not a member? register now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
