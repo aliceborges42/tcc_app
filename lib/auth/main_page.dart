@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/auth/auth_page.dart';
+import 'package:tcc_app/pages/map_page.dart';
 import '../pages/home_page.dart';
 
 class MainPage extends StatelessWidget {

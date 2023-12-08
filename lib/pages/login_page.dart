@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
 import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/pages/forgot_pw_page.dart';
+import 'package:tcc_app/pages/home_page.dart';
+import 'package:tcc_app/resources/auth_methods.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback showRegisterPage;
@@ -16,58 +18,86 @@ class _LoginPageState extends State<LoginPage> {
   // text editing controllers
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool _isLoading = false;
 
-  // sign user in method
-  void signUserIn() async {
-    // show loading circle
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
+   void loginUser() async {
+    setState(() {
+      _isLoading = true;
+    });
+    String res = await AuthMethods().loginUser(
+        email: emailController.text, password: passwordController.text);
+    if (res == 'success') {
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => HomePage()
+          ),
         );
-      },
-    );
 
-    // try sign in
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-      // pop the loading circle
-      Navigator.pop(context);
-    } on FirebaseAuthException catch (e) {
-      // pop the loading circle
-      Navigator.pop(context);
-      // WRONG EMAIL
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        // show error to user
-        wrongEmailOrPasswordMessage();
+        setState(() {
+          _isLoading = false;
+        });
       }
-
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      if (context.mounted) {
+        showSnackBar(context, res);
+      }
     }
   }
+  // sign user in method
+  // void signUserIn() async {
+  //   // show loading circle
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return const Center(
+  //         child: CircularProgressIndicator(),
+  //       );
+  //     },
+  //   );
 
-  // wrong email or password message popup
-  void wrongEmailOrPasswordMessage() {
-    ScaffoldMessenger.of(context).showMaterialBanner(
-      MaterialBanner(
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
-        content: const Text('Email ou senha incorretos', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 14),),
-        leading: const Icon(Icons.error_outline, color: Colors.white),
-        backgroundColor: Colors.redAccent,
-        actions: <Widget>[
-          TextButton(
-            onPressed: () {
-              ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
-            },
-            child: const Text('FECHAR', style: TextStyle(color: Colors.white),),
-          ),
-        ],
-      ),
-    );
-  }
+  //   // try sign in
+  //   try {
+  //     await FirebaseAuth.instance.signInWithEmailAndPassword(
+  //       email: emailController.text.trim(),
+  //       password: passwordController.text.trim(),
+  //     );
+  //     // pop the loading circle
+  //     Navigator.pop(context);
+  //   } on FirebaseAuthException catch (e) {
+  //     // pop the loading circle
+  //     Navigator.pop(context);
+  //     // WRONG EMAIL
+  //     if (e.code == 'user-not-found' || e.code == 'wrong-password') {
+  //       // show error to user
+  //       wrongEmailOrPasswordMessage();
+  //     }
+
+  //   }
+  // }
+
+  // // wrong email or password message popup
+  // void wrongEmailOrPasswordMessage() {
+  //   ScaffoldMessenger.of(context).showMaterialBanner(
+  //     MaterialBanner(
+  //       padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
+  //       content: const Text('Email ou senha incorretos', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w500, fontSize: 14),),
+  //       leading: const Icon(Icons.error_outline, color: Colors.white),
+  //       backgroundColor: Colors.redAccent,
+  //       actions: <Widget>[
+  //         TextButton(
+  //           onPressed: () {
+  //             ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+  //           },
+  //           child: const Text('FECHAR', style: TextStyle(color: Colors.white),),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose(){
@@ -154,8 +184,9 @@ class _LoginPageState extends State<LoginPage> {
         
                 // sign in button
                 MyButton(
-                  onTap: signUserIn,
+                  onTap: loginUser,
                   buttonText: "Sign In",
+                  isLoading: _isLoading,
                 ),
         
                 const SizedBox(height: 15),
@@ -184,6 +215,13 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),]
         ),
+      ),
+    );
+  }
+  showSnackBar(BuildContext context, String text) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
       ),
     );
   }

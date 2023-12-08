@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
 import 'package:tcc_app/components/my_textfield.dart';
+import 'package:tcc_app/pages/home_page.dart';
+import 'package:tcc_app/resources/auth_methods.dart';
 
 class RegisterPage extends StatefulWidget {
   final VoidCallback showLoginPage;
@@ -18,6 +20,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final confirmPasswordController = TextEditingController();
   final nameController = TextEditingController();
   final cpfController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -29,70 +32,79 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
-  Future signUp() async {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return const Center(
-          child: CircularProgressIndicator(),
+  void signUp() async {
+    // set loading to true
+    setState(() {
+      _isLoading = true;
+    });
+
+    // signup user using our authmethodds
+    String res = await AuthMethods().signUpUser(
+        email: emailController.text,
+        password: passwordController.text,
+        username: nameController.text,
+        cpf: cpfController.text);
+    // if string returned is sucess, user has been created
+    if (res == "success") {
+      setState(() {
+        _isLoading = false;
+      });
+      // navigate to the home screen
+      if (context.mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => HomePage()
+          ),
         );
-      },
-    );
-
-    // try {
-    //   if (passwordConfirmed()) {
-    //     await FirebaseAuth.instance.createUserWithEmailAndPassword(
-    //       email: emailController.text.trim(),
-    //       password: passwordController.text.trim(),
-    //     );
-    //   } else {
-    //     passwordNotConfirmed();
-    //   }
-    //   Navigator.pop(context);
-    // } on FirebaseAuthException catch (e) {
-    //   // pop the loading circle
-    //   Navigator.pop(context);
-    //   // WRONG EMAIL
-    //   if (e.code == 'email-already-in-use') {
-    //     // show error to user
-    //     emailAlreadyExistsMessage();
-    //   }
-
-    //   // WRONG PASSWORD
-    //   else if (e.code == 'invalid-email') {
-    //     // show error to user
-    //     invalidEmailMessage();
-    //   }
-    // }
-
-    if(passwordConfirmed()){
-      try{
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
-        );
-
-        addUserDetails(nameController.text.trim(), emailController.text.trim(), cpfController.text.trim());
-        Navigator.pop(context);
-      } on FirebaseAuthException catch (e) {
-        // pop the loading circle
-        Navigator.pop(context);
-        // WRONG EMAIL
-        if (e.code == 'email-already-in-use') {
-          // show error to user
-          emailAlreadyExistsMessage();
-        }
-
-        // WRONG PASSWORD
-        else if (e.code == 'invalid-email') {
-          // show error to user
-          invalidEmailMessage();
-        }
       }
     } else {
-      passwordNotConfirmed();
+      setState(() {
+        _isLoading = false;
+      });
+      // show the error
+      if (context.mounted) {
+        showSnackBar(context, res);
+      }
     }
   }
+  // Future signUp() async {
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return const Center(
+  //         child: CircularProgressIndicator(),
+  //       );
+  //     },
+  //   );
+
+  //   if(passwordConfirmed()){
+  //     try{
+  //       await FirebaseAuth.instance.createUserWithEmailAndPassword(
+  //         email: emailController.text.trim(),
+  //         password: passwordController.text.trim(),
+  //       );
+
+  //       addUserDetails(nameController.text.trim(), emailController.text.trim(), cpfController.text.trim());
+  //       Navigator.pop(context);
+  //     } on FirebaseAuthException catch (e) {
+  //       // pop the loading circle
+  //       Navigator.pop(context);
+  //       // WRONG EMAIL
+  //       if (e.code == 'email-already-in-use') {
+  //         // show error to user
+  //         emailAlreadyExistsMessage();
+  //       }
+
+  //       // WRONG PASSWORD
+  //       else if (e.code == 'invalid-email') {
+  //         // show error to user
+  //         invalidEmailMessage();
+  //       }
+  //     }
+  //   } else {
+  //     passwordNotConfirmed();
+  //   }
+  // }
 
   Future addUserDetails( String name, String email, String cpf) async{
     await FirebaseFirestore.instance.collection('users').add({
@@ -241,6 +253,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 MyButton(
                   onTap: signUp,
                   buttonText: "Sign up",
+                  isLoading: _isLoading,
                 ),
 
                 const SizedBox(height: 50),
@@ -270,6 +283,14 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
           ),
         ]),
+      ),
+    );
+  }
+  
+  showSnackBar(BuildContext context, String text) {
+    return ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(text),
       ),
     );
   }

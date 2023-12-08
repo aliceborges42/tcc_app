@@ -59,6 +59,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           MyButton(
             onTap: resetPassword,
             buttonText: "Reset Password",
+            isLoading: false,
           ),
         ],
       ),

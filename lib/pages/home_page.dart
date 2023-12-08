@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tcc_app/pages/add_complaint_page.dart';
+import 'package:tcc_app/pages/map_page.dart';
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
@@ -24,11 +26,7 @@ class HomePage extends StatelessWidget {
           )
         ],
       ),
-      body: Center(
-          child: Text(
-        "LOGGED IN AS: ${user.email!}",
-        style: const TextStyle(fontSize: 20),
-      )),
+      body: const MapSample()
     );
   }
 }
