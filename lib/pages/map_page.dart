@@ -3,12 +3,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/pages/add_complaint_page.dart';
 import 'dart:async';
-
-import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/resources/firestore_methods.dart';
 
 class MapSample extends StatefulWidget {
-  const MapSample({super.key});
+  const MapSample({Key? key}) : super(key: key);
 
   @override
   State<MapSample> createState() => MapSampleState();
@@ -24,36 +22,54 @@ class MapSampleState extends State<MapSample> {
     zoom: 17,
   );
 
+  late StreamSubscription<List<Complaint>> _complaintsSubscription;
+
   @override
   void initState() {
     super.initState();
     _loadComplaints();
+
+    // Configurar o stream para atualizações no Firestore
+    _complaintsSubscription =
+        _fireStoreMethods.getComplaintsStream().listen((complaints) {
+      _updateMarkers(complaints);
+    });
+  }
+
+  void _updateMarkers(List<Complaint> complaints) {
+    setState(() {
+      _markers.clear();
+      for (Complaint complaint in complaints) {
+        if (complaint.local != null) {
+          _markers.add(
+            Marker(
+              markerId: MarkerId(complaint.complaintId),
+              position: LatLng(
+                complaint.local!.latitude,
+                complaint.local!.longitude,
+              ),
+              infoWindow: InfoWindow(
+                title: complaint.description,
+                snippet: complaint.dateOfOccurrence.toString(),
+              ),
+              zIndex: 1,
+            ),
+          );
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _complaintsSubscription.cancel();
+    super.dispose();
   }
 
   Future<void> _loadComplaints() async {
     try {
       List<Complaint> complaints = await _fireStoreMethods.getComplaints();
-      // print('COMPLAINT:');
-      // print(complaints.length);
-      setState(() {
-        _markers.clear();
-        for (Complaint complaint in complaints) {
-          if (complaint.local != null) {
-            _markers.add(
-              Marker(
-                markerId: MarkerId(complaint.complaintId),
-                position: LatLng(
-                  complaint.local!.latitude,
-                  complaint.local!.longitude,
-                ),
-                // Adicione mais detalhes do marcador conforme necessário
-                infoWindow: InfoWindow(title: complaint.description),
-                zIndex: 1,
-              ),
-            );
-          }
-        }
-      });
+      _updateMarkers(complaints);
     } catch (error) {
       print("Erro ao carregar denúncias: $error");
     }
@@ -76,9 +92,4 @@ class MapSampleState extends State<MapSample> {
       ),
     );
   }
-
-  // Future<void> _goToTheLake() async {
-  //   final GoogleMapController controller = await _controller.future;
-  //   await controller.animateCamera(CameraUpdate.newCameraPosition(_kLake));
-  // }
 }

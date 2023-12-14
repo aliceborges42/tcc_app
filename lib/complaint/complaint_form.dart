@@ -10,6 +10,7 @@ import 'package:tcc_app/resources/firestore_methods.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
+import 'package:intl/intl.dart';
 
 class ComplaintForm extends StatefulWidget {
   const ComplaintForm({super.key});
@@ -42,6 +43,7 @@ class _ComplaintFormState extends State<ComplaintForm> {
             FormBuilderDateTimePicker(
               name: 'dataOcorrido',
               inputType: InputType.date,
+              format: DateFormat('dd/MM/yyyy'),
               decoration: InputDecoration(labelText: 'Data do Ocorrido'),
               validator: FormBuilderValidators.compose([
                 FormBuilderValidators.required(),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:ffi';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -88,5 +89,41 @@ class FireStoreMethods {
       print("Erro ao obter denúncias: $error");
       throw error.toString();
     }
+  }
+
+  // Obter um Stream que emite uma lista de Complaints sempre que houver alterações no Firestore
+  Stream<List<Complaint>> getComplaintsStream() {
+    try {
+      // Configurar um StreamController para emitir as atualizações
+      StreamController<List<Complaint>> controller =
+          StreamController<List<Complaint>>();
+
+      // Obter a referência da coleção
+      CollectionReference complaintsCollection =
+          _firestore.collection('complaints');
+
+      // Configurar um ouvinte em tempo real para a coleção
+      StreamSubscription<QuerySnapshot> subscription =
+          complaintsCollection.snapshots().listen((querySnapshot) {
+        // Mapear os documentos para a lista de Complaints
+        List<Complaint> complaints = querySnapshot.docs
+            .map((document) => Complaint.fromSnap(document))
+            .toList();
+
+        // Adicionar a lista de Complaints ao StreamController
+        controller.add(complaints);
+      });
+
+      // Retornar o Stream
+      return controller.stream;
+    } catch (error) {
+      print("Erro ao obter stream de denúncias: $error");
+      throw error.toString();
+    }
+  }
+
+  // Cancelar a inscrição quando necessário (por exemplo, no dispose de um StatefulWidget)
+  void cancelComplaintsStream(StreamSubscription<QuerySnapshot> subscription) {
+    subscription.cancel();
   }
 }
