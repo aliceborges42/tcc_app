@@ -4,11 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
 import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/pages/home_page.dart';
+import 'package:tcc_app/pages/login_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 
 class RegisterPage extends StatefulWidget {
-  final VoidCallback showLoginPage;
-  const RegisterPage({super.key, required this.showLoginPage});
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -52,9 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
       // navigate to the home screen
       if (context.mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => HomePage()
-          ),
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
       }
     } else {
@@ -67,46 +65,8 @@ class _RegisterPageState extends State<RegisterPage> {
       }
     }
   }
-  // Future signUp() async {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return const Center(
-  //         child: CircularProgressIndicator(),
-  //       );
-  //     },
-  //   );
 
-  //   if(passwordConfirmed()){
-  //     try{
-  //       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-  //         email: emailController.text.trim(),
-  //         password: passwordController.text.trim(),
-  //       );
-
-  //       addUserDetails(nameController.text.trim(), emailController.text.trim(), cpfController.text.trim());
-  //       Navigator.pop(context);
-  //     } on FirebaseAuthException catch (e) {
-  //       // pop the loading circle
-  //       Navigator.pop(context);
-  //       // WRONG EMAIL
-  //       if (e.code == 'email-already-in-use') {
-  //         // show error to user
-  //         emailAlreadyExistsMessage();
-  //       }
-
-  //       // WRONG PASSWORD
-  //       else if (e.code == 'invalid-email') {
-  //         // show error to user
-  //         invalidEmailMessage();
-  //       }
-  //     }
-  //   } else {
-  //     passwordNotConfirmed();
-  //   }
-  // }
-
-  Future addUserDetails( String name, String email, String cpf) async{
+  Future addUserDetails(String name, String email, String cpf) async {
     await FirebaseFirestore.instance.collection('users').add({
       'name': name,
       'email': email,
@@ -214,7 +174,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
 
                 const SizedBox(height: 10),
-                
+
                 MyTextField(
                   controller: cpfController,
                   hintText: 'CPF',
@@ -268,7 +228,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
-                      onTap: widget.showLoginPage,
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const LoginPage(),
+                        ),
+                      ),
                       child: const Text(
                         'Login now',
                         style: TextStyle(
@@ -286,7 +250,7 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
     );
   }
-  
+
   showSnackBar(BuildContext context, String text) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

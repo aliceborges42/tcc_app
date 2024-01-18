@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:intl/intl.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/pages/add_complaint_page.dart';
+import 'package:tcc_app/pages/complaint_page.dart';
 import 'dart:async';
 import 'package:tcc_app/resources/firestore_methods.dart';
 
@@ -36,6 +38,23 @@ class MapSampleState extends State<MapSample> {
     });
   }
 
+  String formatComplaintDetails(
+      String tipoDesordem, DateTime dataOcorrido, DateTime horaOcorrido) {
+    String formattedDate = DateFormat('dd/MM/yyyy').format(dataOcorrido);
+    String formattedTime = DateFormat.Hm().format(horaOcorrido);
+
+    return '$tipoDesordem, $formattedTime $formattedDate';
+  }
+
+  String truncateDescription(String description) {
+    int maxLength = 40;
+    if (description.length <= maxLength) {
+      return description;
+    } else {
+      return '${description.substring(0, maxLength)}...';
+    }
+  }
+
   void _updateMarkers(List<Complaint> complaints) {
     setState(() {
       _markers.clear();
@@ -49,8 +68,15 @@ class MapSampleState extends State<MapSample> {
                 complaint.local!.longitude,
               ),
               infoWindow: InfoWindow(
-                title: complaint.description,
-                snippet: complaint.dateOfOccurrence.toString(),
+                title: formatComplaintDetails(complaint.typeSpecification,
+                    complaint.dateOfOccurrence, complaint.hourOfOccurrence),
+                snippet: truncateDescription(complaint.description),
+                onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => ComplaintPage(
+                              complaintId: complaint.complaintId,
+                            ))),
               ),
               zIndex: 1,
             ),

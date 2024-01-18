@@ -19,22 +19,25 @@ class Complaint {
   final GeoPoint? local;
   final DateTime dateOfOccurrence;
   final DateTime hourOfOccurrence;
+  final String complaintType;
+  final String typeSpecification;
 
-  const Complaint({
-    required this.description,
-    required this.uid,
-    required this.name,
-    required this.complaintId,
-    required this.datePublished,
-    required this.imagesUrl,
-    required this.likes,
-    required this.deslikes,
-    // required this.resolved,
-    // required this.anonymous,
-    required this.local,
-    required this.dateOfOccurrence,
-    required this.hourOfOccurrence,
-  });
+  const Complaint(
+      {required this.description,
+      required this.uid,
+      required this.name,
+      required this.complaintId,
+      required this.datePublished,
+      required this.imagesUrl,
+      required this.likes,
+      required this.deslikes,
+      // required this.resolved,
+      // required this.anonymous,
+      required this.local,
+      required this.dateOfOccurrence,
+      required this.hourOfOccurrence,
+      required this.complaintType,
+      required this.typeSpecification});
 
   static Complaint fromSnap(DocumentSnapshot snap) {
     var snapshot = snap.data() as Map<String, dynamic>;
@@ -56,6 +59,8 @@ class Complaint {
       hourOfOccurrence:
           (snapshot['hourOfOccurrence'] as Timestamp?)?.toDate() ??
               DateTime.now(),
+      complaintType: snapshot["complaintType"] ?? "",
+      typeSpecification: snapshot["typeSpecification"] ?? "",
     );
   }
 
@@ -72,5 +77,7 @@ class Complaint {
         'local': local,
         'dateOfOccurrence': dateOfOccurrence,
         'hourOfOccurrence': hourOfOccurrence,
+        'complaintType': complaintType,
+        'typeSpecification': typeSpecification,
       };
 }

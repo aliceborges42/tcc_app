@@ -13,12 +13,15 @@ class FireStoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<String> uploadPost(
-      String description,
-      List<dynamic> files,
-      String uid,
-      GeoPoint? local,
-      DateTime dateOfOccurrence,
-      DateTime hourOfOccurrence) async {
+    String description,
+    List<dynamic> files,
+    String uid,
+    GeoPoint? local,
+    DateTime dateOfOccurrence,
+    DateTime hourOfOccurrence,
+    String complaintType,
+    String typeSpecification,
+  ) async {
     // asking uid here because we dont want to make extra calls to firebase auth when we can just get from our state management
     String res = "Some error occurred";
     try {
@@ -31,27 +34,36 @@ class FireStoreMethods {
         name = data?['username']; // <-- The value you want to retrieve.
         // Call setState if needed.
       }
+
       for (dynamic file in files) {
-        String photoUrl = await StorageMethods()
-            .uploadImageToStorage('complaints', file, true);
-        photoUrls.add(photoUrl);
+        try {
+          String photoUrl = await StorageMethods()
+              .uploadImageToStorage('complaints', file, true);
+          photoUrls.add(photoUrl);
+        } catch (storageError) {
+          // Lidar com erros de armazenamento aqui
+          print("Erro de armazenamento: $storageError");
+        }
       }
-      String complaintId = const Uuid().v1(); // creates unique id based on time
+
+      String complaintId =
+          const Uuid().v1(); // cria um ID exclusivo com base no tempo
       print('locale: $local');
       Complaint complaint = Complaint(
-          description: description,
-          uid: uid,
-          name: name,
-          likes: [],
-          deslikes: [],
-          complaintId: complaintId,
-          datePublished: DateTime.now(),
-          imagesUrl: photoUrls,
-          // resolved: false as Bool,
-          // anonymous: false as Bool,
-          local: local,
-          dateOfOccurrence: dateOfOccurrence,
-          hourOfOccurrence: hourOfOccurrence);
+        description: description,
+        uid: uid,
+        name: name,
+        likes: [],
+        deslikes: [],
+        complaintId: complaintId,
+        datePublished: DateTime.now(),
+        imagesUrl: photoUrls,
+        local: local,
+        dateOfOccurrence: dateOfOccurrence,
+        hourOfOccurrence: hourOfOccurrence,
+        complaintType: complaintType,
+        typeSpecification: typeSpecification,
+      );
       print('COMPLAINT JSON');
       print(complaint.toJson());
       _firestore
@@ -60,6 +72,8 @@ class FireStoreMethods {
           .set(complaint.toJson());
       res = "success";
     } catch (err) {
+      // Lidar com erros gerais aqui
+      print("Erro ao processar denúncia: $err");
       res = err.toString();
     }
     return res;
@@ -118,6 +132,24 @@ class FireStoreMethods {
       return controller.stream;
     } catch (error) {
       print("Erro ao obter stream de denúncias: $error");
+      throw error.toString();
+    }
+  }
+
+  Future<Complaint?> getComplaintById(String complaintId) async {
+    try {
+      DocumentSnapshot documentSnapshot =
+          await _firestore.collection('complaints').doc(complaintId).get();
+
+      if (documentSnapshot.exists) {
+        // Certifique-se de que o seu modelo Complaint tenha um construtor apropriado
+        // para converter os dados do Firestore para o objeto Complaint.
+        return Complaint.fromSnap(documentSnapshot);
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print("Erro ao obter denúncia por ID: $error");
       throw error.toString();
     }
   }

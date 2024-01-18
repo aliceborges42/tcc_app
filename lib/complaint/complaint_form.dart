@@ -6,7 +6,6 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tcc_app/complaint/choose_location.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tcc_app/resources/firestore_methods.dart';
-// Se necessário, ajuste o caminho para Complaint dependendo da estrutura do seu projeto
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:uuid/uuid.dart';
@@ -23,7 +22,21 @@ class _ComplaintFormState extends State<ComplaintForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   LatLng? _selectedLocation;
   final authuser = FirebaseAuth.instance.currentUser!;
-  // final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  String complaintType = '';
+
+  final desordemItems = [
+    'Poste de Luz Danificado',
+    'Ausência de Iluminação',
+    'Local Depredado'
+  ];
+
+  final situacaoItems = [
+    'Assédio Sexual',
+    'Violência contra a Mulher',
+    'Assédio Moral',
+    'Estupro'
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,6 +52,42 @@ class _ComplaintFormState extends State<ComplaintForm> {
                 FormBuilderValidators.required(),
               ]),
             ),
+            FormBuilderDropdown(
+              name: 'tipoDenuncia',
+              decoration: InputDecoration(labelText: 'Tipo de Denúncia'),
+              // hint: Text('Selecione o tipo de denúncia'),
+              validator: FormBuilderValidators.compose([
+                FormBuilderValidators.required(),
+              ]),
+              items: ['Desordem', 'Situação']
+                  .map((tipo) => DropdownMenuItem(
+                        value: tipo,
+                        child: Text(tipo),
+                      ))
+                  .toList(),
+              onChanged: (tipo) {
+                print("Tipo selecionado: $tipo");
+                setState(() {
+                  complaintType = tipo ?? ''; // Ou atribua um valor padrão
+                });
+              },
+            ),
+            // Adicionar campo 2.1 (seleção condicional)
+            if (complaintType != '')
+              FormBuilderDropdown(
+                name: 'tipoEspecificacao',
+                decoration:
+                    InputDecoration(labelText: 'Desordem ou situação ocorrida'),
+                // hint: Text('Selecione o tipo de desordem'),
+                items: (complaintType == 'Desordem'
+                        ? desordemItems
+                        : situacaoItems)
+                    .map((tipo) => DropdownMenuItem(
+                          value: tipo,
+                          child: Text(tipo),
+                        ))
+                    .toList(),
+              ),
 
             FormBuilderDateTimePicker(
               name: 'dataOcorrido',
@@ -62,11 +111,6 @@ class _ComplaintFormState extends State<ComplaintForm> {
               decoration: const InputDecoration(labelText: 'Imagens do Local'),
               maxImages: 5,
             ),
-            // Outros campos do formulário (data, hora, imagens, localização) aqui
-            // Use FormBuilderDateTimePicker para data e hora
-            // Use FormBuilderImagePicker para imagens
-            // Use FormBuilderGoogleMap para selecionar a localização no mapa
-            // ...
             ElevatedButton(
               onPressed: () async {
                 // Abrir o diálogo do mapa
@@ -92,58 +136,32 @@ class _ComplaintFormState extends State<ComplaintForm> {
               Text('Localização Selecionada: $_selectedLocation'),
 
             SizedBox(height: 20),
-
             ElevatedButton(
               onPressed: () async {
                 if (_formKey.currentState!.saveAndValidate()) {
-                  // Obter dados do formulário
                   Map<String, dynamic> formData = _formKey.currentState!.value;
-                  // print(formData);
                   try {
-                    String complaintId = const Uuid().v1();
                     GeoPoint? geoPoint;
                     if (_selectedLocation != null) {
-                      geoPoint = GeoPoint(_selectedLocation!.latitude,
-                          _selectedLocation!.longitude);
+                      geoPoint = GeoPoint(
+                        _selectedLocation!.latitude,
+                        _selectedLocation!.longitude,
+                      );
                     }
-                    // final complaint = {'local': geoPoint};
-                    // final user = FirebaseFirestore.instance
-                    //     .collection('user')
-                    //     .doc(authuser.uid)
-                    //     .get();
-                    // print('user: $user');
                     final res = await FireStoreMethods().uploadPost(
-                        formData['descricao'],
-                        formData['images']!,
-                        authuser.uid,
-                        geoPoint,
-                        formData['dataOcorrido'],
-                        formData['horaOcorrido']);
-
+                      formData['descricao'],
+                      formData['images']!,
+                      authuser.uid,
+                      geoPoint,
+                      formData['dataOcorrido'],
+                      formData['horaOcorrido'],
+                      formData['tipoDenuncia'],
+                      formData['tipoEspecificacao'],
+                    );
                     print('res: $res');
-
-                    // _firestore
-                    //     .collection('complaints')
-                    //     .doc(complaintId)
-                    //     .set(complaint);
                   } catch (err) {
                     print(err);
                   }
-                  // Complaint newComplaint = Complaint(
-                  //   description: formData['descricao'],
-                  //   // Obter outros campos do formulário
-                  //   // ...
-                  // {
-                  //  descricao: popopo,
-                  //  dataOcorrido: 2023-11-22 00:00:00.000,
-                  //  horaOcorrido: 0001-01-01 10:00:00.000,
-                  //  images: [Instance of 'XFile', Instance of 'XFile']
-
-                  //   // Supondo que você tenha uma função para adicionar denúncia ao Firebase
-                  //   // AdicionarDenunciaAoFirebase(novaDenuncia);
-                  // );
-
-                  // Limpar o formulário após a submissão
                   _formKey.currentState!.reset();
                 }
               },
