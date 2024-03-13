@@ -19,6 +19,18 @@ class MapSampleState extends State<MapSample> {
       Completer<GoogleMapController>();
   final FireStoreMethods _fireStoreMethods = FireStoreMethods();
   final Set<Marker> _markers = {};
+  final Set<Polyline> _polyline = {};
+
+  // list of locations to display polylines
+  List<LatLng> latLen = [
+    LatLng(-15.7593124, -47.8677623),
+    LatLng(-15.7612536, -47.874618),
+    LatLng(-15.7623481, -47.8743203),
+    LatLng(-15.7624539, -47.8747092),
+    LatLng(-15.7622397, -47.8749775),
+    LatLng(-15.7627353, -47.8768845),
+  ];
+
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-15.762780851912703, -47.87026321271443),
     zoom: 17,
@@ -36,6 +48,27 @@ class MapSampleState extends State<MapSample> {
         _fireStoreMethods.getComplaintsStream().listen((complaints) {
       _updateMarkers(complaints);
     });
+
+    for (int i = 0; i < latLen.length; i++) {
+      // _markers.add(
+      //   // added markers
+      //   Marker(
+      //       markerId: MarkerId(i.toString()),
+      //     position: latLen[i],
+      //     infoWindow: InfoWindow(
+      //       title: 'HOTEL',
+      //       snippet: '5 Star Hotel',
+      //     ),
+      //     icon: BitmapDescriptor.defaultMarker,
+      //   )
+      // );
+      setState(() {});
+      _polyline.add(Polyline(
+        polylineId: PolylineId('1'),
+        points: latLen,
+        color: Colors.green,
+      ));
+    }
   }
 
   String formatComplaintDetails(
@@ -110,6 +143,7 @@ class MapSampleState extends State<MapSample> {
           _controller.complete(controller);
         },
         markers: _markers,
+        polylines: _polyline,
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(context,

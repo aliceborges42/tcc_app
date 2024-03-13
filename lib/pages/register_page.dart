@@ -6,6 +6,7 @@ import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/pages/login_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
+import 'package:tcc_app/utils/colors.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -139,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: background,
       body: SafeArea(
         child: ListView(shrinkWrap: true, children: <Widget>[
           Center(
@@ -156,10 +157,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 50),
 
-                Text(
-                  'Register below with your details!',
+                const Text(
+                  'Cadastro',
                   style: TextStyle(
-                    color: Colors.grey[700],
+                    color: white,
                     fontSize: 16,
                   ),
                 ),
@@ -222,9 +223,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Already a member?',
-                      style: TextStyle(color: Colors.grey[700]),
+                    const Text(
+                      'Já possui conta?',
+                      style: TextStyle(color: lightGray),
                     ),
                     const SizedBox(width: 4),
                     GestureDetector(
@@ -236,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: const Text(
                         'Login now',
                         style: TextStyle(
-                          color: Colors.blue,
+                          color: white,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

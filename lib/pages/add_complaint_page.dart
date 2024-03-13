@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/complaint/complaint_form.dart';
 import 'package:tcc_app/pages/map_page.dart';
+import 'package:tcc_app/utils/colors.dart';
 
 class AddComplaintPage extends StatelessWidget {
   AddComplaintPage({super.key});
@@ -16,26 +17,31 @@ class AddComplaintPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[300],
-        elevation: 1,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(3.0),
-          child: Container(
-            color: Colors.grey[500],
-            height: 1,
-          )
+        backgroundColor: white,
+        appBar: AppBar(
+          title: const Text(
+            'Nova denúncia',
+            style: TextStyle(color: Colors.black),
+          ),
+          backgroundColor: white,
+          elevation: 1,
+          bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(3.0),
+              child: Container(
+                color: lightGray,
+                height: 1,
+              )),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            color: Colors.black,
+          ),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          color: Colors.black,
-        ),
-      ),
-      body: const ComplaintForm()
-    );
+        body: const Padding(
+          padding: EdgeInsets.only(top: 24.0),
+          child: ComplaintForm(),
+        ));
   }
 }
