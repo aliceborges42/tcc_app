@@ -4,6 +4,7 @@ import 'package:tcc_app/components/my_button.dart';
 import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/pages/forgot_pw_page.dart';
 import 'package:tcc_app/pages/home_page.dart';
+import 'package:tcc_app/pages/map_page.dart';
 import 'package:tcc_app/pages/register_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 
@@ -32,10 +33,9 @@ class _LoginPageState extends State<LoginPage> {
       _isLoading = true;
     });
 
-    String res = await AuthMethods().loginUser(
-        email: emailController.text, password: passwordController.text);
-
-    if (res == 'success') {
+    try {
+      await AuthMethods().loginUser(
+          email: emailController.text, password: passwordController.text);
       if (context.mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => HomePage()),
@@ -45,12 +45,13 @@ class _LoginPageState extends State<LoginPage> {
           _isLoading = false;
         });
       }
-    } else {
+    } on Exception catch (error) {
+      // make it explicit that this function can throw exceptions
       setState(() {
         _isLoading = false;
       });
       if (context.mounted) {
-        showSnackBar(context, res);
+        showSnackBar(context, error.toString());
       }
     }
   }

@@ -6,11 +6,16 @@ class UserProvider with ChangeNotifier {
   User? _user;
   final AuthMethods _authMethods = AuthMethods();
 
-  User get getUser => _user!;
+  User? get getUser => _user;
 
   Future<void> refreshUser() async {
-    User user = await _authMethods.getUserDetails();
-    _user = user;
-    notifyListeners();
+    final token = await _authMethods.getToken();
+    if (token != null) {
+      User user = await _authMethods.getUserDetails(token);
+      _user = user;
+      notifyListeners();
+    } else {
+      // Caso não seja possível obter o token, você pode tomar alguma ação aqui
+    }
   }
 }

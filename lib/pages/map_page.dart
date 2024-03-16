@@ -43,25 +43,24 @@ class MapSampleState extends State<MapSample> {
     super.initState();
     _loadComplaints();
 
-    // Configurar o stream para atualizações no Firestore
+    //Configurar o stream para atualizações no Firestore
     _complaintsSubscription =
         _fireStoreMethods.getComplaintsStream().listen((complaints) {
       _updateMarkers(complaints);
     });
 
     for (int i = 0; i < latLen.length; i++) {
-      // _markers.add(
-      //   // added markers
-      //   Marker(
-      //       markerId: MarkerId(i.toString()),
-      //     position: latLen[i],
-      //     infoWindow: InfoWindow(
-      //       title: 'HOTEL',
-      //       snippet: '5 Star Hotel',
-      //     ),
-      //     icon: BitmapDescriptor.defaultMarker,
-      //   )
-      // );
+      _markers.add(
+          // added markers
+          Marker(
+        markerId: MarkerId(i.toString()),
+        position: latLen[i],
+        infoWindow: InfoWindow(
+          title: 'HOTEL',
+          snippet: '5 Star Hotel',
+        ),
+        icon: BitmapDescriptor.defaultMarker,
+      ));
       setState(() {});
       _polyline.add(Polyline(
         polylineId: PolylineId('1'),
@@ -126,12 +125,12 @@ class MapSampleState extends State<MapSample> {
   }
 
   Future<void> _loadComplaints() async {
-    try {
-      List<Complaint> complaints = await _fireStoreMethods.getComplaints();
-      _updateMarkers(complaints);
-    } catch (error) {
-      print("Erro ao carregar denúncias: $error");
-    }
+    // try {
+    //   List<Complaint> complaints = await _fireStoreMethods.getComplaints();
+    //   _updateMarkers(complaints);
+    // } catch (error) {
+    //   print("Erro ao carregar denúncias: $error");
+    // }
   }
 
   @override

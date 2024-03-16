@@ -39,30 +39,31 @@ class _RegisterPageState extends State<RegisterPage> {
       _isLoading = true;
     });
 
-    // signup user using our authmethodds
-    String res = await AuthMethods().signUpUser(
-        email: emailController.text,
-        password: passwordController.text,
-        username: nameController.text,
-        cpf: cpfController.text);
-    // if string returned is sucess, user has been created
-    if (res == "success") {
-      setState(() {
-        _isLoading = false;
-      });
-      // navigate to the home screen
-      if (context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => HomePage()),
-        );
+    try {
+      String res = await AuthMethods().signUpUser(
+          email: emailController.text,
+          password: passwordController.text,
+          name: nameController.text,
+          cpf: cpfController.text);
+
+      if (res == "success") {
+        setState(() {
+          _isLoading = false;
+        });
+        // navigate to the home screen
+        if (context.mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
+        }
       }
-    } else {
+    } on Exception catch (error) {
+      // make it explicit that this function can throw exceptions
       setState(() {
         _isLoading = false;
       });
-      // show the error
       if (context.mounted) {
-        showSnackBar(context, res);
+        showSnackBar(context, error.toString());
       }
     }
   }
