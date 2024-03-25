@@ -79,17 +79,19 @@ class _ComplaintFormState extends State<ComplaintForm> {
     });
     if (_formKey.currentState!.saveAndValidate()) {
       Map<String, dynamic> formData = _formKey.currentState!.value;
+      List<dynamic>? images = formData['images'];
       try {
         print('\n\n\n-----------------------\n\n\n');
         await ComplaintMethods().postComplaint(
-            description: formData['descricao'],
-            complaintTypeId: 'Desordem',
-            typeSpecificationId: 'Poste de luz danificado',
-            latitude: _selectedLocation!.latitude,
-            longitude: _selectedLocation!.longitude,
-            hour: formData['horaOcorrido'],
-            date: formData['dataOcorrido'],
-            images: formData['images']!);
+          description: formData['descricao'],
+          complaintTypeId: formData['tipoDenuncia'],
+          typeSpecificationId: formData['tipoEspecificacao'],
+          latitude: _selectedLocation!.latitude,
+          longitude: _selectedLocation!.longitude,
+          hour: formData['horaOcorrido'],
+          date: formData['dataOcorrido'],
+          images: images,
+        );
 
         // print('sres: $res');
         // print('res: $resAPI');

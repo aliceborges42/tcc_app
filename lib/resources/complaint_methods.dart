@@ -38,17 +38,20 @@ class ComplaintMethods {
     request.fields['complaint[longitude]'] = longitude.toString();
     request.fields['complaint[hour]'] = hour!.toString();
     request.fields['complaint[date]'] = date.toString();
+    request.fields['complaint[status]'] = 'Não Resolvido';
 
-    for (int i = 0; i < images!.length; i++) {
-      var file = images[i];
-      request.files.add(
-        await http.MultipartFile.fromPath(
-          'complaint[images][]',
-          file.path,
-          filename: 'image_$i.jpg', // Nome do arquivo
-          contentType: MediaType('image', '/*'), // Tipo de conteúdo
-        ),
-      );
+    if (images != null && images.isNotEmpty) {
+      for (int i = 0; i < images.length; i++) {
+        var file = images[i];
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'complaint[images][]',
+            file.path,
+            filename: 'image_$i.jpg', // Nome do arquivo
+            contentType: MediaType('image', '/*'), // Tipo de conteúdo
+          ),
+        );
+      }
     }
     var response = await request.send();
     if (response.statusCode == 201) {

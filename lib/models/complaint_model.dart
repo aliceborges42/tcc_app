@@ -49,7 +49,7 @@ class Complaint {
       complaintType: ComplaintType.fromJson(json['complaint_type']),
       typeSpecification: TypeSpecification.fromJson(json['type_specification']),
       images: List<String>.from(json['images'] ?? []),
-      status: json['status'] ?? 'open',
+      status: json['status'] ?? 'Não Resolvido',
     );
   }
 }
