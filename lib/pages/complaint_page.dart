@@ -5,6 +5,7 @@ import 'package:tcc_app/models/complaint_model.dart';
 import 'package:geocode/geocode.dart';
 import 'package:tcc_app/resources/map_methods.dart';
 import 'package:tcc_app/resources/format_methods.dart';
+import 'package:tcc_app/resources/complaint_methods.dart';
 
 class ComplaintPage extends StatefulWidget {
   final String complaintId;
@@ -29,8 +30,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
   Future<Complaint> _loadComplaintDetails() async {
     try {
       Complaint? complaint =
-          await FireStoreMethods().getComplaintById(widget.complaintId);
-      return complaint!;
+          await ComplaintMethods().getComplaintById(widget.complaintId);
+      _loadLocationDetails(complaint.latitude, complaint.longitude);
+      _loadDateDetails(complaint.date);
+      return complaint;
     } catch (error) {
       print("Erro ao carregar detalhes da denúncia: $error");
       throw error;
@@ -100,15 +103,14 @@ class _ComplaintPageState extends State<ComplaintPage> {
               Complaint complaint = snapshot.data as Complaint;
 
               // Carrega os detalhes de localização (endereço)
-              _loadLocationDetails(
-                  complaint.local!.latitude, complaint.local!.longitude);
-              _loadDateDetails(complaint.dateOfOccurrence);
+              // _loadLocationDetails(complaint.latitude, complaint.longitude);
+              // _loadDateDetails(complaint.date);
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
                     child: Carousel(
-                      images: complaint.imagesUrl,
+                      images: complaint.images!,
                       height: MediaQuery.of(context).size.height * 0.25,
                       viewportFraction: 1.0,
                     ),
@@ -118,7 +120,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                         barrierColor: Colors.black87,
                         builder: (BuildContext context) {
                           return Carousel(
-                            images: complaint.imagesUrl,
+                            images: complaint.images!,
                             height: MediaQuery.of(context).size.height * 0.8,
                             viewportFraction: 0.8,
                           );
@@ -133,7 +135,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          complaint.typeSpecification,
+                          complaint.typeSpecification.specification,
                           style: const TextStyle(
                               fontSize: 24, fontWeight: FontWeight.w400),
                         ),
@@ -162,7 +164,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        Text(formatHour(complaint.hourOfOccurrence)),
+                        Text(formatHour(complaint.hour)),
                       ],
                     ),
                   ),

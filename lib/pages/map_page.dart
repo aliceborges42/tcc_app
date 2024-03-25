@@ -1,9 +1,136 @@
+// import 'package:flutter/material.dart';
+// import 'package:google_maps_flutter/google_maps_flutter.dart';
+// import 'package:intl/intl.dart';
+// import 'package:tcc_app/models/complaint_model.dart';
+// import 'package:tcc_app/pages/add_complaint_page.dart';
+// import 'package:tcc_app/pages/complaint_page.dart';
+// import 'package:tcc_app/resources/complaint_methods.dart';
+// import 'dart:async';
+
+// class MapSample extends StatefulWidget {
+//   const MapSample({Key? key}) : super(key: key);
+
+//   @override
+//   State<MapSample> createState() => MapSampleState();
+// }
+
+// class MapSampleState extends State<MapSample> {
+//   final Set<Marker> _markers = {};
+//   final Set<Polyline> _polyline = {};
+
+//   late StreamSubscription<List<Complaint>> _complaintsSubscription;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _loadComplaints();
+
+//     _complaintsSubscription =
+//         ComplaintMethods().getAllComplaintsStream().listen((complaints) {
+//       _updateMarkers(complaints);
+//     });
+//   }
+
+//   String formatComplaintDetails(
+//       String tipoDesordem, DateTime dataOcorrido, DateTime horaOcorrido) {
+//     String formattedDate = DateFormat('dd/MM/yyyy').format(dataOcorrido);
+//     String formattedTime = DateFormat.Hm().format(horaOcorrido);
+
+//     return '$tipoDesordem, $formattedTime $formattedDate';
+//   }
+
+//   String truncateDescription(String description) {
+//     int maxLength = 40;
+//     if (description.length <= maxLength) {
+//       return description;
+//     } else {
+//       return '${description.substring(0, maxLength)}...';
+//     }
+//   }
+
+//   void _updateMarkers(List<Complaint> complaints) {
+//     print('\n\nupateMarkers');
+//     setState(() {
+//       _markers.clear();
+//       for (Complaint complaint in complaints) {
+//         print(complaint);
+//         if (complaint.latitude != null && complaint.longitude != null) {
+//           _markers.add(
+//             Marker(
+//               markerId: MarkerId(complaint.id.toString()),
+//               position: LatLng(
+//                 complaint.latitude,
+//                 complaint.longitude,
+//               ),
+//               infoWindow: InfoWindow(
+//                 title: formatComplaintDetails(
+//                   complaint.typeSpecification.specification,
+//                   complaint.date,
+//                   complaint.hour,
+//                 ),
+//                 snippet: truncateDescription(complaint.description),
+//                 onTap: () => Navigator.push(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => ComplaintPage(
+//                       complaintId: complaint.id.toString(),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//               zIndex: 1,
+//             ),
+//           );
+//         }
+//       }
+//     });
+//   }
+
+//   @override
+//   void dispose() {
+//     _complaintsSubscription.cancel();
+//     super.dispose();
+//   }
+
+//   Future<void> _loadComplaints() async {
+//     try {
+//       List<Complaint> complaints = await ComplaintMethods().getAllComplaints();
+//       _updateMarkers(complaints);
+//     } catch (error) {
+//       print("Erro ao carregar denúncias: $error");
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: GoogleMap(
+//         initialCameraPosition: CameraPosition(
+//           target: const LatLng(-15.762780851912703, -47.87026321271443),
+//           zoom: 17,
+//         ),
+//         onMapCreated: (GoogleMapController controller) {},
+//         markers: _markers,
+//         polylines: _polyline,
+//       ),
+//       floatingActionButton: FloatingActionButton.extended(
+//         onPressed: () => Navigator.push(
+//           context,
+//           MaterialPageRoute(builder: (context) => AddComplaintPage()),
+//         ),
+//         label: const Icon(Icons.add),
+//       ),
+//     );
+//   }
+// }
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/pages/add_complaint_page.dart';
 import 'package:tcc_app/pages/complaint_page.dart';
+import 'package:tcc_app/resources/complaint_methods.dart';
 import 'dart:async';
 import 'package:tcc_app/resources/firestore_methods.dart';
 
@@ -17,7 +144,8 @@ class MapSample extends StatefulWidget {
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-  final FireStoreMethods _fireStoreMethods = FireStoreMethods();
+  // final FireStoreMethods _fireStoreMethods = FireStoreMethods();
+  final ComplaintMethods _complaintMethods = ComplaintMethods();
   final Set<Marker> _markers = {};
   final Set<Polyline> _polyline = {};
 
@@ -43,11 +171,15 @@ class MapSampleState extends State<MapSample> {
     super.initState();
     _loadComplaints();
 
-    //Configurar o stream para atualizações no Firestore
+    // Configurar o stream para atualizações no Firestore
     _complaintsSubscription =
-        _fireStoreMethods.getComplaintsStream().listen((complaints) {
+        _complaintMethods.getAllComplaintsStream().listen((complaints) {
       _updateMarkers(complaints);
     });
+
+    // print('\n\n\n COMPLAINT STREAM:\n');
+    // print(_complaintsSubscription);
+    // print('\n-------------------------------\n\n');
 
     for (int i = 0; i < latLen.length; i++) {
       _markers.add(
@@ -88,34 +220,39 @@ class MapSampleState extends State<MapSample> {
   }
 
   void _updateMarkers(List<Complaint> complaints) {
-    setState(() {
-      _markers.clear();
-      for (Complaint complaint in complaints) {
-        if (complaint.local != null) {
+    if (complaints.isNotEmpty) {
+      setState(() {
+        _markers.clear();
+        for (Complaint complaint in complaints) {
+          print('\n\n\n\n COMPLAINT\n');
+          print(complaint.description);
+          print('\n---------------------\n\n\n');
           _markers.add(
             Marker(
-              markerId: MarkerId(complaint.complaintId),
+              markerId: MarkerId(complaint.id.toString()),
               position: LatLng(
-                complaint.local!.latitude,
-                complaint.local!.longitude,
+                complaint.latitude,
+                complaint.longitude,
               ),
               infoWindow: InfoWindow(
-                title: formatComplaintDetails(complaint.typeSpecification,
-                    complaint.dateOfOccurrence, complaint.hourOfOccurrence),
+                title: formatComplaintDetails(
+                    complaint.typeSpecification.specification,
+                    complaint.date,
+                    complaint.hour),
                 snippet: truncateDescription(complaint.description),
                 onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => ComplaintPage(
-                              complaintId: complaint.complaintId,
+                              complaintId: complaint.id.toString(),
                             ))),
               ),
               zIndex: 1,
             ),
           );
         }
-      }
-    });
+      });
+    }
   }
 
   @override
@@ -125,16 +262,24 @@ class MapSampleState extends State<MapSample> {
   }
 
   Future<void> _loadComplaints() async {
-    // try {
-    //   List<Complaint> complaints = await _fireStoreMethods.getComplaints();
-    //   _updateMarkers(complaints);
-    // } catch (error) {
-    //   print("Erro ao carregar denúncias: $error");
-    // }
+    try {
+      List<Complaint> complaints = await _complaintMethods.getAllComplaints();
+
+      print('\n\n\nCOMPLAINTSlenght\n');
+      print(complaints.length);
+
+      _updateMarkers(complaints);
+    } catch (error) {
+      List<Complaint> complaints = [];
+      // _updateMarkers(complaints);
+      print("Erro ao carregar denúncias: $error");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    print('MERKERS ');
+    print(_markers.length);
     return Scaffold(
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,

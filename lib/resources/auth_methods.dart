@@ -35,6 +35,23 @@ class AuthMethods {
     return prefs.getString('token');
   }
 
+  Future<bool> isLogged() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    if (token != null) {
+      // return true;
+      try {
+        await getUserDetails(token);
+        return true;
+      } catch (e) {
+        print(e);
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   Future<String> signUpUser({
     required String email,
     required String password,
@@ -111,3 +128,5 @@ class AuthMethods {
     }
   }
 }
+
+final authMethods = AuthMethods();

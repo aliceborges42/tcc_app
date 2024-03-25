@@ -1,83 +1,89 @@
-import 'dart:ffi';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-
-// TODO: adicionar tipo de denuncia (situação ou desordem) e o tipo de cada um
 class Complaint {
-  final String description;
-  final String uid;
-  final String name;
-  final String complaintId;
-  final DateTime datePublished;
-  final List<String> imagesUrl;
-  final likes;
-  final deslikes;
-  // final Bool resolved;
-  // final Bool anonymous;
-  final GeoPoint? local;
-  final DateTime dateOfOccurrence;
-  final DateTime hourOfOccurrence;
-  final String complaintType;
-  final String typeSpecification;
+  int id;
+  String description;
+  String? status;
+  double latitude;
+  double longitude;
+  DateTime hour;
+  DateTime date;
+  DateTime createdAt;
+  DateTime updatedAt;
+  int complaintTypeId;
+  int typeSpecificationId;
+  int userId;
+  ComplaintType complaintType;
+  TypeSpecification typeSpecification;
+  List<String>? images;
 
-  const Complaint(
-      {required this.description,
-      required this.uid,
-      required this.name,
-      required this.complaintId,
-      required this.datePublished,
-      required this.imagesUrl,
-      required this.likes,
-      required this.deslikes,
-      // required this.resolved,
-      // required this.anonymous,
-      required this.local,
-      required this.dateOfOccurrence,
-      required this.hourOfOccurrence,
-      required this.complaintType,
-      required this.typeSpecification});
+  Complaint({
+    required this.id,
+    required this.description,
+    required this.latitude,
+    required this.longitude,
+    required this.hour,
+    required this.date,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.complaintTypeId,
+    required this.typeSpecificationId,
+    required this.userId,
+    required this.complaintType,
+    required this.typeSpecification,
+    this.images,
+    this.status,
+  });
 
-  static Complaint fromSnap(DocumentSnapshot snap) {
-    var snapshot = snap.data() as Map<String, dynamic>;
-
+  factory Complaint.fromJson(Map<String, dynamic> json) {
     return Complaint(
-      description: snapshot["description"] ?? "",
-      uid: snapshot["uid"] ?? "",
-      complaintId: snapshot["complaintId"] ?? "",
-      datePublished:
-          (snapshot["datePublished"] as Timestamp?)?.toDate() ?? DateTime.now(),
-      name: snapshot["name"] ?? "",
-      imagesUrl: List<String>.from(snapshot['imagesUrl'] ?? []),
-      likes: List<String>.from(snapshot['likes'] ?? []),
-      deslikes: List<String>.from(snapshot['deslikes'] ?? []),
-      local: snapshot['local'] as GeoPoint?,
-      dateOfOccurrence:
-          (snapshot['dateOfOccurrence'] as Timestamp?)?.toDate() ??
-              DateTime.now(),
-      hourOfOccurrence:
-          (snapshot['hourOfOccurrence'] as Timestamp?)?.toDate() ??
-              DateTime.now(),
-      complaintType: snapshot["complaintType"] ?? "",
-      typeSpecification: snapshot["typeSpecification"] ?? "",
+      id: json['id'],
+      description: json['description'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      hour: DateTime.parse(json['hour']),
+      date: DateTime.parse(json['date']),
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+      complaintTypeId: json['complaint_type_id'],
+      typeSpecificationId: json['type_specification_id'],
+      userId: json['user_id'],
+      complaintType: ComplaintType.fromJson(json['complaint_type']),
+      typeSpecification: TypeSpecification.fromJson(json['type_specification']),
+      images: List<String>.from(json['images'] ?? []),
+      status: json['status'] ?? 'open',
     );
   }
+}
 
-  Map<String, dynamic> toJson() => {
-        "description": description,
-        "uid": uid,
-        "complaintId": complaintId,
-        "datePublished": datePublished,
-        'imagesUrl': imagesUrl,
-        'likes': likes,
-        'deslikes': deslikes,
-        // 'resolved': resolved,
-        // 'anonymous': anonymous,
-        'local': local,
-        'dateOfOccurrence': dateOfOccurrence,
-        'hourOfOccurrence': hourOfOccurrence,
-        'complaintType': complaintType,
-        'typeSpecification': typeSpecification,
-      };
+class ComplaintType {
+  int id;
+  String classification;
+
+  ComplaintType({
+    required this.id,
+    required this.classification,
+  });
+
+  factory ComplaintType.fromJson(Map<String, dynamic> json) {
+    return ComplaintType(
+      id: json['id'],
+      classification: json['classification'],
+    );
+  }
+}
+
+class TypeSpecification {
+  int id;
+  String specification;
+
+  TypeSpecification({
+    required this.id,
+    required this.specification,
+  });
+
+  factory TypeSpecification.fromJson(Map<String, dynamic> json) {
+    return TypeSpecification(
+      id: json['id'],
+      specification: json['specification'],
+    );
+  }
 }
