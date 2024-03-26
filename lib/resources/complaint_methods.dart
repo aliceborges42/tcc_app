@@ -1,9 +1,13 @@
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
+import 'package:tcc_app/models/user_model.dart';
 import 'dart:io';
 import './auth_methods.dart';
 import 'dart:convert';
 import 'package:tcc_app/models/complaint_model.dart';
+import 'package:tcc_app/models/like_model.dart';
+import 'package:tcc_app/models/deslike_model.dart';
+import 'package:collection/collection.dart';
 
 class ComplaintMethods {
   Future<void> postComplaint(
@@ -153,6 +157,182 @@ class ComplaintMethods {
       }
     } catch (e) {
       throw Exception('Failed to connect to the server');
+    }
+  }
+
+  Future<String> likeComplaint(String complaintId) async {
+    var uri = Uri.parse('http://localhost:3000/likes/');
+
+    String? authToken = await authMethods.getToken();
+
+    final response = await http.post(uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken'
+        },
+        body: jsonEncode(<String, dynamic>{
+          'like': {'complaint_id': complaintId}
+        }));
+
+    if (response.statusCode == 201) {
+      return 'success';
+    } else {
+      throw Exception('Failed to like');
+    }
+  }
+
+  Future<String> deslikeComplaint(String complaintId) async {
+    var uri = Uri.parse('http://localhost:3000/deslikes/');
+
+    String? authToken = await authMethods.getToken();
+
+    final response = await http.post(uri,
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken'
+        },
+        body: jsonEncode(<String, dynamic>{
+          'deslike': {'complaint_id': complaintId}
+        }));
+
+    if (response.statusCode == 201) {
+      return 'success';
+    } else {
+      throw Exception('Failed to deslike');
+    }
+  }
+
+  Future<List<Like>> getComplaintLikes(String complaintId) async {
+    print('veio like');
+    var uri = Uri.parse('http://localhost:3000/complaints/$complaintId/likes');
+    String? authToken = await authMethods.getToken();
+
+    var response =
+        await http.get(uri, headers: {'Authorization': 'Bearer $authToken'});
+
+    if (response.statusCode == 200) {
+      print('deu bom get like');
+
+      // Converter a resposta JSON em um objeto Complaint
+      List<dynamic> data = json.decode(response.body);
+      List<Like> likes = data.map((json) => Like.fromJson(json)).toList();
+      // likes.map((e) => print(e.id));
+      return likes;
+    } else {
+      throw Exception('Failed to load complaint likes');
+    }
+  }
+
+  Future<List<Deslike>> getComplaintDeslikes(String complaintId) async {
+    print('veio deslike');
+    var uri =
+        Uri.parse('http://localhost:3000/complaints/$complaintId/deslikes');
+    String? authToken = await authMethods.getToken();
+
+    var response =
+        await http.get(uri, headers: {'Authorization': 'Bearer $authToken'});
+
+    if (response.statusCode == 200) {
+      print('deu bom get deslike');
+
+      // Converter a resposta JSON em um objeto Complaint
+      List<dynamic> data = json.decode(response.body);
+      List<Deslike> deslikes =
+          data.map((json) => Deslike.fromJson(json)).toList();
+      // deslikes.map((e) => print(e.id));
+      return deslikes;
+    } else {
+      throw Exception('Failed to load complaint deslikes');
+    }
+  }
+
+  Future<void> removeDislike(String deslikeId) async {
+    try {
+      var uri = Uri.parse('http://localhost:3000/deslikes/$deslikeId');
+      String? authToken = await authMethods.getToken();
+
+      final response = await http.delete(
+        uri,
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode >= 300) {
+        throw Exception('Failed to remove dislike');
+      }
+    } catch (error) {
+      print("Erro ao remover deslike: $error");
+      rethrow;
+    }
+  }
+
+  Future<void> removeLike(String likeId) async {
+    try {
+      var uri = Uri.parse('http://localhost:3000/likes/$likeId');
+      String? authToken = await authMethods.getToken();
+
+      final response = await http.delete(
+        uri,
+        headers: <String, String>{
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode >= 300) {
+        throw Exception('Failed to remove like');
+      }
+    } catch (error) {
+      print("Erro ao remover like: $error");
+      rethrow;
+    }
+  }
+
+  Future<void> dislikeOrRemoveDislike(String complaintId) async {
+    try {
+      String? authToken = await authMethods.getToken();
+      if (authToken != null) {
+        User currentUser = await authMethods.getUserDetails(authToken);
+        List<Deslike> deslikes = await getComplaintDeslikes(complaintId);
+        Deslike? userDeslike = deslikes
+            .firstWhereOrNull((deslike) => deslike.userId == currentUser.uid);
+
+        if (userDeslike != null) {
+          // O usuário já deu deslike, então remova o deslike
+          await removeDislike(userDeslike.id.toString());
+        } else {
+          // O usuário ainda não deu deslike, então adicione o deslike
+          await deslikeComplaint(complaintId);
+        }
+      } else {
+        throw Exception('Token JWT não encontrado');
+      }
+    } catch (error) {
+      print("Erro ao dar ou remover deslike: $error");
+      rethrow;
+    }
+  }
+
+  Future<void> likeOrRemoveLike(String complaintId) async {
+    try {
+      String? authToken = await authMethods.getToken();
+      if (authToken != null) {
+        User currentUser = await authMethods.getUserDetails(authToken);
+        List<Like> likes = await getComplaintLikes(complaintId);
+        Like? userLike =
+            likes.firstWhereOrNull((like) => like.userId == currentUser.uid);
+
+        if (userLike != null) {
+          await removeLike(userLike.id.toString());
+        } else {
+          await likeComplaint(complaintId);
+        }
+      } else {
+        throw Exception('Token JWT não encontrado');
+      }
+    } catch (error) {
+      print("Erro ao dar ou remover like: $error");
+      rethrow;
     }
   }
 }

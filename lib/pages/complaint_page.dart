@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_app/components/carousel.dart';
+import 'package:tcc_app/models/deslike_model.dart';
+import 'package:tcc_app/models/like_model.dart';
+import 'package:tcc_app/models/user_model.dart';
 import 'package:tcc_app/resources/firestore_methods.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:geocode/geocode.dart';
 import 'package:tcc_app/resources/map_methods.dart';
 import 'package:tcc_app/resources/format_methods.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
+import 'package:tcc_app/resources/auth_methods.dart';
 
 class ComplaintPage extends StatefulWidget {
   final String complaintId;
@@ -20,6 +24,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
   late Future<Complaint> _complaintFuture;
   String _locationText = "Loading data...";
   String _dateText = "Loading data...";
+  int _likes = 0;
+  int _dislikes = 0;
+  bool _userLiked = false;
+  bool _userDisliked = false;
 
   @override
   void initState() {
@@ -33,10 +41,54 @@ class _ComplaintPageState extends State<ComplaintPage> {
           await ComplaintMethods().getComplaintById(widget.complaintId);
       _loadLocationDetails(complaint.latitude, complaint.longitude);
       _loadDateDetails(complaint.date);
+      _loadLikesAndDislikes();
       return complaint;
     } catch (error) {
       print("Erro ao carregar detalhes da denúncia: $error");
       throw error;
+    }
+  }
+
+  Future<void> _loadLikesAndDislikes() async {
+    try {
+      String? authToken = await authMethods.getToken();
+      if (authToken != null) {
+        User currentUser = await authMethods.getUserDetails(authToken);
+        List<Like> likes =
+            await ComplaintMethods().getComplaintLikes(widget.complaintId);
+        List<Deslike> deslikes =
+            await ComplaintMethods().getComplaintDeslikes(widget.complaintId);
+        setState(() {
+          _likes = likes.length;
+          _dislikes = deslikes.length;
+          // Verificar se o usuário deu like ou deslike
+          _userLiked = likes.any((like) => like.userId == currentUser.uid);
+          _userDisliked =
+              deslikes.any((dislike) => dislike.userId == currentUser.uid);
+        });
+      } else {
+        throw Exception('Token JWT não encontrado');
+      }
+    } catch (error) {
+      print("Erro ao carregar likes e deslikes: $error");
+    }
+  }
+
+  Future<void> _likeComplaint() async {
+    try {
+      await ComplaintMethods().likeOrRemoveLike(widget.complaintId);
+      _loadLikesAndDislikes();
+    } catch (error) {
+      print("Erro ao dar like na denúncia: $error");
+    }
+  }
+
+  Future<void> _dislikeComplaint() async {
+    try {
+      await ComplaintMethods().dislikeOrRemoveDislike(widget.complaintId);
+      _loadLikesAndDislikes();
+    } catch (error) {
+      print("Erro ao dar deslike na denúncia: $error");
     }
   }
 
@@ -165,6 +217,22 @@ class _ComplaintPageState extends State<ComplaintPage> {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(formatHour(complaint.hour)),
+                        Row(
+                          children: [
+                            IconButton(
+                              onPressed: _likeComplaint,
+                              icon: Icon(Icons.thumb_up,
+                                  color: _userLiked ? Colors.blue : null),
+                            ),
+                            Text('Likes: $_likes'),
+                            IconButton(
+                              onPressed: _dislikeComplaint,
+                              icon: Icon(Icons.thumb_down,
+                                  color: _userDisliked ? Colors.blue : null),
+                            ),
+                            Text('Deslikes: $_dislikes'),
+                          ],
+                        ),
                       ],
                     ),
                   ),

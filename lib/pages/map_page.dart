@@ -224,9 +224,9 @@ class MapSampleState extends State<MapSample> {
       setState(() {
         _markers.clear();
         for (Complaint complaint in complaints) {
-          print('\n\n\n\n COMPLAINT\n');
-          print(complaint.description);
-          print('\n---------------------\n\n\n');
+          // print('\n\n\n\n COMPLAINT\n');
+          // print(complaint.description);
+          // print('\n---------------------\n\n\n');
           _markers.add(
             Marker(
               markerId: MarkerId(complaint.id.toString()),
@@ -278,8 +278,8 @@ class MapSampleState extends State<MapSample> {
 
   @override
   Widget build(BuildContext context) {
-    print('MERKERS ');
-    print(_markers.length);
+    // print('MERKERS ');
+    // print(_markers.length);
     return Scaffold(
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,

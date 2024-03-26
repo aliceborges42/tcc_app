@@ -21,7 +21,7 @@ class AuthMethods {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       return User(
         name: responseData['name'],
-        // uid: responseData['id'],
+        uid: responseData['id'],
         email: responseData['email'],
         cpf: responseData['cpf'],
       );

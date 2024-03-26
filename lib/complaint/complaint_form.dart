@@ -81,7 +81,7 @@ class _ComplaintFormState extends State<ComplaintForm> {
       Map<String, dynamic> formData = _formKey.currentState!.value;
       List<dynamic>? images = formData['images'];
       try {
-        print('\n\n\n-----------------------\n\n\n');
+        // print('\n\n\n-----------------------\n\n\n');
         await ComplaintMethods().postComplaint(
           description: formData['descricao'],
           complaintTypeId: formData['tipoDenuncia'],
