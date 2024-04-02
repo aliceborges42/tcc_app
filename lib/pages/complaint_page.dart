@@ -10,6 +10,7 @@ import 'package:tcc_app/resources/map_methods.dart';
 import 'package:tcc_app/resources/format_methods.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
+import 'package:tcc_app/pages/edit_complaint_page.dart';
 
 class ComplaintPage extends StatefulWidget {
   final String complaintId;
@@ -28,11 +29,29 @@ class _ComplaintPageState extends State<ComplaintPage> {
   int _dislikes = 0;
   bool _userLiked = false;
   bool _userDisliked = false;
+  late User _currentUser;
+  bool _isCurrentUserLoaded = false;
 
   @override
   void initState() {
     super.initState();
     _complaintFuture = _loadComplaintDetails();
+    _getCurrentUser();
+  }
+
+  Future<void> _getCurrentUser() async {
+    try {
+      String? authToken = await authMethods.getToken();
+
+      _currentUser = await authMethods.getUserDetails(authToken!);
+      if (_currentUser.cpf.isNotEmpty) {
+        setState(() {
+          _isCurrentUserLoaded = true;
+        });
+      }
+    } catch (error) {
+      print("Erro ao carregar usuário atual: $error");
+    }
   }
 
   Future<Complaint> _loadComplaintDetails() async {
@@ -132,11 +151,39 @@ class _ComplaintPageState extends State<ComplaintPage> {
     }
   }
 
+  void _navigateToEditPage(Complaint complaint) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditComplaintPage(complaint: complaint),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalhes da Denúncia'),
+        actions: [
+          FutureBuilder(
+            future: _complaintFuture,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && _isCurrentUserLoaded) {
+                Complaint complaint = snapshot.data as Complaint;
+                bool isCurrentUserComplaintOwner =
+                    _currentUser.uid == complaint.userId;
+                if (isCurrentUserComplaintOwner) {
+                  return IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => _navigateToEditPage(complaint),
+                  );
+                }
+              }
+              return SizedBox.shrink();
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: FutureBuilder(
@@ -162,7 +209,8 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 children: [
                   GestureDetector(
                     child: Carousel(
-                      images: complaint.images!,
+                      images:
+                          complaint.images!.map((image) => image.url).toList(),
                       height: MediaQuery.of(context).size.height * 0.25,
                       viewportFraction: 1.0,
                     ),
@@ -172,7 +220,9 @@ class _ComplaintPageState extends State<ComplaintPage> {
                         barrierColor: Colors.black87,
                         builder: (BuildContext context) {
                           return Carousel(
-                            images: complaint.images!,
+                            images: complaint.images!
+                                .map((image) => image.url)
+                                .toList(),
                             height: MediaQuery.of(context).size.height * 0.8,
                             viewportFraction: 0.8,
                           );
@@ -182,7 +232,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(
-                        vertical: 24.0, horizontal: 16.0),
+                        vertical: 15.0, horizontal: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -190,6 +240,14 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           complaint.typeSpecification.specification,
                           style: const TextStyle(
                               fontSize: 24, fontWeight: FontWeight.w400),
+                        ),
+                        Text(
+                          complaint.complaintType.classification,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 15,
                         ),
                         const Text(
                           'Descrição:',

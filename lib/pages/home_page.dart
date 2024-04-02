@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:tcc_app/pages/add_complaint_page.dart';
 import 'package:tcc_app/pages/list_complaints_page.dart';
 import 'package:tcc_app/pages/map_page.dart';
+import 'package:tcc_app/pages/perfil_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 
 // class HomePage extends StatelessWidget {
@@ -59,6 +60,7 @@ class HomePageState extends State<HomePage> {
   static final List<Widget> _widgetOptions = <Widget>[
     const MapSample(),
     ComplaintListPage(),
+    PerfilPage()
   ];
 
   void _onItemTapped(int index) {
@@ -89,15 +91,15 @@ class HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
-      appBar: AppBar(
-        backgroundColor: Colors.grey[900],
-        actions: [
-          IconButton(
-            onPressed: signUserOut,
-            icon: const Icon(Icons.logout),
-          )
-        ],
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.grey[900],
+      //   actions: [
+      //     IconButton(
+      //       onPressed: signUserOut,
+      //       icon: const Icon(Icons.logout),
+      //     )
+      //   ],
+      // ),
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -108,6 +110,10 @@ class HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
             label: 'Denúncias',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Perfil',
           ),
         ],
         currentIndex: _selectedIndex,
