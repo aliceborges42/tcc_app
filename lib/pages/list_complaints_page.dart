@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:tcc_app/components/datepicker.dart';
+import 'package:tcc_app/components/dropdown.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/pages/complaint_page.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
@@ -15,17 +17,16 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
   DateTime? _startDateFilter;
   DateTime? _endDateFilter;
   String? _selectedStatusFilter;
-  String? _selectedComplantTypeFilter;
-  TypeSpecification? _selectedTypeSpecification; // Adicione este campo
+  String? _selectedComplaintTypeFilter;
+  TypeSpecification? _selectedTypeSpecification;
   List<TypeSpecification> _typeSpecifications = [];
 
   @override
   void initState() {
     super.initState();
-    _loadInitialData(); // Carregue as listas de reclamações e especificações de tipo
+    _loadInitialData();
   }
 
-  // Método para carregar os dados iniciais
   void _loadInitialData() async {
     _complaintsFuture = _loadComplaints();
     _typeSpecifications = await _getTypeSpecifications();
@@ -36,241 +37,42 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
       return await ComplaintMethods().getTypeSpecifications();
     } catch (error) {
       print("Failed to load type specifications: $error");
-      return []; // Retorna uma lista vazia em caso de erro
+      return [];
     }
   }
 
-  void _showFilterDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              FilterChip(
-                label: Text("Todos"),
-                selected: _selectedStatusFilter == null &&
-                    _startDateFilter == null &&
-                    _endDateFilter == null,
-                onSelected: (_) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      _selectedStatusFilter = null;
-                      _startDateFilter = null;
-                      _endDateFilter = null;
-                      _selectedTypeSpecification = null;
-                      _complaintsFuture = _loadComplaints();
-                    });
-                  }
-                },
-              ),
-              FilterChip(
-                label: Text("Resolvidos"),
-                selected: _selectedStatusFilter == "Resolvido",
-                onSelected: (_) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      _selectedStatusFilter = "Resolvido";
-                      _complaintsFuture = _applyFilters();
-                    });
-                  }
-                },
-              ),
-              FilterChip(
-                label: Text("Não Resolvidos"),
-                selected: _selectedStatusFilter == "Não Resolvido",
-                onSelected: (_) {
-                  // Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      _selectedStatusFilter = "Não Resolvido";
-                      _complaintsFuture = _applyFilters();
-                    });
-                  }
-                },
-              ),
-              FilterChip(
-                label: Text("Episódios"),
-                selected: _selectedComplantTypeFilter == "Episódio",
-                onSelected: (_) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      _selectedComplantTypeFilter = "Episódio";
-                      _complaintsFuture = _applyFilters();
-                    });
-                  }
-                },
-              ),
-              FilterChip(
-                label: Text("Desordens"),
-                selected: _selectedComplantTypeFilter == "Desordem",
-                onSelected: (_) {
-                  Navigator.pop(context);
-                  if (mounted) {
-                    setState(() {
-                      _selectedComplantTypeFilter = "Desordem";
-                      _complaintsFuture = _applyFilters();
-                    });
-                  }
-                },
-              ),
-              DropdownButton<TypeSpecification>(
-                value: _selectedTypeSpecification,
-                onChanged: (TypeSpecification? newValue) {
-                  setState(() {
-                    _selectedTypeSpecification = newValue;
-                    _complaintsFuture = _applyFilters();
-                  });
-                },
-                items: _typeSpecifications.map((TypeSpecification type) {
-                  return DropdownMenuItem<TypeSpecification>(
-                    value: type,
-                    child: Text(type.specification),
-                  );
-                }).toList(),
-                isExpanded:
-                    true, // Garantir que o menu suspenso esteja totalmente expandido
-              ),
-              ListTile(
-                title: Text("Filtrar por Período de Data"),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final List<DateTime?>? pickedDates =
-                      await showDialog<List<DateTime?>>(
-                    context: context,
-                    builder: (BuildContext context) {
-                      DateTime startDate = _startDateFilter ?? DateTime.now();
-                      DateTime endDate = _endDateFilter ?? DateTime.now();
-                      return AlertDialog(
-                        title: Text("Selecionar Período de Data"),
-                        content: SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text("Data de Início"),
-                                subtitle: Text(
-                                    DateFormat('dd/MM/yyyy').format(startDate)),
-                                onTap: () async {
-                                  final pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: startDate,
-                                    firstDate: DateTime(2015, 8),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (pickedDate != null && mounted) {
-                                    setState(() {
-                                      startDate = pickedDate;
-                                    });
-                                  }
-                                },
-                              ),
-                              ListTile(
-                                title: Text("Data de Fim"),
-                                subtitle: Text(
-                                    DateFormat('dd/MM/yyyy').format(endDate)),
-                                onTap: () async {
-                                  final pickedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: endDate,
-                                    firstDate: DateTime(2015, 8),
-                                    lastDate: DateTime.now(),
-                                  );
-                                  if (pickedDate != null && mounted) {
-                                    setState(() {
-                                      endDate = pickedDate;
-                                    });
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('Cancelar'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context, [startDate, endDate]);
-                            },
-                            child: Text('Filtrar'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                  if (pickedDates != null &&
-                      pickedDates.length == 2 &&
-                      mounted) {
-                    setState(() {
-                      _startDateFilter = pickedDates[0];
-                      _endDateFilter = pickedDates[1];
-                      _complaintsFuture = _applyFilters();
-                    });
-                  }
-                },
-                selected: _startDateFilter != null || _endDateFilter != null,
-              ),
-              ElevatedButton(
-                onPressed: _selectedStatusFilter != null ||
-                        _startDateFilter != null ||
-                        _endDateFilter != null ||
-                        _selectedTypeSpecification != null ||
-                        _selectedComplantTypeFilter != null
-                    ? () {
-                        Navigator.pop(context);
-                        if (mounted) {
-                          _complaintsFuture = _applyFilters();
-                          setState(() {});
-                        }
-                      }
-                    : null,
-                child: Text("Aplicar Filtros"),
-                style: ElevatedButton.styleFrom(
-                  primary: _selectedStatusFilter != null ||
-                          _startDateFilter != null ||
-                          _endDateFilter != null ||
-                          _selectedTypeSpecification != null ||
-                          _selectedComplantTypeFilter != null
-                      ? Theme.of(context).primaryColor
-                      : Colors.grey,
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
+  void _applyFilters() {
+    setState(() {
+      _complaintsFuture = _loadComplaintsFiltered();
+    });
   }
 
-  Future<List<Complaint>> _applyFilters() async {
-    var complaints = await _loadComplaints();
+  Future<List<Complaint>> _loadComplaintsFiltered() async {
+    List<Complaint> complaints = await _loadComplaints();
 
-    // Filtrar por status, tipo de reclamação e tipo de especificação
     complaints = complaints.where((complaint) {
       bool statusFilter = _selectedStatusFilter == null ||
           complaint.status == _selectedStatusFilter;
-      bool typeFilter = _selectedComplantTypeFilter == null ||
-          complaint.complaintType.classification == _selectedComplantTypeFilter;
+
+      bool typeFilter = _selectedComplaintTypeFilter == null ||
+          complaint.complaintType.classification ==
+              _selectedComplaintTypeFilter;
+
       bool typeSpecificationFilter = _selectedTypeSpecification == null ||
           complaint.typeSpecification.id == _selectedTypeSpecification?.id;
-      return statusFilter && typeFilter && typeSpecificationFilter;
-    }).toList();
 
-    // Filtrar por data
-    if (_startDateFilter != null && _endDateFilter != null) {
-      complaints = complaints.where((complaint) {
-        var complaintDate = complaint.date;
-        return complaintDate.isAfter(_startDateFilter!) &&
-            complaintDate.isBefore(_endDateFilter!.add(Duration(days: 1)));
-      }).toList();
-    }
+      bool dateFilter = _startDateFilter == null ||
+          _endDateFilter == null ||
+          ((complaint.date.isAfter(_startDateFilter!) ||
+                  complaint.date.isAtSameMomentAs(_startDateFilter!)) &&
+              (complaint.date.isBefore(_endDateFilter!) ||
+                  complaint.date.isAtSameMomentAs(_endDateFilter!)));
+
+      return statusFilter &&
+          typeFilter &&
+          typeSpecificationFilter &&
+          dateFilter;
+    }).toList();
 
     return complaints;
   }
@@ -280,7 +82,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
       return await ComplaintMethods().getAllComplaints();
     } catch (error) {
       print("Failed to load complaints: $error");
-      return []; // Retorna uma lista vazia em caso de erro
+      return [];
     }
   }
 
@@ -351,7 +153,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
                     Divider(
                       height: 0,
                       color: Colors.grey[600],
-                    ), // Adiciona um Divider após o ListTile
+                    ),
                   ],
                 );
               },
@@ -363,6 +165,95 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
           }
         },
       ),
+    );
+  }
+
+  void _showFilterDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              ListTile(
+                title: Text('Filtrar por Status'),
+                subtitle: CustomDropdown(
+                  value: _selectedStatusFilter,
+                  items: ['Todos', 'Resolvido', 'Não Resolvido'],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedStatusFilter = newValue;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Filtrar por Tipo de Denúncia'),
+                subtitle: CustomDropdown(
+                  value: _selectedComplaintTypeFilter,
+                  items: ['Todos', 'Episódio', 'Desordem'],
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedComplaintTypeFilter = newValue;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Filtrar por Tipo de Especificação'),
+                subtitle: CustomDropdown(
+                  value: _selectedTypeSpecification?.specification,
+                  items: _typeSpecifications
+                      .map((type) => type.specification)
+                      .toList(),
+                  onChanged: (String? newValue) {
+                    final selectedType = _typeSpecifications.firstWhere(
+                      (type) => type.specification == newValue,
+                      orElse: () => _typeSpecifications.first,
+                    );
+                    setState(() {
+                      _selectedTypeSpecification = selectedType;
+                    });
+                  },
+                ),
+              ),
+              ListTile(
+                title: Text('Filtrar por Período de Data'),
+                subtitle: Column(
+                  children: [
+                    CustomDatePicker(
+                      initialDate: _startDateFilter,
+                      labelText: 'Data de Início',
+                      onChanged: (DateTime? newValue) {
+                        setState(() {
+                          _startDateFilter = newValue;
+                        });
+                      },
+                    ),
+                    CustomDatePicker(
+                      initialDate: _endDateFilter,
+                      labelText: 'Data de Fim',
+                      onChanged: (DateTime? newValue) {
+                        setState(() {
+                          _endDateFilter = newValue;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  _applyFilters();
+                  Navigator.pop(context);
+                },
+                child: Text('Aplicar Filtros'),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
