@@ -283,6 +283,7 @@ class MapSampleState extends State<MapSample> {
     return Scaffold(
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,
+        zoomControlsEnabled: false,
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },

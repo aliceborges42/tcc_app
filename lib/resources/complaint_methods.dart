@@ -202,6 +202,25 @@ class ComplaintMethods {
     }
   }
 
+  Future<List<Complaint>> getComplaintsBatch(int page, int batchSize) async {
+    try {
+      var uri = Uri.parse(
+          'http://localhost:3000/complaints?page=$page&limit=$batchSize');
+      var response = await http.get(uri);
+
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        List<Complaint> complaints =
+            data.map((json) => Complaint.fromJson(json)).toList();
+        return complaints;
+      } else {
+        throw Exception('Failed to load complaints');
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to the server');
+    }
+  }
+
   Future<List<Like>> getComplaintLikes(String complaintId) async {
     print('veio like');
     var uri = Uri.parse('http://localhost:3000/complaints/$complaintId/likes');
