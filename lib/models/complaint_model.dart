@@ -13,7 +13,7 @@ class Complaint {
   int userId;
   ComplaintType complaintType;
   TypeSpecification typeSpecification;
-  List<Image>? images;
+  List<CImage>? images;
 
   Complaint({
     required this.id,
@@ -49,7 +49,7 @@ class Complaint {
       complaintType: ComplaintType.fromJson(json['complaint_type']),
       typeSpecification: TypeSpecification.fromJson(json['type_specification']),
       images: (json['images'] as List<dynamic>?)
-          ?.map((imageJson) => Image.fromJson(imageJson))
+          ?.map((imageJson) => CImage.fromJson(imageJson))
           .toList(),
       status: json['status'] ?? 'Não Resolvido',
     );
@@ -90,17 +90,17 @@ class TypeSpecification {
   }
 }
 
-class Image {
+class CImage {
   int id;
   String url;
 
-  Image({
+  CImage({
     required this.id,
     required this.url,
   });
 
-  factory Image.fromJson(Map<String, dynamic> json) {
-    return Image(
+  factory CImage.fromJson(Map<String, dynamic> json) {
+    return CImage(
       id: json['id'],
       url: json['url'],
     );

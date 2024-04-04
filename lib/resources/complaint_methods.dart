@@ -65,6 +65,79 @@ class ComplaintMethods {
     }
   }
 
+  Future<void> updateComplaint({
+    required String complaintId,
+    String? description,
+    String? complaintTypeId,
+    String? typeSpecificationId,
+    double? latitude,
+    double? longitude,
+    String? status,
+    DateTime? hour,
+    DateTime? date,
+    List<dynamic>? images,
+    List<int>? removedImagesIds,
+  }) async {
+    var uri = Uri.parse('http://localhost:3000/complaints/$complaintId');
+
+    final AuthMethods authMethods = AuthMethods();
+    String? authToken = await authMethods.getToken();
+
+    if (authToken == null) {
+      print('Erro: Token de autorização não encontrado.');
+      return;
+    }
+
+    var request = http.MultipartRequest('PATCH', uri);
+    request.headers['Authorization'] = 'Bearer $authToken';
+    if (description != null) {
+      request.fields['complaint[description]'] = description;
+    }
+    if (status != null) {
+      request.fields['complaint[status]'] = status;
+    }
+    if (complaintTypeId != null) {
+      request.fields['complaint[complaint_type_id]'] = complaintTypeId;
+    }
+    if (typeSpecificationId != null) {
+      request.fields['complaint[type_specification_id]'] = typeSpecificationId;
+    }
+    if (latitude != null) {
+      request.fields['complaint[latitude]'] = latitude.toString();
+    }
+    if (longitude != null) {
+      request.fields['complaint[longitude]'] = longitude.toString();
+    }
+    if (hour != null) request.fields['complaint[hour]'] = hour.toString();
+    if (date != null) request.fields['complaint[date]'] = date.toString();
+
+    if (removedImagesIds != null && removedImagesIds.isNotEmpty) {
+      request.fields['complaint[removed_images_ids][]'] =
+          removedImagesIds.join(',');
+    }
+
+    if (images != null && images.isNotEmpty) {
+      for (int i = 0; i < images.length; i++) {
+        var file = images[i];
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            'complaint[images][]',
+            file.path,
+            filename: 'image_$i.jpg',
+            contentType: MediaType('image', '/*'),
+          ),
+        );
+      }
+    }
+
+    var response = await request.send();
+    if (response.statusCode == 200) {
+      print('Complaint successfully updated!');
+    } else {
+      print('Failed to update complaint: ${response.reasonPhrase}');
+    }
+  }
+
   Future<List<Complaint>> getAllComplaints() async {
     var uri = Uri.parse('http://localhost:3000/complaints');
 
@@ -199,25 +272,6 @@ class ComplaintMethods {
       return 'success';
     } else {
       throw Exception('Failed to deslike');
-    }
-  }
-
-  Future<List<Complaint>> getComplaintsBatch(int page, int batchSize) async {
-    try {
-      var uri = Uri.parse(
-          'http://localhost:3000/complaints?page=$page&limit=$batchSize');
-      var response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        List<Complaint> complaints =
-            data.map((json) => Complaint.fromJson(json)).toList();
-        return complaints;
-      } else {
-        throw Exception('Failed to load complaints');
-      }
-    } catch (e) {
-      throw Exception('Failed to connect to the server');
     }
   }
 
