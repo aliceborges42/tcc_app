@@ -65,6 +65,32 @@ class ComplaintMethods {
     }
   }
 
+  Future<void> deleteComplaint({required String complaintId}) async {
+    var uri = Uri.parse('http://localhost:3000/complaints/$complaintId');
+
+    final AuthMethods authMethods = AuthMethods();
+    String? authToken = await authMethods.getToken();
+
+    if (authToken == null) {
+      print('Erro: Token de autorização não encontrado.');
+      return;
+    }
+
+    try {
+      final response = await http.delete(uri, headers: <String, String>{
+        // 'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $authToken'
+      });
+      if (response.statusCode == 200) {
+        print('Complaint succefully deleted');
+      } else {
+        print('Complaint can not be deleted');
+      }
+    } catch (error) {
+      print('Error to delete complaint: $error');
+    }
+  }
+
   Future<void> updateComplaint({
     required String complaintId,
     String? description,

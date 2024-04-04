@@ -3,6 +3,7 @@ import 'package:tcc_app/components/carousel.dart';
 import 'package:tcc_app/models/deslike_model.dart';
 import 'package:tcc_app/models/like_model.dart';
 import 'package:tcc_app/models/user_model.dart';
+import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/resources/firestore_methods.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:geocode/geocode.dart';
@@ -11,6 +12,7 @@ import 'package:tcc_app/resources/format_methods.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/pages/edit_complaint_page.dart';
+import 'package:tcc_app/pages/map_page.dart';
 
 class ComplaintPage extends StatefulWidget {
   final String complaintId;
@@ -31,6 +33,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
   bool _userDisliked = false;
   late User _currentUser;
   bool _isCurrentUserLoaded = false;
+  late Complaint _complaint;
 
   @override
   void initState() {
@@ -160,6 +163,87 @@ class _ComplaintPageState extends State<ComplaintPage> {
     );
   }
 
+  // final GlobalKey<ScaffoldMessengerState> _scaffoldMessengerKey =
+  //     GlobalKey<ScaffoldMessengerState>();
+
+  void _showDeleteConfirmationDialog(String complaintId, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: Text('Confirmar exclusão'),
+          content: Text('Tem certeza de que deseja excluir esta reclamação?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext);
+                _deleteComplaint(complaintId, context);
+              },
+              child: Text('Excluir'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteComplaint(
+      String complaintId, BuildContext context) async {
+    try {
+      await ComplaintMethods().deleteComplaint(complaintId: complaintId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('A reclamação foi excluída com sucesso!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              const HomePage(), // Substitua 'MapPage' pela página que você deseja navegar
+        ),
+      );
+    } catch (error) {
+      print("Erro ao excluir a reclamação: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Erro ao excluir a reclamação. Por favor, tente novamente.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _solveComplaint(String complaintId) async {
+    try {
+      await ComplaintMethods()
+          .updateComplaint(complaintId: complaintId, status: 'Resolvido');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('A reclamação foi resolvida'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (error) {
+      print("Erro ao excluir a reclamação: $error");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Erro ao resolver a reclamação. Por favor, tente novamente.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -170,13 +254,25 @@ class _ComplaintPageState extends State<ComplaintPage> {
             future: _complaintFuture,
             builder: (context, snapshot) {
               if (snapshot.hasData && _isCurrentUserLoaded) {
+                _complaint = snapshot.data as Complaint;
                 Complaint complaint = snapshot.data as Complaint;
                 bool isCurrentUserComplaintOwner =
                     _currentUser.uid == complaint.userId;
                 if (isCurrentUserComplaintOwner) {
-                  return IconButton(
-                    icon: Icon(Icons.edit),
-                    onPressed: () => _navigateToEditPage(complaint),
+                  return Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () => _navigateToEditPage(complaint),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () {
+                          _showDeleteConfirmationDialog(
+                              complaint.id.toString(), context);
+                        },
+                      ),
+                    ],
                   );
                 }
               }
@@ -186,123 +282,149 @@ class _ComplaintPageState extends State<ComplaintPage> {
         ],
       ),
       body: SafeArea(
-        child: FutureBuilder(
-          future: _complaintFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return Center(
-                child: Text(
-                    "Erro ao carregar detalhes da denúncia: ${snapshot.error}"),
-              );
-            } else if (snapshot.hasData) {
-              Complaint complaint = snapshot.data as Complaint;
+        child: SingleChildScrollView(
+          child: FutureBuilder(
+            future: _complaintFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.hasError) {
+                return Center(
+                  child: Text(
+                      "Erro ao carregar detalhes da denúncia: ${snapshot.error}"),
+                );
+              } else if (snapshot.hasData) {
+                Complaint complaint = snapshot.data as Complaint;
 
-              // Carrega os detalhes de localização (endereço)
-              // _loadLocationDetails(complaint.latitude, complaint.longitude);
-              // _loadDateDetails(complaint.date);
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    child: Carousel(
-                      images:
-                          complaint.images!.map((image) => image.url).toList(),
-                      height: MediaQuery.of(context).size.height * 0.25,
-                      viewportFraction: 1.0,
+                // Carrega os detalhes de localização (endereço)
+                // _loadLocationDetails(complaint.latitude, complaint.longitude);
+                // _loadDateDetails(complaint.date);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      child: Carousel(
+                        images: complaint.images!
+                            .map((image) => image.url)
+                            .toList(),
+                        height: MediaQuery.of(context).size.height * 0.25,
+                        viewportFraction: 1.0,
+                      ),
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          barrierColor: Colors.black87,
+                          builder: (BuildContext context) {
+                            return Carousel(
+                              images: complaint.images!
+                                  .map((image) => image.url)
+                                  .toList(),
+                              height: MediaQuery.of(context).size.height * 0.8,
+                              viewportFraction: 0.8,
+                            );
+                          },
+                        );
+                      },
                     ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        barrierColor: Colors.black87,
-                        builder: (BuildContext context) {
-                          return Carousel(
-                            images: complaint.images!
-                                .map((image) => image.url)
-                                .toList(),
-                            height: MediaQuery.of(context).size.height * 0.8,
-                            viewportFraction: 0.8,
-                          );
-                        },
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15.0, horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          complaint.typeSpecification.specification,
-                          style: const TextStyle(
-                              fontSize: 24, fontWeight: FontWeight.w400),
-                        ),
-                        Text(
-                          complaint.complaintType.classification,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        const Text(
-                          'Descrição:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(complaint.description),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Endereço:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(_locationText),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Data do Ocorrido:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(_dateText),
-                        const Text(
-                          'Hora do Ocorrido:',
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(formatHour(complaint.hour)),
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: _likeComplaint,
-                              icon: Icon(Icons.thumb_up,
-                                  color: _userLiked ? Colors.blue : null),
-                            ),
-                            Text('Likes: $_likes'),
-                            IconButton(
-                              onPressed: _dislikeComplaint,
-                              icon: Icon(Icons.thumb_down,
-                                  color: _userDisliked ? Colors.blue : null),
-                            ),
-                            Text('Deslikes: $_dislikes'),
-                          ],
-                        ),
-                      ],
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 15.0, horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            complaint.typeSpecification.specification,
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w400),
+                          ),
+                          Text(
+                            complaint.complaintType.classification,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          Chip(
+                            backgroundColor: complaint.status == 'Resolvido'
+                                ? Colors.green[300]
+                                : Colors.red[300],
+                            label: Text(complaint.status!),
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          const Text(
+                            'Descrição:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(complaint.description),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Endereço:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(_locationText),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'Data do Ocorrido:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(_dateText),
+                          const Text(
+                            'Hora do Ocorrido:',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                          Text(formatHour(complaint.hour)),
+                          Row(
+                            children: [
+                              IconButton(
+                                onPressed: _likeComplaint,
+                                icon: Icon(Icons.thumb_up,
+                                    color: _userLiked ? Colors.blue : null),
+                              ),
+                              Text('Likes: $_likes'),
+                              IconButton(
+                                onPressed: _dislikeComplaint,
+                                icon: Icon(Icons.thumb_down,
+                                    color: _userDisliked ? Colors.blue : null),
+                              ),
+                              Text('Deslikes: $_dislikes'),
+                            ],
+                          ),
+                          SizedBox(height: 16),
+                          if (_isCurrentUserLoaded &&
+                              _currentUser.uid == complaint.userId &&
+                              complaint.status == 'Não Resolvido')
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                _solveComplaint(complaint.id.toString());
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  foregroundColor: Colors.green[800],
+                                  side: BorderSide(color: Colors.green),
+                                  shadowColor: Colors.transparent),
+                              icon: Icon(Icons.check, color: Colors.green),
+                              label: Text('Solucionar Denúncia',
+                                  style: TextStyle(color: Colors.green)),
+                            )
+                        ],
+                      ),
                     ),
-                  ),
-                ],
-              );
-            } else {
-              return const Center(
-                child:
-                    Text("Erro desconhecido ao carregar detalhes da denúncia."),
-              );
-            }
-          },
+                  ],
+                );
+              } else {
+                return const Center(
+                  child: Text(
+                      "Erro desconhecido ao carregar detalhes da denúncia."),
+                );
+              }
+            },
+          ),
         ),
       ),
     );
