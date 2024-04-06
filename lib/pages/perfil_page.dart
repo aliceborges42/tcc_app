@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_app/pages/edit_perfil_page.dart';
+import 'package:tcc_app/pages/list_user_complaint_page.dart';
 import 'package:tcc_app/pages/new_password_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/models/user_model.dart';
@@ -127,6 +128,18 @@ class _PerfilPageState extends State<PerfilPage> {
               );
             },
             child: Text('Editar Perfil'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Navega para a página de edição de perfil
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ComplaintUserListPage(),
+                ),
+              );
+            },
+            child: Text('Minhas Complaints'),
           ),
           GestureDetector(
             child: Text(

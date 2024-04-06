@@ -186,6 +186,52 @@ class ComplaintMethods {
     }
   }
 
+  Future<List<Complaint>> searchComplaints(String query) async {
+    final url = Uri.parse(
+        'http://localhost:3000/complaints?q[description_or_status_cont]=$query');
+
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      Iterable data = json.decode(response.body);
+      List<Complaint> complaints =
+          data.map((model) => Complaint.fromJson(model)).toList();
+      return complaints;
+    } else {
+      throw Exception('Failed to load complaints');
+    }
+  }
+
+  Future<List<Complaint>> getUserComplaints() async {
+    var uri = Uri.parse('http://localhost:3000/complaints/member_complaints');
+    final AuthMethods authMethods = AuthMethods();
+    String? authToken = await authMethods.getToken();
+
+    if (authToken == null) {
+      print('Erro: Token de autorização não encontrado.');
+      return [];
+    }
+
+    try {
+      var response = await http.get(uri, headers: <String, String>{
+        // 'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $authToken'
+      });
+
+      if (response.statusCode == 200) {
+        // Converter a resposta JSON em uma lista de Complaint
+        List<dynamic> data = json.decode(response.body);
+        List<Complaint> complaints =
+            data.map((json) => Complaint.fromJson(json)).toList();
+        // complaints.map((e) => print(e.description));
+        return complaints;
+      } else {
+        throw Exception('Failed to load user  complaints');
+      }
+    } catch (e) {
+      throw Exception('Failed to connect to the server');
+    }
+  }
+
   Stream<List<Complaint>> getAllComplaintsStream() async* {
     try {
       while (true) {
