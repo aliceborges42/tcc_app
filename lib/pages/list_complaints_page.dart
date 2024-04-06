@@ -20,6 +20,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
   String? _selectedComplaintTypeFilter;
   TypeSpecification? _selectedTypeSpecification;
   List<TypeSpecification> _typeSpecifications = [];
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -100,70 +101,92 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
           ),
         ],
       ),
-      body: FutureBuilder(
-        future: _complaintsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("Erro ao carregar as denúncias: ${snapshot.error}"),
-            );
-          } else if (snapshot.hasData) {
-            List<Complaint> complaints = snapshot.data as List<Complaint>;
-            return ListView.builder(
-              itemCount: complaints.length,
-              itemBuilder: (context, index) {
-                Complaint complaint = complaints[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      title: Text(complaint.typeSpecification.specification),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Pesquisar denúncia...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (value) {
+                _performSearch(value);
+              },
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: _complaintsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        "Erro ao carregar as denúncias: ${snapshot.error}"),
+                  );
+                } else if (snapshot.hasData) {
+                  List<Complaint> complaints = snapshot.data as List<Complaint>;
+                  return ListView.builder(
+                    itemCount: complaints.length,
+                    itemBuilder: (context, index) {
+                      Complaint complaint = complaints[index];
+                      return Column(
                         children: [
-                          Text(complaint.description),
-                          Text(
-                            'Data: ${DateFormat('dd/MM/yyyy').format(complaint.date)}',
+                          ListTile(
+                            title:
+                                Text(complaint.typeSpecification.specification),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(complaint.description),
+                                Text(
+                                  'Data: ${DateFormat('dd/MM/yyyy').format(complaint.date)}',
+                                ),
+                                Text(
+                                  'Hora: ${DateFormat('HH:mm').format(complaint.hour)}',
+                                ),
+                              ],
+                            ),
+                            trailing: Chip(
+                              backgroundColor: complaint.status == 'Resolvido'
+                                  ? Colors.green[300]
+                                  : Colors.red[300],
+                              label: Text(complaint.status!),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ComplaintPage(
+                                    complaintId: complaint.id.toString(),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          Text(
-                            'Hora: ${DateFormat('HH:mm').format(complaint.hour)}',
+                          Divider(
+                            height: 0,
+                            color: Colors.grey[600],
                           ),
                         ],
-                      ),
-                      trailing: Chip(
-                        backgroundColor: complaint.status == 'Resolvido'
-                            ? Colors.green[300]
-                            : Colors.red[300],
-                        label: Text(complaint.status!),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ComplaintPage(
-                              complaintId: complaint.id.toString(),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    Divider(
-                      height: 0,
-                      color: Colors.grey[600],
-                    ),
-                  ],
-                );
+                      );
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: Text("Nenhuma denúncia encontrada."),
+                  );
+                }
               },
-            );
-          } else {
-            return Center(
-              child: Text("Nenhuma denúncia encontrada."),
-            );
-          }
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -255,5 +278,24 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
         );
       },
     );
+  }
+
+  void _performSearch(String query) {
+    setState(() {
+      if (query.isNotEmpty) {
+        _complaintsFuture = _searchComplaints(query);
+      } else {
+        _complaintsFuture = _loadComplaints();
+      }
+    });
+  }
+
+  Future<List<Complaint>> _searchComplaints(String query) async {
+    try {
+      return await ComplaintMethods().searchComplaints(query);
+    } catch (error) {
+      print("Failed to search complaints: $error");
+      return [];
+    }
   }
 }
