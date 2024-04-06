@@ -203,6 +203,25 @@ class AuthMethods {
     }
   }
 
+  Future<String> deleteAccount({required String id}) async {
+    String? authToken = await authMethods.getToken();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/member_destroy/'),
+      headers: <String, String>{'Authorization': 'Bearer $authToken'},
+    );
+
+    print(response.statusCode);
+    if (response.statusCode == 204) {
+      // Remova o token JWT do armazenamento local
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.remove('token');
+
+      return 'success';
+    } else {
+      throw Exception('Failed to delete user');
+    }
+  }
+
   Future<String> forgotPassword({required String email}) async {
     final response = await http.post(
       Uri.parse('$baseUrl/forgot'),

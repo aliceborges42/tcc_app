@@ -53,7 +53,7 @@ class _RegisterPageState extends State<RegisterPage> {
         // navigate to the home screen
         if (context.mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => HomePage()),
+            MaterialPageRoute(builder: (context) => LoginPage()),
           );
         }
       }

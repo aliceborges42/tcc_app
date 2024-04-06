@@ -1,6 +1,8 @@
+// Importe as bibliotecas necessárias
 import 'package:flutter/material.dart';
 import 'package:tcc_app/pages/edit_perfil_page.dart';
 import 'package:tcc_app/pages/list_user_complaint_page.dart';
+import 'package:tcc_app/pages/login_page.dart';
 import 'package:tcc_app/pages/new_password_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/models/user_model.dart';
@@ -33,17 +35,57 @@ class _PerfilPageState extends State<PerfilPage> {
     }
   }
 
-  // Desloga o usuário
-  void signUserOut() async {
+  // Desloga o usuário e navega para a tela de login
+  void signUserOut(BuildContext context) async {
     String? token = await AuthMethods().getToken();
     if (token != null) {
       try {
         await AuthMethods().signOut(token);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
       } catch (error) {
         print('Erro durante o logout: $error');
       }
     } else {
       print('Nenhum token encontrado');
+    }
+  }
+
+  // Deleta a conta do usuário
+  void deleteAccount(BuildContext context) async {
+    try {
+      String result = await authMethods.deleteAccount(
+          id: ''); // Passe o ID do usuário se necessário
+      if (result == 'success') {
+        // Se a exclusão for bem-sucedida, deslogue o usuário
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } else {
+        // Se a exclusão falhar, exiba uma mensagem de erro
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Erro'),
+              content: Text('Falha ao deletar a conta do usuário.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } catch (error) {
+      print('Erro durante a exclusão da conta: $error');
     }
   }
 
@@ -168,8 +210,47 @@ class _PerfilPageState extends State<PerfilPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            onTap: signUserOut,
-          )
+            onTap: () {
+              signUserOut(context);
+            },
+          ),
+          GestureDetector(
+            child: Text(
+              'Deletar Conta',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            onTap: () {
+              // Exibe um diálogo de confirmação antes de deletar a conta
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Deletar Conta'),
+                    content:
+                        Text('Tem certeza de que deseja deletar sua conta?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text('Cancelar'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          deleteAccount(context);
+                        },
+                        child: Text('Confirmar'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
     );
