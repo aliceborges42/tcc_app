@@ -328,6 +328,7 @@ class MapSampleState extends State<MapSample> {
         onPressed: () => Navigator.push(context,
             MaterialPageRoute(builder: (context) => AddComplaintPage())),
         label: const Icon(Icons.add),
+        backgroundColor: Colors.deepPurple[600],
       ),
     );
   }
