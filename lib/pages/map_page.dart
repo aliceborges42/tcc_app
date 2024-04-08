@@ -8,7 +8,9 @@ import 'package:tcc_app/pages/complaint_page.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
 import 'package:tcc_app/resources/security_buttons_methods.dart';
 import 'dart:async';
-import 'package:tcc_app/resources/firestore_methods.dart';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
 
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
@@ -25,6 +27,7 @@ class MapSampleState extends State<MapSample> {
   final Set<Marker> _markers = {};
   final Set<Marker> _buttonsMarkers = {};
   final Set<Polyline> _polyline = {};
+  BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
 
   // list of locations to display polylines
   List<LatLng> cooredor1 = [
@@ -78,6 +81,7 @@ class MapSampleState extends State<MapSample> {
   @override
   void initState() {
     super.initState();
+    _loadCustomIcon();
     _loadComplaints();
     _loadButtons();
 
@@ -184,6 +188,59 @@ class MapSampleState extends State<MapSample> {
     }
   }
 
+  Future<BitmapDescriptor> createCustomIcon(String imagePath) async {
+    // Carregar a imagem como ByteData
+    ByteData imageData = await rootBundle.load(imagePath);
+    Uint8List bytes = imageData.buffer.asUint8List();
+
+    // Decodificar a imagem
+    ui.Codec codec = await ui.instantiateImageCodec(bytes);
+    ui.FrameInfo frameInfo = await codec.getNextFrame();
+    ui.Image image = frameInfo.image;
+
+    // Redimensionar a imagem para 64x64 pixels
+    ui.Image resizedImage = await _resizeImage(image, 132, 132);
+
+    // Converter a imagem para bytes
+    ByteData? byteData =
+        await resizedImage.toByteData(format: ui.ImageByteFormat.png);
+    if (byteData != null) {
+      Uint8List resizedBytes = byteData.buffer.asUint8List();
+
+      // Retornar o BitmapDescriptor
+      return BitmapDescriptor.fromBytes(resizedBytes);
+    } else {
+      throw Exception('Falha ao converter a imagem para bytes');
+    }
+  }
+
+  Future<ui.Image> _resizeImage(ui.Image image, int width, int height) async {
+    // Criar uma nova instância de PictureRecorder
+    ui.PictureRecorder recorder = ui.PictureRecorder();
+    Canvas canvas = Canvas(recorder);
+
+    // Redimensionar a imagem no canvas
+    canvas.drawImageRect(
+      image,
+      Rect.fromLTRB(0, 0, image.width.toDouble(), image.height.toDouble()),
+      Rect.fromLTRB(0, 0, width.toDouble(), height.toDouble()),
+      Paint(),
+    );
+
+    // Concluir a gravação
+    ui.Picture picture = recorder.endRecording();
+    return picture.toImage(width, height);
+  }
+
+  Future<void> _loadCustomIcon() async {
+    // Carregar o ícone personalizado apenas uma vez
+    BitmapDescriptor customIcon =
+        await createCustomIcon("assets/images/emergency-button.png");
+    setState(() {
+      markerIcon = customIcon;
+    });
+  }
+
   void _updateButtonsMarkers(List<SecurityButton> securityButtons) {
     if (securityButtons.isNotEmpty) {
       setState(() {
@@ -197,8 +254,7 @@ class MapSampleState extends State<MapSample> {
                 securityButton.latitude,
                 securityButton.longitude,
               ),
-              icon: BitmapDescriptor.defaultMarkerWithHue(
-                  BitmapDescriptor.hueAzure),
+              icon: markerIcon,
               infoWindow: InfoWindow(
                 title: 'Botão de Segurança',
                 snippet: securityButton.name,
