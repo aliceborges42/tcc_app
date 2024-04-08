@@ -7,6 +7,7 @@ import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/pages/login_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/utils/colors.dart';
+import 'package:tcc_app/utils/global_variable.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
 // import 'package:cpf_cnpj_validator/cpf_validator.dart' as cpf_cnpj_validator;
@@ -107,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
       context: context,
       builder: (context) {
         return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Colors.orangeAccent,
           title: Center(
             child: Text(
               'Email already in use',
@@ -157,128 +158,153 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: ListView(shrinkWrap: true, children: <Widget>[
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: ListView(shrinkWrap: true, children: <Widget>[
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 50),
 
-                // logo
-                const Icon(
-                  Icons.lock,
-                  size: 100,
-                ),
-
-                const SizedBox(height: 50),
-
-                const Text(
-                  'Cadastro',
-                  style: TextStyle(
-                    color: white,
-                    fontSize: 16,
+                  // logo
+                  const Icon(
+                    Icons.lock,
+                    size: 100,
                   ),
-                ),
 
-                const SizedBox(height: 25),
+                  const SizedBox(height: 40),
 
-                // email textfield
-                MyTextField(
-                  controller: nameController,
-                  hintText: 'Full Name',
-                  obscureText: false,
-                ),
+                  const Text(
+                    'Cadastro',
+                    style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 25),
 
-                TextField(
-                  controller: cpfController,
-                  // hintText: 'CPF',
-                  inputFormatters: [
-                    // obrigatório
-                    FilteringTextInputFormatter.digitsOnly,
-                    CpfInputFormatter(),
-                  ],
-                  obscureText: false,
-                ),
-
-                // TextField(
-                //   controller: cpfController,
-                //   // inputFormatters: [
-                //   //   // obrigatório
-                //   //   FilteringTextInputFormatter.digitsOnly,
-                //   //   CpfInputFormatter(),
-                //   // ],
-                // ),
-
-                const SizedBox(height: 10),
-
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-
-                const SizedBox(height: 10),
-
-                // password textfield
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 10),
-
-                // confirm password textfield
-                MyTextField(
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 25),
-
-                // sign in button
-                MyButton(
-                  onTap: signUp,
-                  buttonText: "Sign up",
-                  isLoading: _isLoading,
-                ),
-
-                const SizedBox(height: 50),
-
-                // not a member? register now
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Já possui conta?',
-                      style: TextStyle(color: lightGray),
+                  // email textfield
+                  TextField(
+                    controller: nameController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Nome e Sobrenome",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
                     ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const LoginPage(),
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  TextField(
+                    controller: cpfController,
+                    // hintText: 'CPF',
+                    decoration: myDecoration.copyWith(
+                      labelText: "CPF",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    inputFormatters: [
+                      // obrigatório
+                      FilteringTextInputFormatter.digitsOnly,
+                      CpfInputFormatter(),
+                    ],
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  TextField(
+                    controller: emailController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // password textfield
+                  TextField(
+                    controller: passwordController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Senha",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    obscureText: true,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // confirm password textfield
+                  TextField(
+                    controller: confirmPasswordController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Confirme sua senha",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    obscureText: true,
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // sign in button
+                  MyButton(
+                    onTap: signUp,
+                    buttonText: "Criar conta",
+                    isLoading: _isLoading,
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // not a member? register now
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Já possui conta?',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        ),
+                        child: const Text(
+                          'Login now',
+                          style: TextStyle(
+                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
-                      child: const Text(
-                        'Login now',
-                        style: TextStyle(
-                          color: white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
   }

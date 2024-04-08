@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
 import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
+import 'package:tcc_app/utils/colors.dart';
+import 'package:tcc_app/utils/global_variable.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({Key? key}) : super(key: key);
@@ -137,67 +139,117 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple[200],
-        elevation: 0,
+        title: const Text(
+          'Esqueci minha senha',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor: Colors.grey[800],
+        elevation: 1,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          color: Colors.white,
+        ),
       ),
+      backgroundColor: Colors.grey[100],
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Text(
-                'Enter your email and we will send you a password reset link',
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 65),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Informe seu e-mail e te enviaremos um código para a redefinição da senha.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 18),
               ),
-            ),
-            SizedBox(height: 10),
-            MyTextField(
-              controller: emailController,
-              hintText: 'Email',
-              obscureText: false,
-            ),
-            if (showCodeInput) ...[
-              SizedBox(height: 10),
-              MyTextField(
-                controller: codeController,
-                hintText: 'Code',
+              SizedBox(height: 30),
+              TextField(
+                controller: emailController,
+                decoration: myDecoration.copyWith(
+                  labelText: "Email",
+                  labelStyle: TextStyle(
+                    color: Colors.grey,
+                    // fontWeight: FontWeight.bold,
+                  ), // Atualizando o hintText com o texto fornecido
+                ),
                 obscureText: false,
               ),
-              SizedBox(height: 10),
-              MyTextField(
-                controller: newPasswordController,
-                hintText: 'New Password',
-                obscureText: true,
-              ),
-              SizedBox(height: 10),
-              MyTextField(
-                controller: confirmPasswordController,
-                hintText: 'Confirm Password',
-                obscureText: true,
-              ),
-            ],
-            SizedBox(height: 10),
-            MyButton(
-              onTap: showCodeInput ? resetPasswordWithCode : resetPassword,
-              buttonText: showCodeInput ? "Reset Password" : "Send Email",
-              isLoading: isLoading,
-            ),
-            if (showCodeInput && canResendCode) ...[
-              SizedBox(height: 10),
-              Text(
-                "Resend code in $resendTimer seconds",
-                style: TextStyle(fontSize: 16),
-              ),
-              SizedBox(height: 10),
+              if (showCodeInput) ...[
+                SizedBox(height: 15),
+                TextField(
+                  controller: codeController,
+                  decoration: myDecoration.copyWith(
+                    labelText: "Código",
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ), // Atualizando o hintText com o texto fornecido
+                  ),
+                  obscureText: false,
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: newPasswordController,
+                  decoration: myDecoration.copyWith(
+                    labelText: "Nova Senha",
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ), // Atualizando o hintText com o texto fornecido
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  controller: confirmPasswordController,
+                  decoration: myDecoration.copyWith(
+                    labelText: "Confirme a Senha",
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ), // Atualizando o hintText com o texto fornecido
+                  ),
+                  obscureText: true,
+                ),
+              ],
+              SizedBox(height: 25),
               MyButton(
-                onTap: resendCode,
-                buttonText: "Resend Code",
-                isLoading: false,
+                onTap: showCodeInput ? resetPasswordWithCode : resetPassword,
+                buttonText: showCodeInput ? "Redefinir Senha" : "Enviar Email",
+                isLoading: isLoading,
               ),
+              if (showCodeInput && canResendCode) ...[
+                SizedBox(height: 10),
+                Text(
+                  "Reenviar código em $resendTimer segundos",
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.black,
+                    elevation: 0,
+                    backgroundColor:
+                        Colors.grey[100], // Define a cor do texto como preto
+                    side: BorderSide(
+                        color: Colors.black), // Adiciona uma borda preta
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          5.0), // Define o raio do canto do botão
+                    ),
+                  ),
+                  onPressed: resendCode,
+                  child: Text(
+                    "Reenviar Código",
+                    style: TextStyle(fontSize: 16),
+                  ),
+                )
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

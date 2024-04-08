@@ -7,6 +7,7 @@ import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/pages/map_page.dart';
 import 'package:tcc_app/pages/register_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
+import 'package:tcc_app/utils/global_variable.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -59,113 +60,130 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: ListView(shrinkWrap: true, children: <Widget>[
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: ListView(shrinkWrap: true, children: <Widget>[
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 50),
 
-                // logo
-                const Icon(
-                  Icons.lock,
-                  size: 100,
-                ),
-
-                const SizedBox(height: 50),
-
-                // welcome back, you've been missed!
-                Text(
-                  'Welcome back you\'ve been missed!',
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 16,
+                  // logo
+                  const Icon(
+                    Icons.lock,
+                    size: 100,
                   ),
-                ),
 
-                const SizedBox(height: 25),
+                  const SizedBox(height: 40),
 
-                // email textfield
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
+                  // welcome back, you've been missed!
+                  const Text(
+                    'Login',
+                    style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 25),
 
-                // password textfield
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
+                  // email textfield
+                  TextField(
+                    controller: emailController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Email",
+                      labelStyle: const TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    obscureText: false,
+                  ),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-                // forgot password?
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  // password textfield
+                  TextField(
+                    controller: passwordController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Senha",
+                      labelStyle: const TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    obscureText: true,
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // forgot password?
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (context) {
+                              return const ForgotPasswordPage();
+                            }));
+                          },
+                          child: Text(
+                            'Esqueci minha senha',
+                            style: TextStyle(
+                              color: Colors.deepPurple[600],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // sign in button
+                  MyButton(
+                    onTap: loginUser,
+                    buttonText: "Entrar",
+                    isLoading: _isLoading,
+                  ),
+
+                  const SizedBox(height: 15),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      const Text(
+                        'Não possui conta?',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      const SizedBox(width: 4),
                       GestureDetector(
-                        onTap: () {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (context) {
-                            return const ForgotPasswordPage();
-                          }));
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(color: Colors.grey[600]),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const RegisterPage(),
+                          ),
+                        ),
+                        child: const Text(
+                          'Cadastre-se!',
+                          style: TextStyle(
+                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
-                  ),
-                ),
-
-                const SizedBox(height: 25),
-
-                // sign in button
-                MyButton(
-                  onTap: loginUser,
-                  buttonText: "Sign In",
-                  isLoading: _isLoading,
-                ),
-
-                const SizedBox(height: 15),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Not a member?',
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
-                        ),
-                      ),
-                      child: const Text(
-                        'Register now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
   }
