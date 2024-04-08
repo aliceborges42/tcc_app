@@ -77,7 +77,9 @@ class AuthMethods {
     if (response.statusCode == 200) {
       return 'success';
     } else {
-      throw Exception('Failed to sign up');
+      final jsonResponse = json.decode(response.body);
+      final errorMessage = jsonResponse['status']['errors'].join(", ");
+      throw Exception(errorMessage);
     }
   }
 

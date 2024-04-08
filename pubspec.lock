@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  brasil_fields:
+    dependency: "direct main"
+    description:
+      name: brasil_fields
+      sha256: "6b04a76cff0105368504e4b8e55552ffbcaf50b46822794b3ec622026430d60d"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.14.1"
   carousel_slider:
     dependency: "direct main"
     description:
@@ -81,6 +89,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.17.2"
+  cpf_cnpj_validator:
+    dependency: "direct main"
+    description:
+      name: cpf_cnpj_validator
+      sha256: "2d52caefe720f7428d8fd12b5dc3a9603e137ae4eafe032b8f1bd104d3656bfb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   cross_file:
     dependency: transitive
     description:
@@ -770,6 +786,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.2.1"
+  validadores:
+    dependency: "direct main"
+    description:
+      name: validadores
+      sha256: "39f9a88b88f3bd6ebdf4fda4b3fd928d03d5648eb0ca8df6890acd98e4d115c4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.9"
   vector_math:
     dependency: transitive
     description:

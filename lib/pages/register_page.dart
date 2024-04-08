@@ -7,6 +7,9 @@ import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/pages/login_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/utils/colors.dart';
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:flutter/services.dart';
+// import 'package:cpf_cnpj_validator/cpf_validator.dart' as cpf_cnpj_validator;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -40,11 +43,17 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     try {
+      // Validate CPF
+      if (!isValidCPF(cpfController.text)) {
+        throw Exception('Invalid CPF');
+      }
+
       String res = await AuthMethods().signUpUser(
-          email: emailController.text,
-          password: passwordController.text,
-          name: nameController.text,
-          cpf: cpfController.text);
+        email: emailController.text,
+        password: passwordController.text,
+        name: nameController.text,
+        cpf: cpfController.text,
+      );
 
       if (res == "success") {
         setState(() {
@@ -83,6 +92,13 @@ class _RegisterPageState extends State<RegisterPage> {
     } else {
       return false;
     }
+  }
+
+  bool isValidCPF(String cpf) {
+    // Regex for CPF validation
+    // final RegExp cpfRegex = RegExp(
+    //     r'^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2})|([0-9]{11})$');
+    return CPFValidator.isValid(cpf);
   }
 
   // wrong email message popup
@@ -177,11 +193,25 @@ class _RegisterPageState extends State<RegisterPage> {
 
                 const SizedBox(height: 10),
 
-                MyTextField(
+                TextField(
                   controller: cpfController,
-                  hintText: 'CPF',
+                  // hintText: 'CPF',
+                  inputFormatters: [
+                    // obrigatório
+                    FilteringTextInputFormatter.digitsOnly,
+                    CpfInputFormatter(),
+                  ],
                   obscureText: false,
                 ),
+
+                // TextField(
+                //   controller: cpfController,
+                //   // inputFormatters: [
+                //   //   // obrigatório
+                //   //   FilteringTextInputFormatter.digitsOnly,
+                //   //   CpfInputFormatter(),
+                //   // ],
+                // ),
 
                 const SizedBox(height: 10),
 
