@@ -28,27 +28,41 @@ class _CustomDatePickerState extends State<CustomDatePicker> {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: Text(widget.labelText),
-      subtitle: Text(
-        _selectedDate != null
-            ? DateFormat('dd/MM/yyyy').format(_selectedDate)
-            : 'Selecione a data',
-      ),
-      onTap: () async {
-        final pickedDate = await showDatePicker(
-          context: context,
-          initialDate: widget.initialDate ?? DateTime.now(),
-          firstDate: DateTime(2015, 8),
-          lastDate: DateTime.now(),
-        );
-        if (pickedDate != null && pickedDate != _selectedDate) {
-          setState(() {
-            _selectedDate = pickedDate;
-          });
-          widget.onChanged(pickedDate);
-        }
-      },
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Text(
+              widget.labelText,
+            ),
+          ],
+        ),
+        TextButton(
+          child: Text(
+            _selectedDate != null
+                ? DateFormat('dd/MM/yyyy').format(_selectedDate)
+                : 'Selecione a data',
+          ),
+          onPressed: () async {
+            final pickedDate = await showDatePicker(
+              context: context,
+              initialDate: widget.initialDate ?? DateTime.now(),
+              firstDate: DateTime(2015, 8),
+              lastDate: DateTime.now(),
+            );
+            if (pickedDate != null && pickedDate != _selectedDate) {
+              setState(() {
+                _selectedDate = pickedDate;
+              });
+              widget.onChanged(pickedDate);
+            }
+          },
+          style: ButtonStyle(
+              foregroundColor:
+                  MaterialStateProperty.all<Color>(Colors.deepPurple)),
+        ),
+      ],
     );
   }
 }

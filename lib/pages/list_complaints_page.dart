@@ -62,17 +62,19 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
       bool typeSpecificationFilter = _selectedTypeSpecification == null ||
           complaint.typeSpecification.id == _selectedTypeSpecification?.id;
 
-      bool dateFilter = _startDateFilter == null ||
-          _endDateFilter == null ||
-          ((complaint.date.isAfter(_startDateFilter!) ||
-                  complaint.date.isAtSameMomentAs(_startDateFilter!)) &&
-              (complaint.date.isBefore(_endDateFilter!) ||
-                  complaint.date.isAtSameMomentAs(_endDateFilter!)));
+      bool startDateFilter = _startDateFilter == null ||
+          (complaint.date.isAfter(_startDateFilter!) ||
+              complaint.date.isAtSameMomentAs(_startDateFilter!));
+
+      bool endDateFilter = _endDateFilter == null ||
+          (complaint.date.isBefore(_endDateFilter!) ||
+              complaint.date.isAtSameMomentAs(_endDateFilter!));
 
       return statusFilter &&
           typeFilter &&
           typeSpecificationFilter &&
-          dateFilter;
+          startDateFilter &&
+          endDateFilter;
     }).toList();
 
     return complaints;
@@ -100,6 +102,9 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
             },
           ),
         ],
+        backgroundColor: Colors.deepPurple[600],
+        foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: Column(
         children: [
@@ -139,12 +144,14 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
                       return Column(
                         children: [
                           ListTile(
+                            minVerticalPadding: 8.0,
                             title:
                                 Text(complaint.typeSpecification.specification),
                             subtitle: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(complaint.description),
+                                SizedBox(height: 4),
                                 Text(
                                   'Data: ${DateFormat('dd/MM/yyyy').format(complaint.date)}',
                                 ),
@@ -155,9 +162,16 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
                             ),
                             trailing: Chip(
                               backgroundColor: complaint.status == 'Resolvido'
-                                  ? Colors.green[300]
-                                  : Colors.red[300],
+                                  ? Colors.green[200]
+                                  : Colors.red[200],
                               label: Text(complaint.status!),
+                              labelStyle: TextStyle(
+                                  color: complaint.status == 'Resolvido'
+                                      ? Colors.green[900]
+                                      : Colors.red[900]),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
                             ),
                             onTap: () {
                               Navigator.push(
@@ -196,43 +210,57 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
       context: context,
       builder: (BuildContext context) {
         return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              ListTile(
-                title: Text('Filtrar por Status'),
-                subtitle: CustomDropdown(
+          child: Container(
+            padding: EdgeInsets.all(14.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text('Filtros',
+                    style:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                DropdownButtonFormField<String>(
                   value: _selectedStatusFilter,
-                  items: ['Todos', 'Resolvido', 'Não Resolvido'],
+                  items: ['Todos', 'Resolvido', 'Não Resolvido']
+                      .map((label) => DropdownMenuItem(
+                            child: Text(label),
+                            value: label,
+                          ))
+                      .toList(),
+                  decoration: InputDecoration(labelText: 'Status'),
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedStatusFilter = newValue;
                     });
                   },
                 ),
-              ),
-              ListTile(
-                title: Text('Filtrar por Tipo de Denúncia'),
-                subtitle: CustomDropdown(
+                DropdownButtonFormField<String>(
                   value: _selectedComplaintTypeFilter,
-                  items: ['Todos', 'Episódio', 'Desordem'],
+                  items: ['Todos', 'Episódio', 'Desordem']
+                      .map((label) => DropdownMenuItem(
+                            child: Text(label),
+                            value: label,
+                          ))
+                      .toList(),
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedComplaintTypeFilter = newValue;
                     });
                   },
+                  decoration: InputDecoration(labelText: 'Tipo de Denúncia'),
                 ),
-              ),
-              ListTile(
-                title: Text('Filtrar por Tipo de Especificação'),
-                subtitle: CustomDropdown(
+                DropdownButtonFormField<String>(
                   value: _selectedTypeSpecification?.specification,
                   items: _typeSpecifications
-                      .map((type) => type.specification)
+                      .map((label) => DropdownMenuItem(
+                            child: Text(label.specification),
+                            value: label.specification,
+                          ))
                       .toList(),
-                  onChanged: (String? newValue) {
+                  decoration:
+                      InputDecoration(labelText: 'Especificação da Denúncia'),
+                  onChanged: (value) {
                     final selectedType = _typeSpecifications.firstWhere(
-                      (type) => type.specification == newValue,
+                      (type) => type.specification == value,
                       orElse: () => _typeSpecifications.first,
                     );
                     setState(() {
@@ -240,40 +268,37 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
                     });
                   },
                 ),
-              ),
-              ListTile(
-                title: Text('Filtrar por Período de Data'),
-                subtitle: Column(
-                  children: [
-                    CustomDatePicker(
-                      initialDate: _startDateFilter,
-                      labelText: 'Data de Início',
-                      onChanged: (DateTime? newValue) {
-                        setState(() {
-                          _startDateFilter = newValue;
-                        });
-                      },
-                    ),
-                    CustomDatePicker(
-                      initialDate: _endDateFilter,
-                      labelText: 'Data de Fim',
-                      onChanged: (DateTime? newValue) {
-                        setState(() {
-                          _endDateFilter = newValue;
-                        });
-                      },
-                    ),
-                  ],
+                SizedBox(height: 8.0),
+                CustomDatePicker(
+                  initialDate: _startDateFilter,
+                  labelText: 'Data de Início',
+                  onChanged: (DateTime? newValue) {
+                    setState(() {
+                      _startDateFilter = newValue;
+                    });
+                  },
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _applyFilters();
-                  Navigator.pop(context);
-                },
-                child: Text('Aplicar Filtros'),
-              ),
-            ],
+                CustomDatePicker(
+                  initialDate: _endDateFilter,
+                  labelText: 'Data de Fim',
+                  onChanged: (DateTime? newValue) {
+                    setState(() {
+                      _endDateFilter = newValue;
+                    });
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _applyFilters();
+                    Navigator.pop(context);
+                  },
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.deepPurple)),
+                  child: Text('Aplicar Filtros'),
+                ),
+              ],
+            ),
           ),
         );
       },

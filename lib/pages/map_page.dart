@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:tcc_app/components/datepicker.dart';
+import 'package:tcc_app/components/dropdown.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/models/security_button_model.dart';
 import 'package:tcc_app/pages/add_complaint_page.dart';
@@ -71,16 +73,26 @@ class MapSampleState extends State<MapSample> {
     LatLng(-15.7653375, -47.8589586),
   ];
 
+  String? _statusFilter;
+  DateTime? _startDateFilter;
+  DateTime? _endDateFilter;
+  String? _complaintTypeFilter;
+  List<TypeSpecification> _typeSpecifications = [];
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  TextEditingController _startDateController = TextEditingController();
+  TextEditingController _endDateController = TextEditingController();
+  TypeSpecification? _selectedTypeSpecification;
+
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-15.762780851912703, -47.87026321271443),
     zoom: 17,
   );
 
   // late StreamSubscription<List<Complaint>> _complaintsSubscription;
-
   @override
   void initState() {
     super.initState();
+    _getTypeSpecifications();
     _loadCustomIcon();
     _loadComplaints();
     _loadButtons();
@@ -154,38 +166,234 @@ class MapSampleState extends State<MapSample> {
     }
   }
 
-  void _updateMarkers(List<Complaint> complaints) {
-    if (complaints.isNotEmpty) {
-      setState(() {
-        _markers.clear();
-        for (Complaint complaint in complaints) {
-          _markers.add(
-            Marker(
-              markerId: MarkerId(
-                  'complaint_${complaint.id.toString()}'), // Adicionando prefixo 'complaint_'
-              position: LatLng(
-                complaint.latitude,
-                complaint.longitude,
-              ),
-              infoWindow: InfoWindow(
-                title: formatComplaintDetails(
-                    complaint.typeSpecification.specification,
-                    complaint.date,
-                    complaint.hour),
-                snippet: truncateDescription(complaint.description),
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => ComplaintPage(
-                              complaintId: complaint.id.toString(),
-                            ))),
-              ),
-              zIndex: 1,
-            ),
-          );
-        }
-      });
+  Future<void> _loadComplaints() async {
+    try {
+      List<Complaint> complaints = await _complaintMethods.getAllComplaints();
+
+      complaints = _applyFilters(complaints);
+
+      _updateMarkers(complaints);
+    } catch (error) {
+      print("Failed to load complaints: $error");
     }
+  }
+
+  Future<void> _getTypeSpecifications() async {
+    try {
+      List<TypeSpecification> typesSpecifications =
+          await ComplaintMethods().getTypeSpecifications();
+      setState(() {
+        _typeSpecifications = typesSpecifications;
+      });
+    } catch (error) {
+      print("Failed to load type specifications: $error");
+      // return [];
+    }
+  }
+
+  List<Complaint> _applyFilters(List<Complaint> complaints) {
+    return complaints.where((complaint) {
+      bool statusFilter = _statusFilter == null ||
+          _statusFilter == 'Todos' ||
+          complaint.status == _statusFilter;
+
+      bool typeFilter = _complaintTypeFilter == null ||
+          _complaintTypeFilter == 'Todos' ||
+          complaint.complaintType.classification == _complaintTypeFilter;
+
+      bool startDateFilter = _startDateFilter == null ||
+          (complaint.date.isAfter(_startDateFilter!) ||
+              complaint.date.isAtSameMomentAs(_startDateFilter!));
+
+      bool typeSpecificationFilter = _selectedTypeSpecification == null ||
+          complaint.typeSpecification.id == _selectedTypeSpecification?.id;
+
+      bool endDateFilter = _endDateFilter == null ||
+          (complaint.date.isBefore(_endDateFilter!) ||
+              complaint.date.isAtSameMomentAs(_endDateFilter!));
+
+      return statusFilter &&
+          typeFilter &&
+          startDateFilter &&
+          endDateFilter &&
+          typeSpecificationFilter;
+    }).toList();
+  }
+
+  void _updateMarkers(List<Complaint> complaints) {
+    setState(() {
+      _markers.clear();
+      for (Complaint complaint in complaints) {
+        _markers.add(
+          Marker(
+            markerId: MarkerId('complaint_${complaint.id.toString()}'),
+            position: LatLng(
+              complaint.latitude,
+              complaint.longitude,
+            ),
+            infoWindow: InfoWindow(
+              title: '${complaint.typeSpecification.specification}',
+              snippet: '${complaint.description}',
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ComplaintPage(
+                    complaintId: complaint.id.toString(),
+                  ),
+                ),
+              ),
+            ),
+            zIndex: 1,
+          ),
+        );
+      }
+    });
+  }
+
+  void _openFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled:
+          true, // Permite que o BottomSheet ocupe o tamanho completo da tela
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.all(14.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Filtros',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold)),
+
+                    DropdownButtonFormField<String>(
+                      value: _statusFilter,
+                      onChanged: (value) {
+                        setState(() {
+                          _statusFilter = value;
+                        });
+                      },
+                      items: ['Todos', 'Resolvido', 'Não Resolvido']
+                          .map((label) => DropdownMenuItem(
+                                child: Text(label),
+                                value: label,
+                              ))
+                          .toList(),
+                      decoration: InputDecoration(labelText: 'Status'),
+                    ),
+                    // SizedBox(height: 6.0),
+                    DropdownButtonFormField<String>(
+                      value: _complaintTypeFilter,
+                      onChanged: (value) {
+                        setState(() {
+                          _complaintTypeFilter = value;
+                        });
+                      },
+                      items: ['Todos', 'Episódio', 'Desordem']
+                          .map((label) => DropdownMenuItem(
+                                child: Text(label),
+                                value: label,
+                              ))
+                          .toList(),
+                      decoration:
+                          InputDecoration(labelText: 'Tipo de Denúncia'),
+                    ),
+                    // SizedBox(height: 8.0),
+                    DropdownButtonFormField<String>(
+                      value: _selectedTypeSpecification?.specification,
+                      onChanged: (value) {
+                        final selectedType = _typeSpecifications.firstWhere(
+                          (type) => type.specification == value,
+                          orElse: () => _typeSpecifications.first,
+                        );
+                        setState(() {
+                          _selectedTypeSpecification = selectedType;
+                        });
+                      },
+                      items: _typeSpecifications
+                          .map((label) => DropdownMenuItem(
+                                child: Text(label.specification),
+                                value: label.specification,
+                              ))
+                          .toList(),
+                      decoration: InputDecoration(
+                          labelText: 'Especificação da Denúncia'),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text('Data de Início'),
+                    SizedBox(height: 4.0),
+                    TextButton(
+                      onPressed: () async {
+                        DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: _startDateFilter ?? DateTime.now(),
+                          firstDate: DateTime(2015, 8),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _startDateFilter = picked;
+                          });
+                        }
+                      },
+                      style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              Colors.deepPurple)),
+                      child: Text(
+                        _startDateFilter != null
+                            ? DateFormat('dd/MM/yyyy').format(_startDateFilter!)
+                            : 'Selecionar Data',
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text('Data de Fim'),
+                    SizedBox(height: 4.0),
+                    TextButton(
+                      onPressed: () async {
+                        DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: _endDateFilter ?? DateTime.now(),
+                          firstDate: DateTime(2015, 8),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _endDateFilter = picked;
+                          });
+                        }
+                      },
+                      style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              Colors.deepPurple)),
+                      child: Text(
+                        _endDateFilter != null
+                            ? DateFormat('dd/MM/yyyy').format(_endDateFilter!)
+                            : 'Selecionar Data',
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        // _applyFilters();
+                        _loadComplaints();
+                        Navigator.pop(context);
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.deepPurple)),
+                      child: Text('Aplicar Filtros'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<BitmapDescriptor> createCustomIcon(String imagePath) async {
@@ -273,21 +481,6 @@ class MapSampleState extends State<MapSample> {
     super.dispose();
   }
 
-  Future<void> _loadComplaints() async {
-    try {
-      List<Complaint> complaints = await _complaintMethods.getAllComplaints();
-
-      print('\n\n\nCOMPLAINTSlenght\n');
-      print(complaints.length);
-
-      _updateMarkers(complaints);
-    } catch (error) {
-      List<Complaint> complaints = [];
-      // _updateMarkers(complaints);
-      print("Erro ao carregar denúncias: $error");
-    }
-  }
-
   Future<void> _loadButtons() async {
     try {
       List<SecurityButton> securityButtons =
@@ -312,9 +505,19 @@ class MapSampleState extends State<MapSample> {
 
   @override
   Widget build(BuildContext context) {
-    // print('MERKERS ');
-    // print(_markers.length);
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Atenta App'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_alt),
+            onPressed: _openFilterModal,
+          ),
+        ],
+        backgroundColor: Colors.deepPurple[600],
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,
         zoomControlsEnabled: false,
