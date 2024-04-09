@@ -19,16 +19,22 @@ class PerfilEditPage extends StatefulWidget {
 
 class _PerfilEditPageState extends State<PerfilEditPage> {
   final _formKey = GlobalKey<FormBuilderState>();
-  XFile? _pickedImage;
+  File? _pickedImage;
+  double _imageScale = 1.0;
   bool _isLoading = false;
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
-    XFile? pickedImage = await picker.pickImage(source: source);
+    final pickedImage = await picker.getImage(source: source);
 
-    setState(() {
-      _pickedImage = pickedImage;
-    });
+    if (pickedImage != null) {
+      setState(() {
+        _pickedImage = File(pickedImage.path);
+      });
+      print('Imagem selecionada: ${_pickedImage!.path}');
+    } else {
+      print('Nenhuma imagem selecionada.');
+    }
   }
 
   void updateUser() async {
@@ -69,36 +75,65 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
             child: FormBuilder(
               key: _formKey,
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      Container(
-                        width: double.infinity,
-                        height: 200,
-                        color: Colors.grey[200],
-                        child: _pickedImage != null
-                            ? Image.file(
-                                File(_pickedImage!.path),
-                                fit: BoxFit.cover,
-                              )
-                            : widget.user.avatar != null
-                                ? Image.network(
-                                    widget.user.avatar!,
+                      GestureDetector(
+                        onScaleUpdate: (details) {
+                          setState(() {
+                            _imageScale = details.scale;
+                          });
+                        },
+                        child: ClipOval(
+                          child: Container(
+                            width: 150 * _imageScale,
+                            height: 150 * _imageScale,
+                            color: Colors.grey[200],
+                            child: _pickedImage != null
+                                ? Image.file(
+                                    _pickedImage!,
                                     fit: BoxFit.cover,
                                   )
-                                : Icon(
-                                    Icons.person,
-                                    size: 100,
-                                    color: Colors.grey,
-                                  ),
+                                : widget.user.avatar != null
+                                    ? Image.network(
+                                        widget.user.avatar!,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Icon(
+                                        Icons.person,
+                                        size: 100,
+                                        color: Colors.grey,
+                                      ),
+                          ),
+                        ),
                       ),
-                      IconButton(
-                        icon: Icon(Icons.camera_alt),
-                        onPressed: () {
-                          _pickImage(ImageSource.gallery);
-                        },
+                      Container(
+                        padding: EdgeInsets.all(8),
+                        margin: EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              spreadRadius: 2,
+                              blurRadius: 5,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: InkWell(
+                          onTap: () {
+                            print('Selecionar imagem da galeria.');
+                            _pickImage(ImageSource.gallery);
+                          },
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.grey[700],
+                          ),
+                        ),
                       ),
                     ],
                   ),
