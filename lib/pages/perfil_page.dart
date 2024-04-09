@@ -99,17 +99,43 @@ class _PerfilPageState extends State<PerfilPage> {
         elevation: 1,
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              // Navega para a página de edição de perfil
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ComplaintUserListPage(),
-                ),
-              );
-            },
+          Builder(
+            builder: (context) => IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                // Navega para a página de edição de perfil
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => FutureBuilder(
+                      future: _currentUser,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        } else if (snapshot.hasError) {
+                          return Center(
+                            child: Text(
+                              "Erro ao carregar detalhes do usuário: ${snapshot.error}",
+                            ),
+                          );
+                        } else if (snapshot.hasData) {
+                          // Extrai o widget do perfil para melhor legibilidade
+                          return PerfilEditPage(user: snapshot.data as User);
+                        } else {
+                          return const Center(
+                            child: Text(
+                                "Erro desconhecido ao carregar detalhes de usuário."),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),
