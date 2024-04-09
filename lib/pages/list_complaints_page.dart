@@ -102,9 +102,10 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
             },
           ),
         ],
-        backgroundColor: Colors.deepPurple[600],
-        foregroundColor: Colors.white,
-        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.grey[100],
+        foregroundColor: Colors.black87,
+        elevation: 1,
       ),
       body: Column(
         children: [

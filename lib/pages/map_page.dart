@@ -507,16 +507,17 @@ class MapSampleState extends State<MapSample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Atenta App'),
+        title: Text('Mapa da UnB'),
         actions: [
           IconButton(
             icon: Icon(Icons.filter_alt),
             onPressed: _openFilterModal,
           ),
         ],
-        backgroundColor: Colors.deepPurple[600],
-        foregroundColor: Colors.white,
-        elevation: 0,
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.grey[100],
+        foregroundColor: Colors.black87,
+        elevation: 1,
       ),
       body: GoogleMap(
         initialCameraPosition: _kGooglePlex,

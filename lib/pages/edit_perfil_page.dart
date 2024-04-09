@@ -1,5 +1,7 @@
 import 'dart:io';
+import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,6 +24,7 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
   File? _pickedImage;
   double _imageScale = 1.0;
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -37,6 +40,19 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
     }
   }
 
+  bool isValidCPF(String cpf) {
+    // Regex for CPF validation
+    // final RegExp cpfRegex = RegExp(
+    //     r'^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2})|([0-9]{11})$');
+    return CPFValidator.isValid(cpf);
+  }
+
+  void togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
   void updateUser() async {
     setState(() {
       _isLoading = true;
@@ -45,6 +61,9 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
     if (_formKey.currentState!.saveAndValidate()) {
       Map<String, dynamic> formData = _formKey.currentState!.value;
       try {
+        if (!isValidCPF(formData['cpf'])) {
+          throw Exception('Invalid CPF');
+        }
         await AuthMethods().updateUser(
           name: formData['Name'],
           email: formData['email'],
@@ -67,6 +86,9 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Perfil'),
+        backgroundColor: Colors.grey[100],
+        foregroundColor: Colors.black87,
+        elevation: 1,
       ),
       body: ListView(
         children: <Widget>[
@@ -142,7 +164,11 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                     name: 'Name',
                     initialValue: widget.user.name,
                     decoration: myDecoration.copyWith(
-                      hintText: "Nome",
+                      labelText: "Nome",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ),
                     ),
                     validator: FormBuilderValidators.required(),
                   ),
@@ -151,7 +177,11 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                     name: 'email',
                     initialValue: widget.user.email,
                     decoration: myDecoration.copyWith(
-                      hintText: "Email",
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ),
                     ),
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
@@ -161,18 +191,39 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                   SizedBox(height: 12),
                   FormBuilderTextField(
                     name: 'cpf',
-                    initialValue: widget.user.cpf,
                     decoration: myDecoration.copyWith(
-                      hintText: "CPF",
+                      labelText: "CPF",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    inputFormatters: [
+                      // obrigatório
+                      FilteringTextInputFormatter.digitsOnly,
+                      CpfInputFormatter(),
+                    ],
+                    initialValue: widget.user.cpf,
                     validator: FormBuilderValidators.required(),
                   ),
                   SizedBox(height: 12),
                   FormBuilderTextField(
                     name: 'password',
                     decoration: myDecoration.copyWith(
-                      hintText: "Confirme sua Senha",
+                      labelText: "Confirme sua Senha",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: togglePasswordVisibility,
+                      ),
                     ),
+                    obscureText: !_isPasswordVisible,
                     validator: FormBuilderValidators.required(),
                   ),
                   SizedBox(height: 12),

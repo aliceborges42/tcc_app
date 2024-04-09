@@ -20,6 +20,7 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
   String? _selectedComplaintTypeFilter;
   TypeSpecification? _selectedTypeSpecification;
   List<TypeSpecification> _typeSpecifications = [];
+  TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -61,17 +62,19 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
       bool typeSpecificationFilter = _selectedTypeSpecification == null ||
           complaint.typeSpecification.id == _selectedTypeSpecification?.id;
 
-      bool dateFilter = _startDateFilter == null ||
-          _endDateFilter == null ||
-          ((complaint.date.isAfter(_startDateFilter!) ||
-                  complaint.date.isAtSameMomentAs(_startDateFilter!)) &&
-              (complaint.date.isBefore(_endDateFilter!) ||
-                  complaint.date.isAtSameMomentAs(_endDateFilter!)));
+      bool startDateFilter = _startDateFilter == null ||
+          (complaint.date.isAfter(_startDateFilter!) ||
+              complaint.date.isAtSameMomentAs(_startDateFilter!));
+
+      bool endDateFilter = _endDateFilter == null ||
+          (complaint.date.isBefore(_endDateFilter!) ||
+              complaint.date.isAtSameMomentAs(_endDateFilter!));
 
       return statusFilter &&
           typeFilter &&
           typeSpecificationFilter &&
-          dateFilter;
+          startDateFilter &&
+          endDateFilter;
     }).toList();
 
     return complaints;
@@ -99,71 +102,105 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
             },
           ),
         ],
+        backgroundColor: Colors.grey[100],
+        foregroundColor: Colors.black87,
+        elevation: 1,
       ),
-      body: FutureBuilder(
-        future: _complaintsFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text("Erro ao carregar as denúncias: ${snapshot.error}"),
-            );
-          } else if (snapshot.hasData) {
-            List<Complaint> complaints = snapshot.data as List<Complaint>;
-            return ListView.builder(
-              itemCount: complaints.length,
-              itemBuilder: (context, index) {
-                Complaint complaint = complaints[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      title: Text(complaint.typeSpecification.specification),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Pesquisar denúncia...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onSubmitted: (value) {
+                _performSearch(value);
+              },
+            ),
+          ),
+          Expanded(
+            child: FutureBuilder(
+              future: _complaintsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text(
+                        "Erro ao carregar as denúncias: ${snapshot.error}"),
+                  );
+                } else if (snapshot.hasData) {
+                  List<Complaint> complaints = snapshot.data as List<Complaint>;
+                  return ListView.builder(
+                    itemCount: complaints.length,
+                    itemBuilder: (context, index) {
+                      Complaint complaint = complaints[index];
+                      return Column(
                         children: [
-                          Text(complaint.description),
-                          Text(
-                            'Data: ${DateFormat('dd/MM/yyyy').format(complaint.date)}',
+                          ListTile(
+                            minVerticalPadding: 8.0,
+                            title:
+                                Text(complaint.typeSpecification.specification),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(complaint.description),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Data: ${DateFormat('dd/MM/yyyy').format(complaint.date)}',
+                                ),
+                                Text(
+                                  'Hora: ${DateFormat('HH:mm').format(complaint.hour)}',
+                                ),
+                              ],
+                            ),
+                            trailing: Chip(
+                              backgroundColor: complaint.status == 'Resolvido'
+                                  ? Colors.green[200]
+                                  : Colors.red[200],
+                              label: Text(complaint.status!),
+                              labelStyle: TextStyle(
+                                  color: complaint.status == 'Resolvido'
+                                      ? Colors.green[900]
+                                      : Colors.red[900]),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4.0),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ComplaintPage(
+                                    complaintId: complaint.id.toString(),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          Text(
-                            'Hora: ${DateFormat('HH:mm').format(complaint.hour)}',
+                          Divider(
+                            height: 0,
+                            color: Colors.grey[600],
                           ),
                         ],
-                      ),
-                      trailing: Chip(
-                        backgroundColor: complaint.status == 'Resolvido'
-                            ? Colors.green[300]
-                            : Colors.red[300],
-                        label: Text(complaint.status!),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => ComplaintPage(
-                              complaintId: complaint.id.toString(),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    Divider(
-                      height: 0,
-                      color: Colors.grey[600],
-                    ),
-                  ],
-                );
+                      );
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: Text("Nenhuma denúncia encontrada."),
+                  );
+                }
               },
-            );
-          } else {
-            return Center(
-              child: Text("Nenhuma denúncia encontrada."),
-            );
-          }
-        },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -173,43 +210,57 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
       context: context,
       builder: (BuildContext context) {
         return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              ListTile(
-                title: Text('Filtrar por Status'),
-                subtitle: CustomDropdown(
+          child: Container(
+            padding: EdgeInsets.all(14.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Text('Filtros',
+                    style:
+                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                DropdownButtonFormField<String>(
                   value: _selectedStatusFilter,
-                  items: ['Todos', 'Resolvido', 'Não Resolvido'],
+                  items: ['Todos', 'Resolvido', 'Não Resolvido']
+                      .map((label) => DropdownMenuItem(
+                            child: Text(label),
+                            value: label,
+                          ))
+                      .toList(),
+                  decoration: InputDecoration(labelText: 'Status'),
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedStatusFilter = newValue;
                     });
                   },
                 ),
-              ),
-              ListTile(
-                title: Text('Filtrar por Tipo de Denúncia'),
-                subtitle: CustomDropdown(
+                DropdownButtonFormField<String>(
                   value: _selectedComplaintTypeFilter,
-                  items: ['Todos', 'Episódio', 'Desordem'],
+                  items: ['Todos', 'Episódio', 'Desordem']
+                      .map((label) => DropdownMenuItem(
+                            child: Text(label),
+                            value: label,
+                          ))
+                      .toList(),
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedComplaintTypeFilter = newValue;
                     });
                   },
+                  decoration: InputDecoration(labelText: 'Tipo de Denúncia'),
                 ),
-              ),
-              ListTile(
-                title: Text('Filtrar por Tipo de Especificação'),
-                subtitle: CustomDropdown(
+                DropdownButtonFormField<String>(
                   value: _selectedTypeSpecification?.specification,
                   items: _typeSpecifications
-                      .map((type) => type.specification)
+                      .map((label) => DropdownMenuItem(
+                            child: Text(label.specification),
+                            value: label.specification,
+                          ))
                       .toList(),
-                  onChanged: (String? newValue) {
+                  decoration:
+                      InputDecoration(labelText: 'Especificação da Denúncia'),
+                  onChanged: (value) {
                     final selectedType = _typeSpecifications.firstWhere(
-                      (type) => type.specification == newValue,
+                      (type) => type.specification == value,
                       orElse: () => _typeSpecifications.first,
                     );
                     setState(() {
@@ -217,43 +268,59 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
                     });
                   },
                 ),
-              ),
-              ListTile(
-                title: Text('Filtrar por Período de Data'),
-                subtitle: Column(
-                  children: [
-                    CustomDatePicker(
-                      initialDate: _startDateFilter,
-                      labelText: 'Data de Início',
-                      onChanged: (DateTime? newValue) {
-                        setState(() {
-                          _startDateFilter = newValue;
-                        });
-                      },
-                    ),
-                    CustomDatePicker(
-                      initialDate: _endDateFilter,
-                      labelText: 'Data de Fim',
-                      onChanged: (DateTime? newValue) {
-                        setState(() {
-                          _endDateFilter = newValue;
-                        });
-                      },
-                    ),
-                  ],
+                SizedBox(height: 8.0),
+                CustomDatePicker(
+                  initialDate: _startDateFilter,
+                  labelText: 'Data de Início',
+                  onChanged: (DateTime? newValue) {
+                    setState(() {
+                      _startDateFilter = newValue;
+                    });
+                  },
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _applyFilters();
-                  Navigator.pop(context);
-                },
-                child: Text('Aplicar Filtros'),
-              ),
-            ],
+                CustomDatePicker(
+                  initialDate: _endDateFilter,
+                  labelText: 'Data de Fim',
+                  onChanged: (DateTime? newValue) {
+                    setState(() {
+                      _endDateFilter = newValue;
+                    });
+                  },
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _applyFilters();
+                    Navigator.pop(context);
+                  },
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.deepPurple)),
+                  child: Text('Aplicar Filtros'),
+                ),
+              ],
+            ),
           ),
         );
       },
     );
+  }
+
+  void _performSearch(String query) {
+    setState(() {
+      if (query.isNotEmpty) {
+        _complaintsFuture = _searchComplaints(query);
+      } else {
+        _complaintsFuture = _loadComplaints();
+      }
+    });
+  }
+
+  Future<List<Complaint>> _searchComplaints(String query) async {
+    try {
+      return await ComplaintMethods().searchComplaints(query);
+    } catch (error) {
+      print("Failed to search complaints: $error");
+      return [];
+    }
   }
 }

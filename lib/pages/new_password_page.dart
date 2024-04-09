@@ -15,6 +15,9 @@ class EditPassword extends StatefulWidget {
 class _EditPasswordState extends State<EditPassword> {
   final _formKey = GlobalKey<FormBuilderState>();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
+  bool _isNewPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   void updatePassword() async {
     setState(() {
@@ -39,11 +42,32 @@ class _EditPasswordState extends State<EditPassword> {
     }
   }
 
+  void togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
+  void toggleNewPasswordVisibility() {
+    setState(() {
+      _isNewPasswordVisible = !_isNewPasswordVisible;
+    });
+  }
+
+  void toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Alterar Senha'),
+        backgroundColor: Colors.grey[100],
+        foregroundColor: Colors.black87,
+        elevation: 1,
       ),
       body: ListView(
         children: <Widget>[
@@ -56,20 +80,42 @@ class _EditPasswordState extends State<EditPassword> {
                 children: [
                   SizedBox(height: 16.0),
                   FormBuilderTextField(
-                    name: 'currentPassword',
-                    obscureText: true, // Torna o campo de senha
+                    name: 'currentPassword', // Torna o campo de senha
                     decoration: myDecoration.copyWith(
-                      hintText: "Senha Atual",
+                      labelText: "Senha Atual",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: togglePasswordVisibility,
+                      ),
                     ),
+                    obscureText: !_isPasswordVisible,
                     validator: FormBuilderValidators.required(),
                   ),
                   SizedBox(height: 12),
                   FormBuilderTextField(
-                    name: 'newPassword',
-                    obscureText: true, // Torna o campo de senha
+                    name: 'newPassword', // Torna o campo de senha
                     decoration: myDecoration.copyWith(
-                      hintText: "Nova Senha",
+                      labelText: "Nova Senha",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: togglePasswordVisibility,
+                      ),
                     ),
+                    obscureText: !_isPasswordVisible,
                     validator: FormBuilderValidators.compose([
                       FormBuilderValidators.required(),
                     ]),
@@ -77,10 +123,21 @@ class _EditPasswordState extends State<EditPassword> {
                   SizedBox(height: 12),
                   FormBuilderTextField(
                     name: 'passwordConfirmation',
-                    obscureText: true, // Torna o campo de senha
                     decoration: myDecoration.copyWith(
-                      hintText: "Confirme sua Senha",
+                      labelText: "Confirme sua Senha",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: togglePasswordVisibility,
+                      ),
                     ),
+                    obscureText: !_isPasswordVisible,
                     validator: FormBuilderValidators.required(),
                   ),
                   SizedBox(height: 12),

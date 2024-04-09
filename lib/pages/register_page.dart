@@ -27,6 +27,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final cpfController = TextEditingController();
   bool _isLoading = false;
 
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   @override
   void dispose() {
     emailController.dispose();
@@ -35,6 +38,18 @@ class _RegisterPageState extends State<RegisterPage> {
     nameController.dispose();
     cpfController.dispose();
     super.dispose();
+  }
+
+  void togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
+  void toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+    });
   }
 
   void signUp() async {
@@ -243,10 +258,17 @@ class _RegisterPageState extends State<RegisterPage> {
                       labelText: "Senha",
                       labelStyle: TextStyle(
                         color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ), // Atualizando o hintText com o texto fornecido
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: togglePasswordVisibility,
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                   ),
 
                   const SizedBox(height: 10),
@@ -258,10 +280,17 @@ class _RegisterPageState extends State<RegisterPage> {
                       labelText: "Confirme sua senha",
                       labelStyle: TextStyle(
                         color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ), // Atualizando o hintText com o texto fornecido
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: toggleConfirmPasswordVisibility,
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isConfirmPasswordVisible,
                   ),
 
                   const SizedBox(height: 25),

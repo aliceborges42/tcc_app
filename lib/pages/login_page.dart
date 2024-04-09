@@ -1,10 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
-import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/pages/forgot_pw_page.dart';
 import 'package:tcc_app/pages/home_page.dart';
-import 'package:tcc_app/pages/map_page.dart';
 import 'package:tcc_app/pages/register_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/utils/global_variable.dart';
@@ -21,12 +18,19 @@ class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+  }
+
+  void togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
   }
 
   void loginUser() async {
@@ -110,12 +114,19 @@ class _LoginPageState extends State<LoginPage> {
                     controller: passwordController,
                     decoration: myDecoration.copyWith(
                       labelText: "Senha",
-                      labelStyle: const TextStyle(
+                      labelStyle: TextStyle(
                         color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ), // Atualizando o hintText com o texto fornecido
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: togglePasswordVisibility,
+                      ),
                     ),
-                    obscureText: true,
+                    obscureText: !_isPasswordVisible,
                   ),
 
                   const SizedBox(height: 8),
