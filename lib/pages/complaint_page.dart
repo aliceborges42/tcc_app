@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:tcc_app/components/carousel.dart';
 import 'package:tcc_app/models/deslike_model.dart';
 import 'package:tcc_app/models/like_model.dart';
@@ -116,11 +117,11 @@ class _ComplaintPageState extends State<ComplaintPage> {
 
   Future<void> _loadLocationDetails(double lat, double lon) async {
     try {
-      String address = await getAddressByLatLon(lat, lon);
+      Placemark address = await getAddressByLatLon(lat, lon);
       // Verifica se o widget ainda está montado antes de chamar setState
       if (mounted) {
         setState(() {
-          _locationText = address;
+          _locationText = address.street.toString();
         });
       }
     } catch (error) {
@@ -248,7 +249,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detalhes da Denúncia'),
+        title: const Text('Denúncia'),
+        backgroundColor: Colors.grey[100],
+        foregroundColor: Colors.black87,
+        elevation: 1,
         actions: [
           FutureBuilder(
             future: _complaintFuture,
@@ -304,92 +308,159 @@ class _ComplaintPageState extends State<ComplaintPage> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    GestureDetector(
-                      child: Carousel(
-                        images: complaint.images!
-                            .map((image) => image.url)
-                            .toList(),
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        viewportFraction: 1.0,
+                    if (complaint.images != null &&
+                        complaint.images!.isNotEmpty)
+                      GestureDetector(
+                        child: Carousel(
+                          images: complaint.images!
+                              .map((image) => image.url)
+                              .toList(),
+                          height: MediaQuery.of(context).size.height * 0.32,
+                          viewportFraction: 1,
+                        ),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            barrierColor: Colors.black87,
+                            builder: (BuildContext context) {
+                              return Center(
+                                child: Container(
+                                  alignment: Alignment
+                                      .center, // Centraliza verticalmente o conteúdo do Container
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 30, horizontal: 20),
+                                  child: Carousel(
+                                    images: complaint.images!
+                                        .map((image) => image.url)
+                                        .toList(),
+                                    height: MediaQuery.of(context).size.height *
+                                        0.7,
+                                    viewportFraction: 1,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        },
                       ),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          barrierColor: Colors.black87,
-                          builder: (BuildContext context) {
-                            return Carousel(
-                              images: complaint.images!
-                                  .map((image) => image.url)
-                                  .toList(),
-                              height: MediaQuery.of(context).size.height * 0.8,
-                              viewportFraction: 0.8,
-                            );
-                          },
-                        );
-                      },
-                    ),
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 15.0, horizontal: 16.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Chip(
+                                backgroundColor: complaint.status == 'Resolvido'
+                                    ? Colors.green[100]
+                                    : Colors.red[100],
+                                label: Text(complaint.status!),
+                                labelStyle: TextStyle(
+                                    color: complaint.status == 'Resolvido'
+                                        ? Colors.green[900]
+                                        : Colors.red[900]),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // SizedBox(
+                          //   height: 6,
+                          // ),
+                          Text(
+                            complaint.complaintType.classification,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.black54,
+                            ),
+                          ),
                           Text(
                             complaint.typeSpecification.specification,
                             style: const TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.w400),
                           ),
-                          Text(
-                            complaint.complaintType.classification,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                          Chip(
-                            backgroundColor: complaint.status == 'Resolvido'
-                                ? Colors.green[300]
-                                : Colors.red[300],
-                            label: Text(complaint.status!),
-                          ),
+
+                          // SizedBox(
+                          //   height: 6,
+                          // ),
+                          // Divider(
+                          //   height: 2,
+                          //   color: Colors.grey[600],
+                          // ),
                           SizedBox(
-                            height: 15,
+                            height: 16,
                           ),
                           const Text(
                             'Descrição:',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black54),
                           ),
-                          Text(complaint.description),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Text(complaint.description,
+                              style: TextStyle(
+                                fontSize: 16,
+                              )),
                           const SizedBox(height: 16),
                           const Text(
                             'Endereço:',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black54),
                           ),
-                          Text(_locationText),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Text(_locationText,
+                              style: TextStyle(
+                                fontSize: 16,
+                              )),
                           const SizedBox(height: 16),
                           const Text(
                             'Data do Ocorrido:',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black54),
                           ),
-                          Text(_dateText),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Text(_dateText,
+                              style: TextStyle(
+                                fontSize: 16,
+                              )),
+                          const SizedBox(height: 16),
                           const Text(
                             'Hora do Ocorrido:',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
+                            style:
+                                TextStyle(fontSize: 16, color: Colors.black54),
                           ),
-                          Text(formatHour(complaint.hour)),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Text(formatHour(complaint.hour),
+                              style: TextStyle(
+                                fontSize: 16,
+                              )),
+                          const SizedBox(height: 16),
                           Row(
                             children: [
                               IconButton(
                                 onPressed: _likeComplaint,
-                                icon: Icon(Icons.thumb_up,
+                                icon: Icon(
+                                    _userLiked
+                                        ? Icons.thumb_up
+                                        : Icons.thumb_up_outlined,
                                     color: _userLiked ? Colors.blue : null),
                               ),
                               Text('Likes: $_likes'),
                               IconButton(
                                 onPressed: _dislikeComplaint,
-                                icon: Icon(Icons.thumb_down,
+                                icon: Icon(
+                                    _userDisliked
+                                        ? Icons.thumb_down
+                                        : Icons.thumb_down_outlined,
                                     color: _userDisliked ? Colors.blue : null),
                               ),
                               Text('Deslikes: $_dislikes'),

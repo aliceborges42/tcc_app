@@ -93,7 +93,7 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Denúncias'),
+        title: Text('Minhas Denúncias'),
         actions: [
           IconButton(
             icon: Icon(Icons.filter_alt),
@@ -162,8 +162,8 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
                             ),
                             trailing: Chip(
                               backgroundColor: complaint.status == 'Resolvido'
-                                  ? Colors.green[200]
-                                  : Colors.red[200],
+                                  ? Colors.green[100]
+                                  : Colors.red[100],
                               label: Text(complaint.status!),
                               labelStyle: TextStyle(
                                   color: complaint.status == 'Resolvido'

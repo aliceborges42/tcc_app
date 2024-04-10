@@ -251,7 +251,11 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   name: 'status',
                   initialValue: widget.complaint.status,
                   decoration: myDecoration.copyWith(
-                    hintText: "Status da Denúncia",
+                    labelText: "Status",
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ), // Atualizando o hintText com o texto fornecido
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
@@ -263,11 +267,16 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                           ))
                       .toList(),
                 ),
+                const SizedBox(height: 12),
                 FormBuilderTextField(
                   name: 'descricao',
                   initialValue: widget.complaint.description,
                   decoration: myDecoration.copyWith(
-                    hintText: "Descrição",
+                    labelText: "Descrição",
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ), // Atualizando o hintText com o texto fornecido
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
@@ -278,7 +287,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   name: 'tipoDenuncia',
                   initialValue: complaintType,
                   decoration: myDecoration.copyWith(
-                    hintText: "Tipo de Denúncia",
+                    labelText:
+                        "Tipo de Denúncia", // Atualizando o hintText com o texto fornecido
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ),
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
@@ -300,7 +314,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   name: 'tipoEspecificacao',
                   initialValue: initialSpecification,
                   decoration: myDecoration.copyWith(
-                    hintText: "Desordem ou episódio ocorrido",
+                    labelText:
+                        "Especificação", // Atualizando o hintText com o texto fornecido
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ),
                   ),
                   items: _getDropdownItems(),
                 ),
@@ -311,7 +330,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   inputType: InputType.date,
                   format: DateFormat('dd/MM/yyyy'),
                   decoration: myDecoration.copyWith(
-                    hintText: "Data do Ocorrido",
+                    labelText:
+                        "Data do Ocorrido", // Atualizando o hintText com o texto fornecido
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ),
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
@@ -323,7 +347,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   initialValue: widget.complaint.hour,
                   inputType: InputType.time,
                   decoration: myDecoration.copyWith(
-                    hintText: "Hora do Ocorrido",
+                    labelText:
+                        "Hora do Ocorrido", // Atualizando o hintText com o texto fornecido
+                    labelStyle: TextStyle(
+                      color: Colors.grey,
+                      // fontWeight: FontWeight.bold,
+                    ),
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(),
@@ -333,8 +362,11 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                 FormBuilderImagePicker(
                   name: 'images',
                   decoration: myDecoration.copyWith(
-                    labelText: "Imagens do Local",
+                    labelText:
+                        "Imagens do Local", // Atualizando o hintText com o texto fornecido
                   ),
+                  backgroundColor: Colors.grey[200],
+                  iconColor: Colors.grey[800],
                   maxImages: 5,
                 ),
                 SizedBox(height: 12),
