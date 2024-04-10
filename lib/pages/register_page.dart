@@ -4,11 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
 import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/pages/home_page.dart';
+import 'package:tcc_app/pages/login_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
+import 'package:tcc_app/utils/colors.dart';
+import 'package:tcc_app/utils/global_variable.dart';
+import 'package:brasil_fields/brasil_fields.dart';
+import 'package:flutter/services.dart';
+// import 'package:cpf_cnpj_validator/cpf_validator.dart' as cpf_cnpj_validator;
 
 class RegisterPage extends StatefulWidget {
-  final VoidCallback showLoginPage;
-  const RegisterPage({super.key, required this.showLoginPage});
+  const RegisterPage({super.key});
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -22,6 +27,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final cpfController = TextEditingController();
   bool _isLoading = false;
 
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
+
   @override
   void dispose() {
     emailController.dispose();
@@ -32,81 +40,60 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  void togglePasswordVisibility() {
+    setState(() {
+      _isPasswordVisible = !_isPasswordVisible;
+    });
+  }
+
+  void toggleConfirmPasswordVisibility() {
+    setState(() {
+      _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+    });
+  }
+
   void signUp() async {
     // set loading to true
     setState(() {
       _isLoading = true;
     });
 
-    // signup user using our authmethodds
-    String res = await AuthMethods().signUpUser(
+    try {
+      // Validate CPF
+      if (!isValidCPF(cpfController.text)) {
+        throw Exception('Invalid CPF');
+      }
+
+      String res = await AuthMethods().signUpUser(
         email: emailController.text,
         password: passwordController.text,
-        username: nameController.text,
-        cpf: cpfController.text);
-    // if string returned is sucess, user has been created
-    if (res == "success") {
-      setState(() {
-        _isLoading = false;
-      });
-      // navigate to the home screen
-      if (context.mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => HomePage()
-          ),
-        );
+        name: nameController.text,
+        cpf: cpfController.text,
+      );
+
+      if (res == "success") {
+        setState(() {
+          _isLoading = false;
+        });
+        // navigate to the home screen
+        if (context.mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => LoginPage()),
+          );
+        }
       }
-    } else {
+    } on Exception catch (error) {
+      // make it explicit that this function can throw exceptions
       setState(() {
         _isLoading = false;
       });
-      // show the error
       if (context.mounted) {
-        showSnackBar(context, res);
+        showSnackBar(context, error.toString());
       }
     }
   }
-  // Future signUp() async {
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return const Center(
-  //         child: CircularProgressIndicator(),
-  //       );
-  //     },
-  //   );
 
-  //   if(passwordConfirmed()){
-  //     try{
-  //       await FirebaseAuth.instance.createUserWithEmailAndPassword(
-  //         email: emailController.text.trim(),
-  //         password: passwordController.text.trim(),
-  //       );
-
-  //       addUserDetails(nameController.text.trim(), emailController.text.trim(), cpfController.text.trim());
-  //       Navigator.pop(context);
-  //     } on FirebaseAuthException catch (e) {
-  //       // pop the loading circle
-  //       Navigator.pop(context);
-  //       // WRONG EMAIL
-  //       if (e.code == 'email-already-in-use') {
-  //         // show error to user
-  //         emailAlreadyExistsMessage();
-  //       }
-
-  //       // WRONG PASSWORD
-  //       else if (e.code == 'invalid-email') {
-  //         // show error to user
-  //         invalidEmailMessage();
-  //       }
-  //     }
-  //   } else {
-  //     passwordNotConfirmed();
-  //   }
-  // }
-
-  Future addUserDetails( String name, String email, String cpf) async{
+  Future addUserDetails(String name, String email, String cpf) async {
     await FirebaseFirestore.instance.collection('users').add({
       'name': name,
       'email': email,
@@ -123,13 +110,20 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
+  bool isValidCPF(String cpf) {
+    // Regex for CPF validation
+    // final RegExp cpfRegex = RegExp(
+    //     r'^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2})|([0-9]{11})$');
+    return CPFValidator.isValid(cpf);
+  }
+
   // wrong email message popup
   void emailAlreadyExistsMessage() {
     showDialog(
       context: context,
       builder: (context) {
         return const AlertDialog(
-          backgroundColor: Colors.deepPurple,
+          backgroundColor: Colors.orangeAccent,
           title: Center(
             child: Text(
               'Email already in use',
@@ -179,114 +173,171 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      backgroundColor: Colors.grey[100],
       body: SafeArea(
-        child: ListView(shrinkWrap: true, children: <Widget>[
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 50),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: ListView(shrinkWrap: true, children: <Widget>[
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 50),
 
-                // logo
-                const Icon(
-                  Icons.lock,
-                  size: 100,
-                ),
-
-                const SizedBox(height: 50),
-
-                Text(
-                  'Register below with your details!',
-                  style: TextStyle(
-                    color: Colors.grey[700],
-                    fontSize: 16,
+                  // logo
+                  const Icon(
+                    Icons.lock,
+                    size: 100,
                   ),
-                ),
 
-                const SizedBox(height: 25),
+                  const SizedBox(height: 40),
 
-                // email textfield
-                MyTextField(
-                  controller: nameController,
-                  hintText: 'Full Name',
-                  obscureText: false,
-                ),
+                  const Text(
+                    'Cadastro',
+                    style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold),
+                  ),
 
-                const SizedBox(height: 10),
-                
-                MyTextField(
-                  controller: cpfController,
-                  hintText: 'CPF',
-                  obscureText: false,
-                ),
+                  const SizedBox(height: 25),
 
-                const SizedBox(height: 10),
-
-                MyTextField(
-                  controller: emailController,
-                  hintText: 'Email',
-                  obscureText: false,
-                ),
-
-                const SizedBox(height: 10),
-
-                // password textfield
-                MyTextField(
-                  controller: passwordController,
-                  hintText: 'Password',
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 10),
-
-                // confirm password textfield
-                MyTextField(
-                  controller: confirmPasswordController,
-                  hintText: 'Confirm Password',
-                  obscureText: true,
-                ),
-
-                const SizedBox(height: 25),
-
-                // sign in button
-                MyButton(
-                  onTap: signUp,
-                  buttonText: "Sign up",
-                  isLoading: _isLoading,
-                ),
-
-                const SizedBox(height: 50),
-
-                // not a member? register now
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Already a member?',
-                      style: TextStyle(color: Colors.grey[700]),
+                  // email textfield
+                  TextField(
+                    controller: nameController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Nome e Sobrenome",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
                     ),
-                    const SizedBox(width: 4),
-                    GestureDetector(
-                      onTap: widget.showLoginPage,
-                      child: const Text(
-                        'Login now',
-                        style: TextStyle(
-                          color: Colors.blue,
-                          fontWeight: FontWeight.bold,
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  TextField(
+                    controller: cpfController,
+                    // hintText: 'CPF',
+                    decoration: myDecoration.copyWith(
+                      labelText: "CPF",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    inputFormatters: [
+                      // obrigatório
+                      FilteringTextInputFormatter.digitsOnly,
+                      CpfInputFormatter(),
+                    ],
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  TextField(
+                    controller: emailController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Email",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        // fontWeight: FontWeight.bold,
+                      ), // Atualizando o hintText com o texto fornecido
+                    ),
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // password textfield
+                  TextField(
+                    controller: passwordController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Senha",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
                         ),
+                        onPressed: togglePasswordVisibility,
                       ),
                     ),
-                  ],
-                )
-              ],
+                    obscureText: !_isPasswordVisible,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  // confirm password textfield
+                  TextField(
+                    controller: confirmPasswordController,
+                    decoration: myDecoration.copyWith(
+                      labelText: "Confirme sua senha",
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isConfirmPasswordVisible
+                              ? Icons.visibility_off
+                              : Icons.visibility,
+                        ),
+                        onPressed: toggleConfirmPasswordVisibility,
+                      ),
+                    ),
+                    obscureText: !_isConfirmPasswordVisible,
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // sign in button
+                  MyButton(
+                    onTap: signUp,
+                    buttonText: "Criar conta",
+                    isLoading: _isLoading,
+                  ),
+
+                  const SizedBox(height: 30),
+
+                  // not a member? register now
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Já possui conta?',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const LoginPage(),
+                          ),
+                        ),
+                        child: const Text(
+                          'Login now',
+                          style: TextStyle(
+                            color: Colors.deepPurple,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
             ),
-          ),
-        ]),
+          ]),
+        ),
       ),
     );
   }
-  
+
   showSnackBar(BuildContext context, String text) {
     return ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

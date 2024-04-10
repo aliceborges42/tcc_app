@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Corredores de Segurança</name>
+    <Style id="line-A52714-12044-nodesc-normal">
+      <LineStyle>
+        <color>ff1427a5</color>
+        <width>12.044</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-A52714-12044-nodesc-highlight">
+      <LineStyle>
+        <color>ff1427a5</color>
+        <width>18.066</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-A52714-12044-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-A52714-12044-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-A52714-12044-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-E65100-12238-nodesc-normal">
+      <LineStyle>
+        <color>ff0051e6</color>
+        <width>12.238</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-E65100-12238-nodesc-highlight">
+      <LineStyle>
+        <color>ff0051e6</color>
+        <width>18.357</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-E65100-12238-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-E65100-12238-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-E65100-12238-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-F57C00-12431-nodesc-normal">
+      <LineStyle>
+        <color>ff007cf5</color>
+        <width>12.431</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-F57C00-12431-nodesc-highlight">
+      <LineStyle>
+        <color>ff007cf5</color>
+        <width>18.6465</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-F57C00-12431-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-F57C00-12431-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-F57C00-12431-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-F9A825-12238-nodesc-normal">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>12.238</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-F9A825-12238-nodesc-highlight">
+      <LineStyle>
+        <color>ff25a8f9</color>
+        <width>18.357</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-F9A825-12238-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-F9A825-12238-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-F9A825-12238-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="line-FFD600-11656-nodesc-normal">
+      <LineStyle>
+        <color>ff00d6ff</color>
+        <width>11.656</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-FFD600-11656-nodesc-highlight">
+      <LineStyle>
+        <color>ff00d6ff</color>
+        <width>17.484</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-FFD600-11656-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-FFD600-11656-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-FFD600-11656-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>Corredor 1</name>
+      <styleUrl>#line-A52714-12044-nodesc</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          -47.8677623,-15.7593124,0
+          -47.874618,-15.7612536,0
+          -47.8743203,-15.7623481,0
+          -47.8747092,-15.7624539,0
+          -47.8749775,-15.7622397,0
+          -47.8768845,-15.7627353,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Corredor 2</name>
+      <styleUrl>#line-E65100-12238-nodesc</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          -47.867767,-15.76149,0
+          -47.8704385,-15.7626567,0
+          -47.8715221,-15.7636222,0
+          -47.8715114,-15.7639113,0
+          -47.8734479,-15.7651193,0
+          -47.8735659,-15.7649077,0
+          -47.8761301,-15.7656149,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Corredor 3</name>
+      <styleUrl>#line-F57C00-12431-nodesc</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          -47.867216,-15.7631168,0
+          -47.8682567,-15.7637725,0
+          -47.8698144,-15.765963,0
+          -47.8726856,-15.7678434,0
+          -47.8730959,-15.7663823,0
+          -47.8757406,-15.7669554,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Corredor 4</name>
+      <styleUrl>#line-F9A825-12238-nodesc</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          -47.8646506,-15.7635645,0
+          -47.8683413,-15.7684225,0
+          -47.8691084,-15.76723,0
+          -47.8720552,-15.771251,0
+          -47.8721517,-15.7709206,0
+          -47.8747427,-15.7715478,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+    <Placemark>
+      <name>Corredor 5</name>
+      <styleUrl>#line-FFD600-11656-nodesc</styleUrl>
+      <LineString>
+        <tessellate>1</tessellate>
+        <coordinates>
+          -47.8676329,-15.761388,0
+          -47.8660933,-15.7637009,0
+          -47.8644625,-15.7635151,0
+          -47.8607289,-15.7635512,0
+          -47.8589586,-15.7653375,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+  </Document>
+</kml>
