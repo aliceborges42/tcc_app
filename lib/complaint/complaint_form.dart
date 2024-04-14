@@ -4,7 +4,6 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tcc_app/complaint/choose_location.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
 import 'package:intl/intl.dart';
@@ -22,7 +21,6 @@ class ComplaintForm extends StatefulWidget {
 class _ComplaintFormState extends State<ComplaintForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   LatLng? _selectedLocation;
-  final authuser = FirebaseAuth.instance.currentUser!;
   String complaintType = '';
   bool _isLoading = false;
   List<dynamic> desordemItems = [];
