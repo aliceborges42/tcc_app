@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tcc_app/models/user_model.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/utils/global_variable.dart';
@@ -27,17 +28,43 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
   bool _isPasswordVisible = false;
 
   Future<void> _pickImage(ImageSource source) async {
-    final picker = ImagePicker();
-    final pickedImage = await picker.getImage(source: source);
+    final PermissionStatus permissionStatus = await _getPermission();
 
-    if (pickedImage != null) {
-      setState(() {
-        _pickedImage = File(pickedImage.path);
-      });
-      print('Imagem selecionada: ${_pickedImage!.path}');
+    if (permissionStatus == PermissionStatus.granted) {
+      final picker = ImagePicker();
+      final pickedImage = await picker.pickImage(source: source);
+
+      if (pickedImage != null) {
+        setState(() {
+          _pickedImage = File(pickedImage.path);
+        });
+        print('Imagem selecionada: ${_pickedImage!.path}');
+      } else {
+        print('Nenhuma imagem selecionada.');
+      }
     } else {
-      print('Nenhuma imagem selecionada.');
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Permissão Negada'),
+          content: const Text(
+              'Por favor, conceda permissão para acessar a câmera e a galeria.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
     }
+  }
+
+  Future<PermissionStatus> _getPermission() async {
+    final List<Permission> permissions = [Permission.camera, Permission.photos];
+    final Map<Permission, PermissionStatus> permissionStatuses =
+        await permissions.request();
+    return permissionStatuses[Permission.camera]!;
   }
 
   bool isValidCPF(String cpf) {
@@ -147,9 +174,34 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                           ],
                         ),
                         child: InkWell(
-                          onTap: () {
-                            print('Selecionar imagem da galeria.');
-                            _pickImage(ImageSource.gallery);
+                          onTap: () async {
+                            await showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: <Widget>[
+                                    ListTile(
+                                      leading: const Icon(Icons.camera_alt),
+                                      title: const Text('Tirar Foto'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _pickImage(ImageSource.camera);
+                                      },
+                                    ),
+                                    ListTile(
+                                      leading: const Icon(Icons.image),
+                                      title:
+                                          const Text('Selecionar da Galeria'),
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                        _pickImage(ImageSource.gallery);
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
                           child: Icon(
                             Icons.camera_alt,
@@ -206,7 +258,14 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                     initialValue: widget.user.cpf,
                     validator: FormBuilderValidators.required(),
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: 28),
+                  Text(
+                    'Confirme sua senha para salvar as alterações:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  SizedBox(
+                    height: 12,
+                  ),
                   FormBuilderTextField(
                     name: 'password',
                     decoration: myDecoration.copyWith(

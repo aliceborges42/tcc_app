@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:tcc_app/complaint/choose_location.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
@@ -25,6 +28,7 @@ class _ComplaintFormState extends State<ComplaintForm> {
   bool _isLoading = false;
   List<dynamic> desordemItems = [];
   List<dynamic> situacaoItems = [];
+  List<XFile> _images = [];
 
   @override
   void initState() {
@@ -71,15 +75,51 @@ class _ComplaintFormState extends State<ComplaintForm> {
     }
   }
 
+  Future<void> _getImage(ImageSource source) async {
+    final PermissionStatus permissionStatus = await _getPermission();
+    if (permissionStatus == PermissionStatus.granted) {
+      final XFile? image = await ImagePicker().pickImage(source: source);
+      if (image != null) {
+        setState(() {
+          if (_images.length < 5) {
+            _images.add(image);
+          } else {
+            // You can display a toast or snackbar here indicating maximum image limit reached
+          }
+        });
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) => AlertDialog(
+          title: const Text('Permissão Negada'),
+          content: const Text(
+              'Por favor, conceda permissão para acessar a câmera e a galeria.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<PermissionStatus> _getPermission() async {
+    final List<Permission> permissions = [Permission.camera, Permission.photos];
+    final Map<Permission, PermissionStatus> permissionStatuses =
+        await permissions.request();
+    return permissionStatuses[Permission.camera]!;
+  }
+
   void sendComplaint() async {
     setState(() {
       _isLoading = true;
     });
     if (_formKey.currentState!.saveAndValidate()) {
       Map<String, dynamic> formData = _formKey.currentState!.value;
-      List<dynamic>? images = formData['images'];
       try {
-        // print('\n\n\n-----------------------\n\n\n');
         await ComplaintMethods().postComplaint(
           description: formData['descricao'],
           complaintTypeId: formData['tipoDenuncia'],
@@ -88,20 +128,38 @@ class _ComplaintFormState extends State<ComplaintForm> {
           longitude: _selectedLocation!.longitude,
           hour: formData['horaOcorrido'],
           date: formData['dataOcorrido'],
-          images: images,
+          images: _images,
         );
 
-        // print('sres: $res');
-        // print('res: $resAPI');
-        // if (context.mounted) Navigator.pop(context, true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Denúncia enviada com sucesso!'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.green[700],
+          ),
+        );
+
+        // Limpa o formulário e reinicia as variáveis após o envio bem-sucedido
+        setState(() {
+          _isLoading = false;
+          _formKey.currentState!.reset();
+          _selectedLocation = null;
+          _images = [];
+        });
       } catch (err) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text('Erro ao enviar a denúncia. Tente novamente mais tarde.'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red[700],
+          ),
+        );
         print(err);
+        setState(() {
+          _isLoading = false;
+        });
       }
-      setState(() {
-        _isLoading = false;
-      });
-      _formKey.currentState!.reset();
-      _selectedLocation = null;
     }
   }
 
@@ -216,19 +274,122 @@ class _ComplaintFormState extends State<ComplaintForm> {
                 const SizedBox(
                   height: 20,
                 ),
-                FormBuilderImagePicker(
-                  name: 'images',
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Imagens do Local", // Atualizando o hintText com o texto fornecido
-                  ),
-                  backgroundColor: Colors.grey[200],
-                  iconColor: Colors.grey[800],
-                  maxImages: 5,
+                // Dentro do Wrap que exibe as imagens adicionadas
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _images.map((XFile image) {
+                    return Stack(
+                      children: [
+                        Container(
+                          // margin: const EdgeInsets.all(8),
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            // borderRadius: BorderRadius.circular(8),
+                            image: DecorationImage(
+                              image: FileImage(File(image.path)),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _images.remove(image);
+                              });
+                            },
+                            child: Container(
+                              width: 24,
+                              height: 24,
+                              // padding: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.grey.withOpacity(0.7),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  }).toList(),
                 ),
-                const SizedBox(
+                SizedBox(
                   height: 12,
                 ),
+
+                Container(
+                  width: double.infinity,
+                  // margin: const EdgeInsets.symmetric(
+                  //     horizontal: 16.0, vertical: 8.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.0),
+                    color: Colors.grey[200],
+                  ),
+                  child: TextButton.icon(
+                    onPressed: () async {
+                      await showModalBottomSheet(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              ListTile(
+                                leading: const Icon(Icons.camera_alt),
+                                title: const Text('Tirar Foto'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  _getImage(ImageSource.camera);
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.image),
+                                title: const Text('Selecionar da Galeria'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  _getImage(ImageSource.gallery);
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    icon: const Icon(Icons.add_a_photo),
+                    label: const Text('Adicionar Imagem'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.deepPurple,
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 20,
+                ),
+                // FormBuilderImagePicker(
+                //   name: 'images',
+                //   decoration: myDecoration.copyWith(
+                //     labelText:
+                //         "Imagens do Local", // Atualizando o hintText com o texto fornecido
+                //   ),
+                //   backgroundColor: Colors.grey[200],
+                //   iconColor: Colors.grey[800],
+                //   maxImages: 5,
+                // ),
+                // const SizedBox(
+                //   height: 12,
+                // ),
 
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -272,37 +433,6 @@ class _ComplaintFormState extends State<ComplaintForm> {
                     onTap: sendComplaint,
                     buttonText: 'Enviar Denúncia',
                     isLoading: _isLoading)
-                // ElevatedButton(
-                //   onPressed: () async {
-                //     if (_formKey.currentState!.saveAndValidate()) {
-                //       Map<String, dynamic> formData = _formKey.currentState!.value;
-                //       try {
-                //         GeoPoint? geoPoint;
-                //         if (_selectedLocation != null) {
-                //           geoPoint = GeoPoint(
-                //             _selectedLocation!.latitude,
-                //             _selectedLocation!.longitude,
-                //           );
-                //         }
-                //         final res = await FireStoreMethods().uploadPost(
-                //           formData['descricao'],
-                //           formData['images']!,
-                //           authuser.uid,
-                //           geoPoint,
-                //           formData['dataOcorrido'],
-                //           formData['horaOcorrido'],
-                //           formData['tipoDenuncia'],
-                //           formData['tipoEspecificacao'],
-                //         );
-                //         print('res: $res');
-                //       } catch (err) {
-                //         print(err);
-                //       }
-                //       _formKey.currentState!.reset();
-                //     }
-                //   },
-                //   child: Text('Enviar Denúncia'),
-                // ),
               ],
             ),
           ),
