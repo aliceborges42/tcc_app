@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/auth/auth_page.dart';
-import 'package:tcc_app/pages/map_page.dart';
+import 'package:tcc_app/resources/auth_methods.dart';
 import '../pages/home_page.dart';
 
 class MainPage extends StatelessWidget {
@@ -10,17 +9,16 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<User?>(
-        stream: FirebaseAuth.instance.authStateChanges(),
+      body: FutureBuilder<bool>(
+        future: authMethods.isLogged(),
         builder: (context, snapshot) {
-          // user is logged in
-          if (snapshot.hasData) {
-            return HomePage();
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
           }
-
-          // user is NOT logged in
-          else {
-            return const AuthPage();
+          if (snapshot.data == true) {
+            return HomePage();
+          } else {
+            return AuthPage();
           }
         },
       ),

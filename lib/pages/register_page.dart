@@ -1,12 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
-import 'package:tcc_app/components/my_textfield.dart';
-import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/pages/login_page.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
-import 'package:tcc_app/utils/colors.dart';
 import 'package:tcc_app/utils/global_variable.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
@@ -91,14 +86,6 @@ class _RegisterPageState extends State<RegisterPage> {
         showSnackBar(context, error.toString());
       }
     }
-  }
-
-  Future addUserDetails(String name, String email, String cpf) async {
-    await FirebaseFirestore.instance.collection('users').add({
-      'name': name,
-      'email': email,
-      'cpf': cpf,
-    });
   }
 
   bool passwordConfirmed() {

@@ -1,18 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/complaint/complaint_form.dart';
-import 'package:tcc_app/pages/map_page.dart';
 import 'package:tcc_app/utils/colors.dart';
 
 class AddComplaintPage extends StatelessWidget {
-  AddComplaintPage({super.key});
-
-  final user = FirebaseAuth.instance.currentUser!;
+  const AddComplaintPage({super.key});
 
   // sign user out method
-  void signUserOut() {
-    FirebaseAuth.instance.signOut();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +32,7 @@ class AddComplaintPage extends StatelessWidget {
           color: Colors.black,
         ),
       ),
-      body: ComplaintForm(),
+      body: const ComplaintForm(),
     );
   }
 }

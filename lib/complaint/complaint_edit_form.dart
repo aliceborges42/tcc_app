@@ -4,7 +4,6 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:tcc_app/complaint/choose_location.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/pages/complaint_page.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
@@ -26,7 +25,6 @@ class ComplaintEditForm extends StatefulWidget {
 class _ComplaintEditFormState extends State<ComplaintEditForm> {
   final _formKey = GlobalKey<FormBuilderState>();
   LatLng? _selectedLocation;
-  final authUser = FirebaseAuth.instance.currentUser!;
   String complaintType = '';
   String initialSpecification = '';
   bool _isLoading = false;
