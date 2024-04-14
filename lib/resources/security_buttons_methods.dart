@@ -4,7 +4,7 @@ import 'package:tcc_app/models/security_button_model.dart';
 
 class SecurityButtonMethods {
   Future<List<SecurityButton>> getAllSecurityButtons() async {
-    var uri = Uri.parse('http://localhost:3000/security_buttons');
+    var uri = Uri.parse('https://atenta-api.onrender.com/security_buttons');
 
     try {
       var response = await http.get(uri);

@@ -182,15 +182,18 @@ class _RegisterPageState extends State<RegisterPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
 
                   // logo
                   const Icon(
                     Icons.lock,
                     size: 100,
                   ),
+                  const Text('Atenta App',
+                      style:
+                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
 
                   const Text(
                     'Cadastro',

@@ -6,7 +6,7 @@ import 'package:tcc_app/models/user_model.dart' as model;
 import 'package:tcc_app/models/user_model.dart';
 
 class AuthMethods {
-  static const String baseUrl = 'http://localhost:3000';
+  static const String baseUrl = 'https://atenta-api.onrender.com';
 
   Future<User> getUserDetails(String token) async {
     final response = await http.get(
