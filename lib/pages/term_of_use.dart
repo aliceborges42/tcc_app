@@ -18,12 +18,14 @@ class _TermsOfUsePageState extends State<TermsOfUsePage> {
   }
 
   Future<void> _fetchTermsOfUse() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/term_of_uses/2'));
+    final response = await http
+        .get(Uri.parse('https://atenta-api.onrender.com/term_of_uses/'));
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final List<dynamic> data = json.decode(response.body);
+      final String content =
+          data.isNotEmpty ? data[0]['content'] : 'Sem conteúdo';
       setState(() {
-        _termsOfUse = data['content'];
+        _termsOfUse = content;
       });
     } else {
       setState(() {
@@ -45,26 +47,6 @@ class _TermsOfUsePageState extends State<TermsOfUsePage> {
     );
   }
 
-  // Widget _buildTermsOfUseText() {
-  //   final List<String> sections = _termsOfUse.split('\n\n');
-
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: sections.map((section) {
-  //       return Padding(
-  //         padding: const EdgeInsets.only(bottom: 16.0),
-  //         // child: Text(
-  //         //   section,
-  //         //   style: TextStyle(
-  //         //     fontSize: 16,
-  //         //     fontWeight: FontWeight.normal,
-  //         //   ),
-  //         // ),
-  //         child: Markdown(data: section),
-  //       );
-  //     }).toList(),
-  //   );
-  // }
   Widget _buildTermsOfUseText() {
     return SingleChildScrollView(
       padding: EdgeInsets.all(8.0),

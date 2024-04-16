@@ -18,12 +18,14 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   }
 
   Future<void> _fetchPrivacyPolicy() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:3000/privacy_policies/2'));
+    final response = await http
+        .get(Uri.parse('https://atenta-api.onrender.com/privacy_policies/'));
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final List<dynamic> data = json.decode(response.body);
+      final String content =
+          data.isNotEmpty ? data[0]['content'] : 'Sem conteúdo';
       setState(() {
-        _privacyPolicy = data['content'];
+        _privacyPolicy = content;
       });
     } else {
       setState(() {
