@@ -78,13 +78,13 @@ class _LoginPageState extends State<LoginPage> {
                   // logo
                   const Icon(
                     Icons.lock,
-                    size: 100,
+                    size: 80,
                   ),
-                  const Text('Atenta App',
+                  const Text('Atenta UnB',
                       style:
                           TextStyle(fontSize: 26, fontWeight: FontWeight.bold)),
 
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 20),
 
                   // welcome back, you've been missed!
                   const Text(
