@@ -182,33 +182,36 @@ class _RegisterPageState extends State<RegisterPage> {
                 crossAxisAlignment:
                     CrossAxisAlignment.start, // Alinha a coluna à esquerda
                 children: [
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 4),
                   // logo
-                  const Row(
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Column(
                         children: [
-                          Icon(
-                            Icons.lock,
-                            size: 80,
+                          // Icon(
+                          //   Icons.lock,
+                          //   size: 80,
+                          // ),
+                          Image.asset(
+                            'assets/images/Group 22 (1).png',
+                            height: 150,
+                            // width: 150,
                           ),
-                          Text('Atenta UnB',
-                              style: TextStyle(
-                                  fontSize: 26, fontWeight: FontWeight.bold)),
+                          // Text('Atenta UnB',
+                          //     style: TextStyle(
+                          //         fontSize: 26, fontWeight: FontWeight.bold)),
                           SizedBox(height: 20),
                           Text(
                             'Cadastro',
                             style: TextStyle(
-                                color: Colors.deepPurple,
-                                fontSize: 24,
-                                fontWeight: FontWeight.bold),
+                                fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 18),
                   // email textfield
                   TextField(
                     controller: nameController,
