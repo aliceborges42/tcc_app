@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:tcc_app/components/datepicker.dart';
-import 'package:tcc_app/components/dropdown.dart';
+
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/models/security_button_model.dart';
 import 'package:tcc_app/pages/add_complaint_page.dart';
@@ -24,7 +23,6 @@ class MapSample extends StatefulWidget {
 class MapSampleState extends State<MapSample> {
   final Completer<GoogleMapController> _controller =
       Completer<GoogleMapController>();
-  // final FireStoreMethods _fireStoreMethods = FireStoreMethods();
   final ComplaintMethods _complaintMethods = ComplaintMethods();
   final Set<Marker> _markers = {};
   final Set<Marker> _buttonsMarkers = {};
@@ -88,7 +86,6 @@ class MapSampleState extends State<MapSample> {
     zoom: 17,
   );
 
-  // late StreamSubscription<List<Complaint>> _complaintsSubscription;
   @override
   void initState() {
     super.initState();
@@ -96,12 +93,6 @@ class MapSampleState extends State<MapSample> {
     _loadCustomIcon();
     _loadComplaints();
     _loadButtons();
-
-    // Configurar o stream para atualizações no Firestore
-    // _complaintsSubscription =
-    //     _complaintMethods.getAllComplaintsStream().listen((complaints) {
-    //   _updateMarkers(complaints);
-    // });
 
     for (int i = 0; i < cooredor1.length; i++) {
       setState(() {});
