@@ -12,6 +12,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MapSample extends StatefulWidget {
   const MapSample({Key? key}) : super(key: key);
@@ -504,6 +505,16 @@ class MapSampleState extends State<MapSample> {
             icon: Icon(Icons.filter_alt),
             onPressed: _openFilterModal,
           ),
+          Container(
+            padding: EdgeInsets.all(6),
+            color: Colors.red[100],
+            child: IconButton(
+              tooltip: 'Ligar para a segurança',
+              icon: Icon(Icons.phone),
+              color: Colors.red[700],
+              onPressed: () => _callSecurity(),
+            ),
+          ),
         ],
         automaticallyImplyLeading: false,
         backgroundColor: Colors.grey[100],
@@ -525,6 +536,47 @@ class MapSampleState extends State<MapSample> {
         label: const Icon(Icons.add),
         backgroundColor: Colors.deepPurple[600],
       ),
+    );
+  }
+
+  void _callSecurity() async {
+    const String phoneNumber = '6131076222';
+    final Uri url = Uri(scheme: 'tel', path: phoneNumber);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Chamada de Emergência'),
+          content:
+              Text('Tem certeza que deseja ligar para a segurança dda UnB?'),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.green[600],
+                elevation: 0,
+              ),
+              child: Text('LIGAR'),
+              onPressed: () async {
+                if (await canLaunchUrl(url)) {
+                  await launchUrl(url);
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('Não foi possível fazer a ligação.'),
+                  ));
+                }
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

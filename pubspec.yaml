@@ -57,6 +57,7 @@ dependencies:
   permission_handler: ^11.0.1
   flutter_markdown: ^0.6.19
   flutter_launcher_icons: ^0.13.1
+  url_launcher: ^6.2.4
 
 dev_dependencies:
   flutter_test:

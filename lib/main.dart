@@ -29,6 +29,7 @@ class MyApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Se estiver esperando, mostra uma tela de carregamento
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -39,10 +40,12 @@ class MyApp extends StatelessWidget {
           // Quando a verificação estiver completa, decide qual tela exibir
           if (snapshot.hasData && snapshot.data!) {
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               home: HomePage(),
             );
           } else {
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               home: LoginPage(),
             );
           }
