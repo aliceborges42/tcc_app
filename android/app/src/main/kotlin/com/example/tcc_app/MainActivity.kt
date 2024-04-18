@@ -1,4 +1,4 @@
-package com.example.tcc_app
+package com.aliceborges.atentaunb
 
 import io.flutter.embedding.android.FlutterActivity
 
