@@ -82,6 +82,10 @@ class MapSampleState extends State<MapSample> {
   TextEditingController _endDateController = TextEditingController();
   TypeSpecification? _selectedTypeSpecification;
 
+  int tabletSize = 60;
+  int mobileSize = 132;
+  int bigtablet = 100;
+
   static const CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-15.762780851912703, -47.87026321271443),
     zoom: 17,
@@ -91,7 +95,7 @@ class MapSampleState extends State<MapSample> {
   void initState() {
     super.initState();
     _getTypeSpecifications();
-    _loadCustomIcon();
+    // _loadCustomIcon();
     _loadComplaints();
     _loadButtons();
 
@@ -139,6 +143,12 @@ class MapSampleState extends State<MapSample> {
         color: Colors.purple,
       ));
     }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadCustomIcon();
   }
 
   String formatComplaintDetails(
@@ -388,7 +398,7 @@ class MapSampleState extends State<MapSample> {
     );
   }
 
-  Future<BitmapDescriptor> createCustomIcon(String imagePath) async {
+  Future<BitmapDescriptor> createCustomIcon(String imagePath, int size) async {
     // Carregar a imagem como ByteData
     ByteData imageData = await rootBundle.load(imagePath);
     Uint8List bytes = imageData.buffer.asUint8List();
@@ -399,7 +409,7 @@ class MapSampleState extends State<MapSample> {
     ui.Image image = frameInfo.image;
 
     // Redimensionar a imagem para 64x64 pixels
-    ui.Image resizedImage = await _resizeImage(image, 132, 132);
+    ui.Image resizedImage = await _resizeImage(image, size, size);
 
     // Converter a imagem para bytes
     ByteData? byteData =
@@ -433,9 +443,23 @@ class MapSampleState extends State<MapSample> {
   }
 
   Future<void> _loadCustomIcon() async {
-    // Carregar o ícone personalizado apenas uma vez
-    BitmapDescriptor customIcon =
-        await createCustomIcon("assets/images/emergency-button.png");
+    final Size screenSize = MediaQuery.of(context).size;
+    final double deviceWidth = screenSize.width;
+    // final double deviceHeight = screenSize.height;
+    print('Tablet size ');
+    print(deviceWidth);
+    final int deviceSize; /*deviceWidth >= 800 ? tabletSize : mobileSize;*/
+    if (deviceWidth >= 800) {
+      deviceSize = bigtablet;
+    } else if (deviceWidth >= 600) {
+      deviceSize = tabletSize;
+    } else {
+      deviceSize = mobileSize;
+    }
+
+    // Carregar o ícone personalizado com o tamanho do dispositivo
+    BitmapDescriptor customIcon = await createCustomIcon(
+        "assets/images/emergency-button.png", deviceSize);
     setState(() {
       markerIcon = customIcon;
     });
