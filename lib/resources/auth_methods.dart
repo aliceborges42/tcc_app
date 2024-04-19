@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tcc_app/models/user_model.dart' as model;
 import 'package:tcc_app/models/user_model.dart';
 
 class AuthMethods {

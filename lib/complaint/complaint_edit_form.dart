@@ -2,14 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tcc_app/complaint/choose_location.dart';
 import 'package:tcc_app/models/complaint_model.dart';
-import 'package:tcc_app/pages/complaint_page.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
 import 'package:intl/intl.dart';
 import 'package:tcc_app/utils/colors.dart';
@@ -36,7 +34,6 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
   List<dynamic> situacaoItems = [];
   final List<int> _imagesToDelete = [];
   TypeSpecification? initialTypeSpecification;
-  final _navigatorKey = GlobalKey<NavigatorState>();
   List<XFile> _images = [];
 
   @override
@@ -415,7 +412,6 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   ]),
                 ),
                 const SizedBox(height: 12),
-
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -513,16 +509,6 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                     ),
                   ),
                 ),
-                // FormBuilderImagePicker(
-                //   name: 'images',
-                //   decoration: myDecoration.copyWith(
-                //     labelText:
-                //         "Imagens do Local", // Atualizando o hintText com o texto fornecido
-                //   ),
-                //   backgroundColor: Colors.grey[200],
-                //   iconColor: Colors.grey[800],
-                //   maxImages: 5,
-                // ),
                 SizedBox(height: 12),
                 _buildComplaintImages(),
                 SizedBox(height: 12),

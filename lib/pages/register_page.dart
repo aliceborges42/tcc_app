@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
 import 'package:tcc_app/pages/login_page.dart';
@@ -83,7 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
         // navigate to the home screen
         if (context.mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         }
       }
@@ -108,9 +107,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   bool isValidCPF(String cpf) {
-    // Regex for CPF validation
-    // final RegExp cpfRegex = RegExp(
-    //     r'^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2})|([0-9]{11})$');
     return CPFValidator.isValid(cpf);
   }
 
@@ -189,20 +185,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       Column(
                         children: [
-                          // Icon(
-                          //   Icons.lock,
-                          //   size: 80,
-                          // ),
                           Image.asset(
                             'assets/images/Group 22 (1).png',
                             height: 150,
                             // width: 150,
                           ),
-                          // Text('Atenta UnB',
-                          //     style: TextStyle(
-                          //         fontSize: 26, fontWeight: FontWeight.bold)),
-                          SizedBox(height: 20),
-                          Text(
+                          const SizedBox(height: 20),
+                          const Text(
                             'Cadastro',
                             style: TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
-import 'package:tcc_app/components/my_textfield.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
-import 'package:tcc_app/utils/colors.dart';
 import 'package:tcc_app/utils/global_variable.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
@@ -35,7 +33,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   void startResendTimer() {
     resendTimer = 60;
-    timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         if (resendTimer > 0) {
           resendTimer--;
@@ -92,13 +90,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         });
         // Exibindo snackbar de sucesso
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Password reset successful!'),
             duration: Duration(seconds: 3),
           ),
         );
         // Redirecionando para a página de login após 3 segundos
-        Future.delayed(Duration(seconds: 3), () {
+        Future.delayed(const Duration(seconds: 3), () {
           Navigator.of(context).pop();
         });
       } else {
@@ -106,14 +104,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text("Error"),
-              content: Text("Passwords do not match."),
+              title: const Text("Error"),
+              content: const Text("Passwords do not match."),
               actions: <Widget>[
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text("OK"),
+                  child: const Text("OK"),
                 ),
               ],
             );
@@ -160,19 +158,18 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              const Text(
                 'Informe seu e-mail e te enviaremos um código para a redefinição da senha.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               TextField(
                 controller: emailController,
                 decoration: myDecoration.copyWith(
                   labelText: "Email",
-                  labelStyle: TextStyle(
+                  labelStyle: const TextStyle(
                     color: Colors.grey,
-                    // fontWeight: FontWeight.bold,
                   ), // Atualizando o hintText com o texto fornecido
                 ),
                 obscureText: false,
@@ -183,58 +180,55 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   controller: codeController,
                   decoration: myDecoration.copyWith(
                     labelText: "Código",
-                    labelStyle: TextStyle(
+                    labelStyle: const TextStyle(
                       color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
                     ), // Atualizando o hintText com o texto fornecido
                   ),
                   obscureText: false,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
                   controller: newPasswordController,
                   decoration: myDecoration.copyWith(
                     labelText: "Nova Senha",
-                    labelStyle: TextStyle(
+                    labelStyle: const TextStyle(
                       color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
                     ), // Atualizando o hintText com o texto fornecido
                   ),
                   obscureText: true,
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
                   controller: confirmPasswordController,
                   decoration: myDecoration.copyWith(
                     labelText: "Confirme a Senha",
-                    labelStyle: TextStyle(
+                    labelStyle: const TextStyle(
                       color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
                     ), // Atualizando o hintText com o texto fornecido
                   ),
                   obscureText: true,
                 ),
               ],
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               MyButton(
                 onTap: showCodeInput ? resetPasswordWithCode : resetPassword,
                 buttonText: showCodeInput ? "Redefinir Senha" : "Enviar Email",
                 isLoading: isLoading,
               ),
               if (showCodeInput && canResendCode) ...[
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   "Reenviar código em $resendTimer segundos",
-                  style: TextStyle(fontSize: 16),
+                  style: const TextStyle(fontSize: 16),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
                     elevation: 0,
                     backgroundColor:
                         Colors.grey[100], // Define a cor do texto como preto
-                    side: BorderSide(
+                    side: const BorderSide(
                         color: Colors.black), // Adiciona uma borda preta
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(
@@ -242,7 +236,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     ),
                   ),
                   onPressed: resendCode,
-                  child: Text(
+                  child: const Text(
                     "Reenviar Código",
                     style: TextStyle(fontSize: 16),
                   ),

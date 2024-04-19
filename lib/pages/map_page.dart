@@ -9,7 +9,6 @@ import 'package:tcc_app/pages/complaint_page.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
 import 'package:tcc_app/resources/security_buttons_methods.dart';
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -32,44 +31,44 @@ class MapSampleState extends State<MapSample> {
 
   // list of locations to display polylines
   List<LatLng> cooredor1 = [
-    LatLng(-15.7593124, -47.8677623),
-    LatLng(-15.7612536, -47.874618),
-    LatLng(-15.7623481, -47.8743203),
-    LatLng(-15.7624539, -47.8747092),
-    LatLng(-15.7622397, -47.8749775),
-    LatLng(-15.7627353, -47.8768845),
+    const LatLng(-15.7593124, -47.8677623),
+    const LatLng(-15.7612536, -47.874618),
+    const LatLng(-15.7623481, -47.8743203),
+    const LatLng(-15.7624539, -47.8747092),
+    const LatLng(-15.7622397, -47.8749775),
+    const LatLng(-15.7627353, -47.8768845),
   ];
   List<LatLng> cooredor2 = [
-    LatLng(-15.76149, -47.867767),
-    LatLng(-15.7626567, -47.8704385),
-    LatLng(-15.7636222, -47.8715221),
-    LatLng(-15.7639113, -47.8715114),
-    LatLng(-15.7651193, -47.8734479),
-    LatLng(-15.7649077, -47.8735659),
-    LatLng(-15.7656149, -47.8761301),
+    const LatLng(-15.76149, -47.867767),
+    const LatLng(-15.7626567, -47.8704385),
+    const LatLng(-15.7636222, -47.8715221),
+    const LatLng(-15.7639113, -47.8715114),
+    const LatLng(-15.7651193, -47.8734479),
+    const LatLng(-15.7649077, -47.8735659),
+    const LatLng(-15.7656149, -47.8761301),
   ];
   List<LatLng> cooredor3 = [
-    LatLng(-15.7631168, -47.867216),
-    LatLng(-15.7637725, -47.8682567),
-    LatLng(-15.765963, -47.8698144),
-    LatLng(-15.7678434, -47.8726856),
-    LatLng(-15.7663823, -47.8730959),
-    LatLng(-15.7669554, -47.8757406),
+    const LatLng(-15.7631168, -47.867216),
+    const LatLng(-15.7637725, -47.8682567),
+    const LatLng(-15.765963, -47.8698144),
+    const LatLng(-15.7678434, -47.8726856),
+    const LatLng(-15.7663823, -47.8730959),
+    const LatLng(-15.7669554, -47.8757406),
   ];
   List<LatLng> cooredor4 = [
-    LatLng(-15.7635645, -47.8646506),
-    LatLng(-15.7684225, -47.8683413),
-    LatLng(-15.76723, -47.8691084),
-    LatLng(-15.771251, -47.8720552),
-    LatLng(-15.7709206, -47.8721517),
-    LatLng(-15.7715478, -47.8747427),
+    const LatLng(-15.7635645, -47.8646506),
+    const LatLng(-15.7684225, -47.8683413),
+    const LatLng(-15.76723, -47.8691084),
+    const LatLng(-15.771251, -47.8720552),
+    const LatLng(-15.7709206, -47.8721517),
+    const LatLng(-15.7715478, -47.8747427),
   ];
   List<LatLng> cooredor5 = [
-    LatLng(-15.761388, -47.8676329),
-    LatLng(-15.7637009, -47.8660933),
-    LatLng(-15.7635151, -47.8644625),
-    LatLng(-15.7635512, -47.8607289),
-    LatLng(-15.7653375, -47.8589586),
+    const LatLng(-15.761388, -47.8676329),
+    const LatLng(-15.7637009, -47.8660933),
+    const LatLng(-15.7635151, -47.8644625),
+    const LatLng(-15.7635512, -47.8607289),
+    const LatLng(-15.7653375, -47.8589586),
   ];
 
   String? _statusFilter;
@@ -77,9 +76,6 @@ class MapSampleState extends State<MapSample> {
   DateTime? _endDateFilter;
   String? _complaintTypeFilter;
   List<TypeSpecification> _typeSpecifications = [];
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  TextEditingController _startDateController = TextEditingController();
-  TextEditingController _endDateController = TextEditingController();
   TypeSpecification? _selectedTypeSpecification;
 
   int tabletSize = 60;
@@ -95,14 +91,13 @@ class MapSampleState extends State<MapSample> {
   void initState() {
     super.initState();
     _getTypeSpecifications();
-    // _loadCustomIcon();
     _loadComplaints();
     _loadButtons();
 
     for (int i = 0; i < cooredor1.length; i++) {
       setState(() {});
       _polyline.add(Polyline(
-        polylineId: PolylineId('1'),
+        polylineId: const PolylineId('1'),
         points: cooredor1,
         color: Colors.green,
       ));
@@ -111,7 +106,7 @@ class MapSampleState extends State<MapSample> {
     for (int i = 0; i < cooredor2.length; i++) {
       setState(() {});
       _polyline.add(Polyline(
-        polylineId: PolylineId('2'),
+        polylineId: const PolylineId('2'),
         points: cooredor2,
         color: Colors.yellow,
       ));
@@ -120,7 +115,7 @@ class MapSampleState extends State<MapSample> {
     for (int i = 0; i < cooredor3.length; i++) {
       setState(() {});
       _polyline.add(Polyline(
-        polylineId: PolylineId('3'),
+        polylineId: const PolylineId('3'),
         points: cooredor3,
         color: Colors.blue,
       ));
@@ -129,7 +124,7 @@ class MapSampleState extends State<MapSample> {
     for (int i = 0; i < cooredor4.length; i++) {
       setState(() {});
       _polyline.add(Polyline(
-        polylineId: PolylineId('4'),
+        polylineId: const PolylineId('4'),
         points: cooredor4,
         color: Colors.orange,
       ));
@@ -138,7 +133,7 @@ class MapSampleState extends State<MapSample> {
     for (int i = 0; i < cooredor5.length; i++) {
       setState(() {});
       _polyline.add(Polyline(
-        polylineId: PolylineId('5'),
+        polylineId: const PolylineId('5'),
         points: cooredor5,
         color: Colors.purple,
       ));
@@ -448,7 +443,7 @@ class MapSampleState extends State<MapSample> {
     // final double deviceHeight = screenSize.height;
     print('Tablet size ');
     print(deviceWidth);
-    final int deviceSize; /*deviceWidth >= 800 ? tabletSize : mobileSize;*/
+    final int deviceSize;
     if (deviceWidth >= 800) {
       deviceSize = bigtablet;
     } else if (deviceWidth >= 600) {
@@ -493,7 +488,6 @@ class MapSampleState extends State<MapSample> {
 
   @override
   void dispose() {
-    // _complaintsSubscription.cancel();
     super.dispose();
   }
 
@@ -502,13 +496,8 @@ class MapSampleState extends State<MapSample> {
       List<SecurityButton> securityButtons =
           await SecurityButtonMethods().getAllSecurityButtons();
 
-      print('\n\n\nCOMPLAINTSlenght\n');
-      print(securityButtons.length);
-
       _updateButtonsMarkers(securityButtons);
     } catch (error) {
-      List<SecurityButton> securityButtons = [];
-      // _updateMarkers(complaints);
       print("Erro ao carregar botões de segurança: $error");
     }
   }
@@ -523,18 +512,18 @@ class MapSampleState extends State<MapSample> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mapa da UnB'),
+        title: const Text('Mapa da UnB'),
         actions: [
           IconButton(
-            icon: Icon(Icons.filter_alt),
+            icon: const Icon(Icons.filter_alt),
             onPressed: _openFilterModal,
           ),
           Container(
-            padding: EdgeInsets.all(6),
+            padding: const EdgeInsets.all(6),
             color: Colors.red[100],
             child: IconButton(
               tooltip: 'Ligar para a segurança',
-              icon: Icon(Icons.phone),
+              icon: const Icon(Icons.phone),
               color: Colors.red[700],
               onPressed: () => _callSecurity(),
             ),
@@ -556,7 +545,7 @@ class MapSampleState extends State<MapSample> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => AddComplaintPage())),
+            MaterialPageRoute(builder: (context) => const AddComplaintPage())),
         label: const Icon(Icons.add),
         backgroundColor: Colors.deepPurple[600],
       ),
@@ -570,12 +559,12 @@ class MapSampleState extends State<MapSample> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Chamada de Emergência'),
-          content:
-              Text('Tem certeza que deseja ligar para a segurança dda UnB?'),
+          title: const Text('Chamada de Emergência'),
+          content: const Text(
+              'Tem certeza que deseja ligar para a segurança dda UnB?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancelar'),
+              child: const Text('Cancelar'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -586,13 +575,13 @@ class MapSampleState extends State<MapSample> {
                 backgroundColor: Colors.green[600],
                 elevation: 0,
               ),
-              child: Text('LIGAR'),
+              child: const Text('LIGAR'),
               onPressed: () async {
                 if (await canLaunchUrl(url)) {
                   await launchUrl(url);
                   Navigator.of(context).pop();
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                     content: Text('Não foi possível fazer a ligação.'),
                   ));
                 }

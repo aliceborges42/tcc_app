@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:tcc_app/models/user_model.dart';
-import 'dart:io';
 import './auth_methods.dart';
 import 'dart:convert';
 import 'package:tcc_app/models/complaint_model.dart';

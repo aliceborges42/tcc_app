@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tcc_app/complaint/complaint_edit_form.dart';
-import 'package:tcc_app/complaint/complaint_form.dart';
 import 'package:tcc_app/models/complaint_model.dart';
-import 'package:tcc_app/pages/map_page.dart';
 import 'package:tcc_app/utils/colors.dart';
 
 class EditComplaintPage extends StatelessWidget {
