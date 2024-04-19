@@ -110,6 +110,7 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
 
   @override
   Widget build(BuildContext context) {
+    final maskedCpf = maskCpf(widget.user.cpf);
     return Scaffold(
       appBar: AppBar(
         title: Text('Editar Perfil'),
@@ -241,8 +242,9 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                     ]),
                   ),
                   SizedBox(height: 12),
-                  FormBuilderTextField(
-                    name: 'cpf',
+                  TextFormField(
+                    readOnly: true,
+                    initialValue: maskedCpf,
                     decoration: myDecoration.copyWith(
                       labelText: "CPF",
                       labelStyle: TextStyle(
@@ -250,13 +252,7 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                         // fontWeight: FontWeight.bold,
                       ),
                     ),
-                    inputFormatters: [
-                      // obrigatório
-                      FilteringTextInputFormatter.digitsOnly,
-                      CpfInputFormatter(),
-                    ],
-                    initialValue: widget.user.cpf,
-                    validator: FormBuilderValidators.required(),
+                    enabled: false,
                   ),
                   SizedBox(height: 28),
                   Text(
@@ -298,5 +294,9 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
         ],
       ),
     );
+  }
+
+  String maskCpf(String cpf) {
+    return '***.***.${cpf.substring(cpf.length - 5, cpf.length - 2)}-${cpf.substring(cpf.length - 2)}';
   }
 }
