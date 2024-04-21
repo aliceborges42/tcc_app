@@ -322,7 +322,7 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   name: 'descricao',
                   initialValue: widget.complaint.description,
                   decoration: myDecorationdois(
-                    labelText: "Descrição",
+                    labelText: "Tipo de Denúncia",
                   ),
                   validator: FormBuilderValidators.compose([
                     FormBuilderValidators.required(
@@ -356,18 +356,8 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                 FormBuilderDropdown(
                   name: 'tipoEspecificacao',
                   initialValue: initialSpecification,
-<<<<<<< Updated upstream
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Especificação", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
-=======
                   decoration: myDecorationdois(
                     labelText: "Especificação",
->>>>>>> Stashed changes
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
