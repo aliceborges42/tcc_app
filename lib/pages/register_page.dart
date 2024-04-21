@@ -1,12 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tcc_app/components/my_button.dart';
-import 'package:tcc_app/components/my_textfield.dart';
-import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/pages/login_page.dart';
+import 'package:tcc_app/pages/privacy_policy.dart';
+import 'package:tcc_app/pages/term_of_use.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
-import 'package:tcc_app/utils/colors.dart';
 import 'package:tcc_app/utils/global_variable.dart';
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/services.dart';
@@ -29,6 +26,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  bool _agreedToTerms = false;
 
   @override
   void dispose() {
@@ -64,6 +62,12 @@ class _RegisterPageState extends State<RegisterPage> {
         throw Exception('Invalid CPF');
       }
 
+      // Check if user agreed to terms
+      if (!_agreedToTerms) {
+        throw Exception(
+            'Por favor, concorde com os Termos de Uso e a Política de Privacidade');
+      }
+
       String res = await AuthMethods().signUpUser(
         email: emailController.text,
         password: passwordController.text,
@@ -78,7 +82,7 @@ class _RegisterPageState extends State<RegisterPage> {
         // navigate to the home screen
         if (context.mounted) {
           Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => LoginPage()),
+            MaterialPageRoute(builder: (context) => const LoginPage()),
           );
         }
       }
@@ -93,14 +97,6 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-  Future addUserDetails(String name, String email, String cpf) async {
-    await FirebaseFirestore.instance.collection('users').add({
-      'name': name,
-      'email': email,
-      'cpf': cpf,
-    });
-  }
-
   bool passwordConfirmed() {
     if (passwordController.text.trim() ==
         confirmPasswordController.text.trim()) {
@@ -111,9 +107,6 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   bool isValidCPF(String cpf) {
-    // Regex for CPF validation
-    // final RegExp cpfRegex = RegExp(
-    //     r'^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2})|([0-9]{11})$');
     return CPFValidator.isValid(cpf);
   }
 
@@ -177,86 +170,81 @@ class _RegisterPageState extends State<RegisterPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: ListView(shrinkWrap: true, children: <Widget>[
-            Center(
-              child: Column(
+          child: ListView(
+            shrinkWrap: true,
+            children: <Widget>[
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // Alinha a coluna à esquerda
                 children: [
-                  const SizedBox(height: 50),
-
+                  const SizedBox(height: 4),
                   // logo
-                  const Icon(
-                    Icons.lock,
-                    size: 100,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Image.asset(
+                            'assets/images/Group 22 (1).png',
+                            height: 150,
+                            // width: 150,
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            'Cadastro',
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-
-                  const SizedBox(height: 40),
-
-                  const Text(
-                    'Cadastro',
-                    style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
-                  ),
-
-                  const SizedBox(height: 25),
-
+                  const SizedBox(height: 18),
                   // email textfield
                   TextField(
                     controller: nameController,
                     decoration: myDecoration.copyWith(
                       labelText: "Nome e Sobrenome",
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ), // Atualizando o hintText com o texto fornecido
+                      ),
                     ),
                     obscureText: false,
                   ),
-
                   const SizedBox(height: 10),
-
                   TextField(
                     controller: cpfController,
-                    // hintText: 'CPF',
                     decoration: myDecoration.copyWith(
                       labelText: "CPF",
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ), // Atualizando o hintText com o texto fornecido
+                      ),
                     ),
                     inputFormatters: [
-                      // obrigatório
                       FilteringTextInputFormatter.digitsOnly,
                       CpfInputFormatter(),
                     ],
                     obscureText: false,
                   ),
-
                   const SizedBox(height: 10),
-
                   TextField(
                     controller: emailController,
                     decoration: myDecoration.copyWith(
                       labelText: "Email",
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ), // Atualizando o hintText com o texto fornecido
+                      ),
                     ),
                     obscureText: false,
                   ),
-
                   const SizedBox(height: 10),
-
                   // password textfield
                   TextField(
                     controller: passwordController,
                     decoration: myDecoration.copyWith(
                       labelText: "Senha",
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.grey,
                       ),
                       suffixIcon: IconButton(
@@ -270,15 +258,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     obscureText: !_isPasswordVisible,
                   ),
-
                   const SizedBox(height: 10),
-
                   // confirm password textfield
                   TextField(
                     controller: confirmPasswordController,
                     decoration: myDecoration.copyWith(
                       labelText: "Confirme sua senha",
-                      labelStyle: TextStyle(
+                      labelStyle: const TextStyle(
                         color: Colors.grey,
                       ),
                       suffixIcon: IconButton(
@@ -292,18 +278,76 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     obscureText: !_isConfirmPasswordVisible,
                   ),
-
-                  const SizedBox(height: 25),
-
+                  const SizedBox(height: 10),
+                  // checkbox for terms agreement
+                  Wrap(
+                    alignment: WrapAlignment.start, // Alinha o Wrap à esquerda
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Checkbox(
+                          value: _agreedToTerms,
+                          onChanged: (value) {
+                            setState(() {
+                              _agreedToTerms = value!;
+                            });
+                          },
+                          activeColor: Colors.deepPurple),
+                      const Text(
+                        'Concordo com os ',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Navegar para a página de Termos de Uso quando o texto for clicado
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TermsOfUsePage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Termos de Uso',
+                          style: TextStyle(
+                            fontSize: 14,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                      const Text(
+                        ' e a ',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          // Navegar para a página de Política de Privacidade quando o texto for clicado
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => PrivacyPolicyPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          'Política de Privacidade',
+                          style: TextStyle(
+                            fontSize: 14,
+                            decoration: TextDecoration.underline,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                   // sign in button
                   MyButton(
                     onTap: signUp,
                     buttonText: "Criar conta",
                     isLoading: _isLoading,
                   ),
-
-                  const SizedBox(height: 30),
-
+                  const SizedBox(height: 15),
                   // not a member? register now
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -320,7 +364,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           ),
                         ),
                         child: const Text(
-                          'Login now',
+                          'Faça o Login',
                           style: TextStyle(
                             color: Colors.deepPurple,
                             fontWeight: FontWeight.bold,
@@ -331,8 +375,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   )
                 ],
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ),
     );

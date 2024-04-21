@@ -1,6 +1,4 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:tcc_app/firebase_options.dart';
 // import 'package:nested_navigation/ui/session/login.dart';
 import 'package:tcc_app/pages/home_page.dart';
 import 'package:tcc_app/pages/login_page.dart';
@@ -10,9 +8,6 @@ import 'resources/auth_methods.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(MyApp());
 }
 
@@ -34,6 +29,7 @@ class MyApp extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           // Se estiver esperando, mostra uma tela de carregamento
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             home: Scaffold(
               body: Center(
                 child: CircularProgressIndicator(),
@@ -44,10 +40,12 @@ class MyApp extends StatelessWidget {
           // Quando a verificação estiver completa, decide qual tela exibir
           if (snapshot.hasData && snapshot.data!) {
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               home: HomePage(),
             );
           } else {
             return MaterialApp(
+              debugShowCheckedModeBanner: false,
               home: LoginPage(),
             );
           }

@@ -73,26 +73,23 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 40),
 
                   // logo
-                  const Icon(
-                    Icons.lock,
-                    size: 100,
+                  Image.asset(
+                    'assets/images/Group 22 (1).png',
+                    height: 150,
+                    // width: 150,
                   ),
-
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
 
                   // welcome back, you've been missed!
                   const Text(
                     'Login',
-                    style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
 
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 18),
 
                   // email textfield
                   TextField(

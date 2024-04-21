@@ -5,15 +5,12 @@ import 'package:tcc_app/models/deslike_model.dart';
 import 'package:tcc_app/models/like_model.dart';
 import 'package:tcc_app/models/user_model.dart';
 import 'package:tcc_app/pages/home_page.dart';
-import 'package:tcc_app/resources/firestore_methods.dart';
 import 'package:tcc_app/models/complaint_model.dart';
-import 'package:geocode/geocode.dart';
 import 'package:tcc_app/resources/map_methods.dart';
 import 'package:tcc_app/resources/format_methods.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/pages/edit_complaint_page.dart';
-import 'package:tcc_app/pages/map_page.dart';
 
 class ComplaintPage extends StatefulWidget {
   final String complaintId;
@@ -34,7 +31,6 @@ class _ComplaintPageState extends State<ComplaintPage> {
   bool _userDisliked = false;
   late User _currentUser;
   bool _isCurrentUserLoaded = false;
-  late Complaint _complaint;
 
   @override
   void initState() {
@@ -258,7 +254,6 @@ class _ComplaintPageState extends State<ComplaintPage> {
             future: _complaintFuture,
             builder: (context, snapshot) {
               if (snapshot.hasData && _isCurrentUserLoaded) {
-                _complaint = snapshot.data as Complaint;
                 Complaint complaint = snapshot.data as Complaint;
                 bool isCurrentUserComplaintOwner =
                     _currentUser.uid == complaint.userId;

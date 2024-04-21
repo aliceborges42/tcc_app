@@ -1,7 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:tcc_app/models/user_model.dart';
-import 'dart:io';
 import './auth_methods.dart';
 import 'dart:convert';
 import 'package:tcc_app/models/complaint_model.dart';
@@ -19,7 +18,7 @@ class ComplaintMethods {
       DateTime? hour,
       required DateTime date,
       List<dynamic>? images}) async {
-    var uri = Uri.parse('http://localhost:3000/complaints');
+    var uri = Uri.parse('https://atenta-api.onrender.com/complaints');
 
     var request = http.MultipartRequest('POST', uri);
     final AuthMethods authMethods = AuthMethods(); // Instanciando AuthMethods
@@ -66,7 +65,8 @@ class ComplaintMethods {
   }
 
   Future<void> deleteComplaint({required String complaintId}) async {
-    var uri = Uri.parse('http://localhost:3000/complaints/$complaintId');
+    var uri =
+        Uri.parse('https://atenta-api.onrender.com/complaints/$complaintId');
 
     final AuthMethods authMethods = AuthMethods();
     String? authToken = await authMethods.getToken();
@@ -104,7 +104,8 @@ class ComplaintMethods {
     List<dynamic>? images,
     List<int>? removedImagesIds,
   }) async {
-    var uri = Uri.parse('http://localhost:3000/complaints/$complaintId');
+    var uri =
+        Uri.parse('https://atenta-api.onrender.com/complaints/$complaintId');
 
     final AuthMethods authMethods = AuthMethods();
     String? authToken = await authMethods.getToken();
@@ -165,7 +166,7 @@ class ComplaintMethods {
   }
 
   Future<List<Complaint>> getAllComplaints() async {
-    var uri = Uri.parse('http://localhost:3000/complaints');
+    var uri = Uri.parse('https://atenta-api.onrender.com/complaints');
 
     try {
       var response = await http.get(uri);
@@ -188,7 +189,7 @@ class ComplaintMethods {
 
   Future<List<Complaint>> searchComplaints(String query) async {
     final url = Uri.parse(
-        'http://localhost:3000/complaints?q[description_or_status_cont]=$query');
+        'https://atenta-api.onrender.com/complaints?q[description_or_status_cont]=$query');
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
@@ -202,7 +203,8 @@ class ComplaintMethods {
   }
 
   Future<List<Complaint>> getUserComplaints() async {
-    var uri = Uri.parse('http://localhost:3000/complaints/member_complaints');
+    var uri = Uri.parse(
+        'https://atenta-api.onrender.com/complaints/member_complaints');
     final AuthMethods authMethods = AuthMethods();
     String? authToken = await authMethods.getToken();
 
@@ -246,7 +248,7 @@ class ComplaintMethods {
   }
 
   Future<Complaint> getComplaintById(String id) async {
-    var uri = Uri.parse('http://localhost:3000/complaints/$id');
+    var uri = Uri.parse('https://atenta-api.onrender.com/complaints/$id');
 
     try {
       var response = await http.get(uri);
@@ -264,7 +266,7 @@ class ComplaintMethods {
   }
 
   Future<List<TypeSpecification>> getTypeSpecifications() async {
-    var uri = Uri.parse('http://localhost:3000/type_specifications');
+    var uri = Uri.parse('https://atenta-api.onrender.com/type_specifications');
 
     try {
       var response = await http.get(uri);
@@ -285,7 +287,7 @@ class ComplaintMethods {
   }
 
   Future<List<ComplaintType>> getComplaintTypes() async {
-    var uri = Uri.parse('http://localhost:3000/complaint_types');
+    var uri = Uri.parse('https://atenta-api.onrender.com/complaint_types');
 
     try {
       var response = await http.get(uri);
@@ -306,7 +308,7 @@ class ComplaintMethods {
   }
 
   Future<String> likeComplaint(String complaintId) async {
-    var uri = Uri.parse('http://localhost:3000/likes/');
+    var uri = Uri.parse('https://atenta-api.onrender.com/likes/');
 
     String? authToken = await authMethods.getToken();
 
@@ -327,7 +329,7 @@ class ComplaintMethods {
   }
 
   Future<String> deslikeComplaint(String complaintId) async {
-    var uri = Uri.parse('http://localhost:3000/deslikes/');
+    var uri = Uri.parse('https://atenta-api.onrender.com/deslikes/');
 
     String? authToken = await authMethods.getToken();
 
@@ -349,7 +351,8 @@ class ComplaintMethods {
 
   Future<List<Like>> getComplaintLikes(String complaintId) async {
     print('veio like');
-    var uri = Uri.parse('http://localhost:3000/complaints/$complaintId/likes');
+    var uri = Uri.parse(
+        'https://atenta-api.onrender.com/complaints/$complaintId/likes');
     String? authToken = await authMethods.getToken();
 
     var response =
@@ -370,8 +373,8 @@ class ComplaintMethods {
 
   Future<List<Deslike>> getComplaintDeslikes(String complaintId) async {
     print('veio deslike');
-    var uri =
-        Uri.parse('http://localhost:3000/complaints/$complaintId/deslikes');
+    var uri = Uri.parse(
+        'https://atenta-api.onrender.com/complaints/$complaintId/deslikes');
     String? authToken = await authMethods.getToken();
 
     var response =
@@ -393,7 +396,8 @@ class ComplaintMethods {
 
   Future<void> removeDislike(String deslikeId) async {
     try {
-      var uri = Uri.parse('http://localhost:3000/deslikes/$deslikeId');
+      var uri =
+          Uri.parse('https://atenta-api.onrender.com/deslikes/$deslikeId');
       String? authToken = await authMethods.getToken();
 
       final response = await http.delete(
@@ -414,7 +418,7 @@ class ComplaintMethods {
 
   Future<void> removeLike(String likeId) async {
     try {
-      var uri = Uri.parse('http://localhost:3000/likes/$likeId');
+      var uri = Uri.parse('https://atenta-api.onrender.com/likes/$likeId');
       String? authToken = await authMethods.getToken();
 
       final response = await http.delete(
