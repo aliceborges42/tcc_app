@@ -371,7 +371,6 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                         "Especificação", // Atualizando o hintText com o texto fornecido
                     labelStyle: TextStyle(
                       color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                   items: _getDropdownItems(),
