@@ -303,15 +303,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                 FormBuilderDropdown(
                   name: 'status',
                   initialValue: widget.complaint.status,
-                  decoration: myDecoration.copyWith(
+                  decoration: myDecorationdois(
                     labelText: "Status",
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ), // Atualizando o hintText com o texto fornecido
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                   items: ['Resolvido', 'Não Resolvido']
                       .map((tipo) => DropdownMenuItem(
@@ -324,31 +321,24 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                 FormBuilderTextField(
                   name: 'descricao',
                   initialValue: widget.complaint.description,
-                  decoration: myDecoration.copyWith(
+                  decoration: myDecorationdois(
                     labelText: "Descrição",
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ), // Atualizando o hintText com o texto fornecido
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                 ),
                 const SizedBox(height: 12),
                 FormBuilderDropdown(
                   name: 'tipoDenuncia',
                   initialValue: complaintType,
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Tipo de Denúncia", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                  decoration: myDecorationdois(
+                    labelText: "Tipo de Denúncia",
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                   items: ['Desordem', 'Episódio']
                       .map((tipo) => DropdownMenuItem(
@@ -366,6 +356,7 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                 FormBuilderDropdown(
                   name: 'tipoEspecificacao',
                   initialValue: initialSpecification,
+<<<<<<< Updated upstream
                   decoration: myDecoration.copyWith(
                     labelText:
                         "Especificação", // Atualizando o hintText com o texto fornecido
@@ -373,7 +364,17 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                       color: Colors.grey,
                       // fontWeight: FontWeight.bold,
                     ),
+=======
+                  decoration: myDecorationdois(
+                    labelText: "Especificação",
+>>>>>>> Stashed changes
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Campo obrigatório.';
+                    }
+                    return null;
+                  },
                   items: _getDropdownItems(),
                 ),
                 const SizedBox(height: 12),
@@ -382,16 +383,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   initialValue: widget.complaint.date,
                   inputType: InputType.date,
                   format: DateFormat('dd/MM/yyyy'),
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Data do Ocorrido", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                  decoration: myDecorationdois(
+                    labelText: "Data do Ocorrido",
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                 ),
                 const SizedBox(height: 12),
@@ -399,16 +396,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   name: 'horaOcorrido',
                   initialValue: widget.complaint.hour,
                   inputType: InputType.time,
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Hora do Ocorrido", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                  decoration: myDecorationdois(
+                    labelText: "Hora do Ocorrido",
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                 ),
                 const SizedBox(height: 12),
@@ -529,10 +522,19 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                         return const ChooseLocationMap();
                       },
                     );
+
                     if (selectedLocation != null) {
                       setState(() {
                         _selectedLocation = selectedLocation;
                       });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Localização é obrigatória.'),
+                          backgroundColor: Colors.red[700],
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
                     }
                   },
                   child: const Text('Escolher Localização'),

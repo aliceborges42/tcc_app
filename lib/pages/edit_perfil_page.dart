@@ -81,30 +81,61 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
   }
 
   void updateUser() async {
+    if (!_formKey.currentState!.saveAndValidate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, preencha todos os campos obrigatórios.'),
+          backgroundColor: Colors.red[700],
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return; // Return here to avoid setting _isLoading to true
+    }
+
+    // Now that we've validated, we can set _isLoading to true
     setState(() {
       _isLoading = true;
     });
 
-    if (_formKey.currentState!.saveAndValidate()) {
-      Map<String, dynamic> formData = _formKey.currentState!.value;
-      try {
-        if (!isValidCPF(formData['cpf'])) {
-          throw Exception('Invalid CPF');
-        }
-        await AuthMethods().updateUser(
-          name: formData['Name'],
-          email: formData['email'],
-          cpf: formData['cpf'],
-          password: formData['password'],
-          avatar: _pickedImage,
-        );
-      } catch (err) {
-        print(err);
+    Map<String, dynamic> formData = _formKey.currentState!.value;
+    try {
+      if (!isValidCPF(formData['cpf'])) {
+        throw Exception('Invalid CPF');
       }
+
+      // Simulate an API call to update the user
+      print('Updating user with new data');
+      await AuthMethods().updateUser(
+        name: formData['Name'],
+        email: formData['email'],
+        cpf: formData['cpf'],
+        password: formData['password'],
+        avatar: _pickedImage,
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Perfil atualizado com sucesso!'),
+          backgroundColor: Colors.green[700],
+          duration: Duration(seconds: 2),
+        ),
+      );
+      // Optionally, pop the screen if needed:
+      // Navigator.pop(context);
+    } catch (err) {
+      print(err);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content:
+              Text('Erro ao atualizar o perfil. Tente novamente mais tarde.'),
+          backgroundColor: Colors.red[700],
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } finally {
       setState(() {
-        _isLoading = false;
+        _isLoading = false; // Ensure we turn off the loading indicator
       });
-      _formKey.currentState!.reset();
     }
   }
 
@@ -216,28 +247,24 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                   FormBuilderTextField(
                     name: 'Name',
                     initialValue: widget.user.name,
-                    decoration: myDecoration.copyWith(
+                    decoration: myDecorationdois(
                       labelText: "Nome",
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ),
                     ),
-                    validator: FormBuilderValidators.required(),
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(
+                          errorText: "Campo obrigatório."),
+                    ]),
                   ),
                   SizedBox(height: 12),
                   FormBuilderTextField(
                     name: 'email',
                     initialValue: widget.user.email,
-                    decoration: myDecoration.copyWith(
+                    decoration: myDecorationdois(
                       labelText: "Email",
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                        // fontWeight: FontWeight.bold,
-                      ),
                     ),
                     validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(),
+                      FormBuilderValidators.required(
+                          errorText: "Campo obrigatório."),
                       FormBuilderValidators.email(),
                     ]),
                   ),
@@ -277,9 +304,19 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                         ),
                         onPressed: togglePasswordVisibility,
                       ),
+                      errorStyle: TextStyle(
+                          color: Colors.red), // Estilo do texto de erro
+                      errorBorder: OutlineInputBorder(
+                        // Borda quando em estado de erro
+                        borderSide: BorderSide(color: Colors.red),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
                     ),
                     obscureText: !_isPasswordVisible,
-                    validator: FormBuilderValidators.required(),
+                    validator: FormBuilderValidators.compose([
+                      FormBuilderValidators.required(
+                          errorText: "Campo obrigatório."),
+                    ]),
                   ),
                   SizedBox(height: 12),
                   MyButton(

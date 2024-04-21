@@ -33,7 +33,7 @@ class _ComplaintFormState extends State<ComplaintForm> {
   @override
   void initState() {
     super.initState();
-    fetchTypeSpecifications(); // Chama o método no momento da inicialização do estado
+    fetchTypeSpecifications();
   }
 
   Future<void> fetchTypeSpecifications() async {
@@ -41,11 +41,9 @@ class _ComplaintFormState extends State<ComplaintForm> {
       List<TypeSpecification> typeSpecifications =
           await ComplaintMethods().getTypeSpecifications();
 
-      // Mapeando apenas o campo 'specification' para cada objeto TypeSpecification
       List<String> specifications =
           typeSpecifications.map((typeSpec) => typeSpec.specification).toList();
 
-      // Dividindo as especificações entre situaçãoItems e desordemItems
       setState(() {
         situacaoItems = specifications.sublist(0, 10);
         desordemItems = specifications.sublist(10);
@@ -71,7 +69,7 @@ class _ComplaintFormState extends State<ComplaintForm> {
               ))
           .toList();
     } else {
-      return []; // Retornar uma lista vazia se nenhum tipo de denúncia estiver selecionado
+      return [];
     }
   }
 
@@ -84,7 +82,13 @@ class _ComplaintFormState extends State<ComplaintForm> {
           if (_images.length < 5) {
             _images.add(image);
           } else {
-            // You can display a toast or snackbar here indicating maximum image limit reached
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Limite máximo de 5 imagens atingido.'),
+                backgroundColor: Colors.red[700],
+                duration: Duration(seconds: 2),
+              ),
+            );
           }
         });
       }
@@ -114,6 +118,17 @@ class _ComplaintFormState extends State<ComplaintForm> {
   }
 
   void sendComplaint() async {
+    if (_selectedLocation == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, selecione uma localização.'),
+          backgroundColor: Colors.red[700],
+          duration: Duration(seconds: 2),
+        ),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
     });
@@ -134,12 +149,11 @@ class _ComplaintFormState extends State<ComplaintForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Denúncia enviada com sucesso!'),
-            duration: Duration(seconds: 2),
             backgroundColor: Colors.green[700],
+            duration: Duration(seconds: 2),
           ),
         );
 
-        // Limpa o formulário e reinicia as variáveis após o envio bem-sucedido
         setState(() {
           _isLoading = false;
           _formKey.currentState!.reset();
@@ -151,15 +165,25 @@ class _ComplaintFormState extends State<ComplaintForm> {
           SnackBar(
             content:
                 Text('Erro ao enviar a denúncia. Tente novamente mais tarde.'),
-            duration: Duration(seconds: 2),
             backgroundColor: Colors.red[700],
+            duration: Duration(seconds: 2),
           ),
         );
-        print(err);
         setState(() {
           _isLoading = false;
         });
       }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, preencha todos os campos obrigatórios.'),
+          backgroundColor: Colors.red[700],
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -176,34 +200,23 @@ class _ComplaintFormState extends State<ComplaintForm> {
               children: [
                 FormBuilderTextField(
                   name: 'descricao',
-                  decoration: myDecoration.copyWith(
+                  decoration: myDecorationdois(
                     labelText: "Descrição",
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ), // Atualizando o hintText com o texto fornecido
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                 ),
-                const SizedBox(
-                  height: 12,
-                ),
+                const SizedBox(height: 12),
                 FormBuilderDropdown(
                   name: 'tipoDenuncia',
-                  // decoration: InputDecoration(labelText: 'Tipo de Denúncia'),
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Tipo de Denúncia", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                  decoration: myDecorationdois(
+                    labelText: "Tipo de Denúncia",
                   ),
-                  // hint: Text('Selecione o tipo de denúncia'),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                   items: ['Desordem', 'Episódio']
                       .map((tipo) => DropdownMenuItem(
@@ -212,69 +225,51 @@ class _ComplaintFormState extends State<ComplaintForm> {
                           ))
                       .toList(),
                   onChanged: (tipo) {
-                    print("Tipo selecionado: $tipo");
                     setState(() {
-                      complaintType = tipo ?? ''; // Ou atribua um valor padrão
+                      complaintType = tipo ?? '';
                     });
                   },
                 ),
-                // Adicionar campo 2.1 (seleção condicional)
-                const SizedBox(
-                  height: 12,
-                ),
+                const SizedBox(height: 12),
                 FormBuilderDropdown(
                   name: 'tipoEspecificacao',
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Especificação", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                  decoration: myDecorationdois(
+                    labelText: "Especificação",
                   ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Campo obrigatório.';
+                    }
+                    return null;
+                  },
                   items: _getDropdownItems(),
                 ),
-                const SizedBox(
-                  height: 12,
-                ),
+                const SizedBox(height: 12),
                 FormBuilderDateTimePicker(
                   name: 'dataOcorrido',
                   inputType: InputType.date,
                   format: DateFormat('dd/MM/yyyy'),
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Data do Ocorrido", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                  decoration: myDecorationdois(
+                    labelText: "Data do Ocorrido",
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                 ),
-                const SizedBox(
-                  height: 12,
-                ),
+                const SizedBox(height: 12),
                 FormBuilderDateTimePicker(
                   name: 'horaOcorrido',
                   inputType: InputType.time,
-                  decoration: myDecoration.copyWith(
-                    labelText:
-                        "Hora do Ocorrido", // Atualizando o hintText com o texto fornecido
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      // fontWeight: FontWeight.bold,
-                    ),
+                  decoration: myDecorationdois(
+                    labelText: "Hora do Ocorrido",
                   ),
                   validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(),
+                    FormBuilderValidators.required(
+                        errorText: "Campo obrigatório."),
                   ]),
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                // Dentro do Wrap que exibe as imagens adicionadas
+                const SizedBox(height: 20),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -282,11 +277,9 @@ class _ComplaintFormState extends State<ComplaintForm> {
                     return Stack(
                       children: [
                         Container(
-                          // margin: const EdgeInsets.all(8),
                           width: 100,
                           height: 100,
                           decoration: BoxDecoration(
-                            // borderRadius: BorderRadius.circular(8),
                             image: DecorationImage(
                               image: FileImage(File(image.path)),
                               fit: BoxFit.cover,
@@ -305,17 +298,13 @@ class _ComplaintFormState extends State<ComplaintForm> {
                             child: Container(
                               width: 24,
                               height: 24,
-                              // padding: const EdgeInsets.all(2),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: Colors.grey.withOpacity(0.7),
                               ),
                               child: Center(
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
+                                child: Icon(Icons.close,
+                                    color: Colors.white, size: 18),
                               ),
                             ),
                           ),
@@ -324,14 +313,9 @@ class _ComplaintFormState extends State<ComplaintForm> {
                     );
                   }).toList(),
                 ),
-                SizedBox(
-                  height: 12,
-                ),
-
+                SizedBox(height: 12),
                 Container(
                   width: double.infinity,
-                  // margin: const EdgeInsets.symmetric(
-                  //     horizontal: 16.0, vertical: 8.0),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.0),
                     color: Colors.grey[200],
@@ -373,39 +357,18 @@ class _ComplaintFormState extends State<ComplaintForm> {
                     ),
                   ),
                 ),
-
-                const SizedBox(
-                  height: 20,
-                ),
-                // FormBuilderImagePicker(
-                //   name: 'images',
-                //   decoration: myDecoration.copyWith(
-                //     labelText:
-                //         "Imagens do Local", // Atualizando o hintText com o texto fornecido
-                //   ),
-                //   backgroundColor: Colors.grey[200],
-                //   iconColor: Colors.grey[800],
-                //   maxImages: 5,
-                // ),
-                // const SizedBox(
-                //   height: 12,
-                // ),
-
+                const SizedBox(height: 20),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.black,
-                    backgroundColor:
-                        Colors.white, // Define a cor do texto como preto
-                    elevation: 0, // Define a elevação do botão
+                    backgroundColor: Colors.white,
+                    elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(
-                          10.0), // Define o raio do canto do botão
-                      side: BorderSide(
-                          color: lightBlack), // Define a cor da borda
+                      borderRadius: BorderRadius.circular(10.0),
+                      side: BorderSide(color: lightBlack),
                     ),
                   ),
                   onPressed: () async {
-                    // Abrir o diálogo do mapa
                     LatLng? selectedLocation = await showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -413,22 +376,25 @@ class _ComplaintFormState extends State<ComplaintForm> {
                       },
                     );
 
-                    // Atualizar a localização selecionada no formulário
                     if (selectedLocation != null) {
                       setState(() {
                         _selectedLocation = selectedLocation;
                       });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Localização é obrigatória.'),
+                          backgroundColor: Colors.red[700],
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
                     }
                   },
                   child: const Text('Escolher Localização'),
                 ),
-
-                // Exibir a localização selecionada (opcional)
                 if (_selectedLocation != null)
                   Text('Localização Selecionada: $_selectedLocation'),
-
                 SizedBox(height: 24),
-
                 MyButton(
                     onTap: sendComplaint,
                     buttonText: 'Enviar Denúncia',
