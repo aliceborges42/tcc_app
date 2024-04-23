@@ -511,45 +511,46 @@ class MapSampleState extends State<MapSample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mapa da UnB'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt),
-            onPressed: _openFilterModal,
-          ),
-          Container(
-            padding: const EdgeInsets.all(6),
-            color: Colors.red[100],
-            child: IconButton(
-              tooltip: 'Ligar para a segurança',
-              icon: const Icon(Icons.phone),
-              color: Colors.red[700],
-              onPressed: () => _callSecurity(),
+        appBar: AppBar(
+          title: const Text('Mapa da UnB'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.filter_alt),
+              onPressed: _openFilterModal,
             ),
+            Container(
+              padding: const EdgeInsets.all(6),
+              color: Colors.red[100],
+              child: IconButton(
+                tooltip: 'Ligar para a segurança',
+                icon: const Icon(Icons.phone),
+                color: Colors.red[700],
+                onPressed: () => _callSecurity(),
+              ),
+            ),
+          ],
+          automaticallyImplyLeading: false,
+          backgroundColor: Colors.grey[100],
+          foregroundColor: Colors.black87,
+          elevation: 1,
+        ),
+        body: GoogleMap(
+          initialCameraPosition: _kGooglePlex,
+          zoomControlsEnabled: false,
+          onMapCreated: (GoogleMapController controller) {
+            _controller.complete(controller);
+          },
+          markers: _getAllMarkers(),
+          polylines: _polyline,
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AddComplaintPage()),
           ),
-        ],
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey[100],
-        foregroundColor: Colors.black87,
-        elevation: 1,
-      ),
-      body: GoogleMap(
-        initialCameraPosition: _kGooglePlex,
-        zoomControlsEnabled: false,
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: _getAllMarkers(),
-        polylines: _polyline,
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const AddComplaintPage())),
-        label: const Icon(Icons.add),
-        backgroundColor: Colors.deepPurple[600],
-      ),
-    );
+          child: const Icon(Icons.add),
+          backgroundColor: Colors.deepPurple[600],
+        ));
   }
 
   void _callSecurity() async {

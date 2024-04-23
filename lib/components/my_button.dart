@@ -32,8 +32,13 @@ class MyButton extends StatelessWidget {
                     fontSize: 18,
                   ),
                 )
-              : const CircularProgressIndicator(
-                  color: white,
+              : SizedBox(
+                  width: 21, // Largura do CircularProgressIndicator
+                  height: 21, // Altura do CircularProgressIndicator
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2, // Espessura da linha do progresso
+                    color: Colors.white, // Cor do CircularProgressIndicator
+                  ),
                 ),
         ),
       ),

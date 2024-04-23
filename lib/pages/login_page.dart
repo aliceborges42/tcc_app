@@ -115,10 +115,12 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.grey,
                       ),
                       suffixIcon: IconButton(
+                        splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
                               ? Icons.visibility_off
                               : Icons.visibility,
+                          color: Colors.grey,
                         ),
                         onPressed: togglePasswordVisibility,
                       ),
