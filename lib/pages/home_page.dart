@@ -17,7 +17,7 @@ class HomePageState extends State<HomePage> {
   static final List<Widget> _widgetOptions = <Widget>[
     const MapSample(),
     ComplaintListPage(),
-    PerfilPage()
+    const PerfilPage()
   ];
 
   void _onItemTapped(int index) {

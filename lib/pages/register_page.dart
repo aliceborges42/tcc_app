@@ -248,10 +248,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         color: Colors.grey,
                       ),
                       suffixIcon: IconButton(
+                        splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
                               ? Icons.visibility_off
                               : Icons.visibility,
+                          color: Colors.grey,
                         ),
                         onPressed: togglePasswordVisibility,
                       ),
@@ -268,10 +270,12 @@ class _RegisterPageState extends State<RegisterPage> {
                         color: Colors.grey,
                       ),
                       suffixIcon: IconButton(
+                        splashRadius: 1,
                         icon: Icon(
                           _isConfirmPasswordVisible
                               ? Icons.visibility_off
                               : Icons.visibility,
+                          color: Colors.grey,
                         ),
                         onPressed: toggleConfirmPasswordVisibility,
                       ),

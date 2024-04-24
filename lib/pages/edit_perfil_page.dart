@@ -297,10 +297,12 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                         color: Colors.grey,
                       ),
                       suffixIcon: IconButton(
+                        splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
                               ? Icons.visibility_off
                               : Icons.visibility,
+                          color: Colors.grey,
                         ),
                         onPressed: togglePasswordVisibility,
                       ),
