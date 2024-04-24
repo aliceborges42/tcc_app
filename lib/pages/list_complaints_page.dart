@@ -102,10 +102,11 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
           ),
         ],
         automaticallyImplyLeading: false,
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
       ),
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Padding(
@@ -161,18 +162,19 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
                               ],
                             ),
                             trailing: Chip(
-                              backgroundColor: complaint.status == 'Resolvido'
-                                  ? Colors.green[100]
-                                  : Colors.red[100],
-                              label: Text(complaint.status!),
-                              labelStyle: TextStyle(
-                                  color: complaint.status == 'Resolvido'
-                                      ? Colors.green[900]
-                                      : Colors.red[900]),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                            ),
+                                backgroundColor: complaint.status == 'Resolvido'
+                                    ? Colors.green[100]
+                                    : Colors.red[100],
+                                label: Text(complaint.status!),
+                                labelStyle: TextStyle(
+                                    color: complaint.status == 'Resolvido'
+                                        ? Colors.green[900]
+                                        : Colors.red[900]),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                                side: const BorderSide(
+                                    color: Colors.transparent)),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -186,7 +188,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
                           ),
                           Divider(
                             height: 0,
-                            color: Colors.grey[600],
+                            color: Colors.grey[500],
                           ),
                         ],
                       );

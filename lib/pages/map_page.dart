@@ -530,7 +530,7 @@ class MapSampleState extends State<MapSample> {
             ),
           ],
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.grey[100],
+          backgroundColor: Colors.white,
           foregroundColor: Colors.black87,
           elevation: 1,
         ),
@@ -553,6 +553,8 @@ class MapSampleState extends State<MapSample> {
             Icons.add,
             color: Colors.white,
           ),
+          shape: CircleBorder(),
+          clipBehavior: Clip.antiAlias,
         ));
   }
 

@@ -246,7 +246,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Denúncia'),
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
         actions: [
@@ -280,6 +280,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: FutureBuilder(

@@ -45,7 +45,6 @@ dependencies:
   provider: ^6.1.1
   carousel_slider: ^4.2.1
   dots_indicator: ^3.0.0
-  geocode: ^1.0.3
   geocoding: ^2.1.1
   http: ^1.1.0
   shared_preferences: ^2.2.2
