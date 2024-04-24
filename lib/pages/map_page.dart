@@ -548,8 +548,11 @@ class MapSampleState extends State<MapSample> {
             context,
             MaterialPageRoute(builder: (context) => const AddComplaintPage()),
           ),
-          child: const Icon(Icons.add),
           backgroundColor: Colors.deepPurple[600],
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
         ));
   }
 
