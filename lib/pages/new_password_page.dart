@@ -90,11 +90,14 @@ class _EditPasswordState extends State<EditPassword> {
                         splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
                         onPressed: togglePasswordVisibility,
+                        tooltip: _isPasswordVisible
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha',
                       ),
                     ),
                     obscureText: !_isPasswordVisible,
@@ -112,10 +115,13 @@ class _EditPasswordState extends State<EditPassword> {
                         splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
+                        tooltip: _isPasswordVisible
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha',
                         onPressed: togglePasswordVisibility,
                       ),
                     ),
@@ -136,10 +142,13 @@ class _EditPasswordState extends State<EditPassword> {
                         splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
+                        tooltip: _isPasswordVisible
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha',
                         onPressed: togglePasswordVisibility,
                       ),
                     ),

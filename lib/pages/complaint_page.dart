@@ -263,6 +263,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () => _navigateToEditPage(complaint),
+                        tooltip: 'Editar denúncia',
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
@@ -270,6 +271,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           _showDeleteConfirmationDialog(
                               complaint.id.toString(), context);
                         },
+                        tooltip: 'Exluir denúncia',
                       ),
                     ],
                   );
@@ -449,6 +451,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                         ? Icons.thumb_up
                                         : Icons.thumb_up_outlined,
                                     color: _userLiked ? Colors.blue : null),
+                                tooltip: 'Curtir denúncia',
                               ),
                               Text('Likes: $_likes'),
                               IconButton(
@@ -458,6 +461,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                         ? Icons.thumb_down
                                         : Icons.thumb_down_outlined,
                                     color: _userDisliked ? Colors.blue : null),
+                                tooltip: 'Não gostei da denúncia (dislike)',
                               ),
                               Text('Deslikes: $_dislikes'),
                             ],

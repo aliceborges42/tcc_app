@@ -102,6 +102,7 @@ class _PerfilPageState extends State<PerfilPage> {
           Builder(
             builder: (context) => IconButton(
               icon: Icon(Icons.edit),
+              tooltip: 'Editar perfil',
               onPressed: () {
                 // Navega para a página de edição de perfil
                 Navigator.push(

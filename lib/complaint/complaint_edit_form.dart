@@ -153,6 +153,7 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                             Icons.close,
                             color: Colors.white,
                             size: 18,
+                            semanticLabel: 'Excluir Imagem',
                           ),
                         ),
                       ),
@@ -431,11 +432,10 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                                 color: Colors.grey.withOpacity(0.7),
                               ),
                               child: Center(
-                                child: Icon(
-                                  Icons.close,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
+                                child: Icon(Icons.close,
+                                    color: Colors.white,
+                                    size: 18,
+                                    semanticLabel: 'Excluir Imagem'),
                               ),
                             ),
                           ),

@@ -100,6 +100,7 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
             onPressed: () {
               _showFilterDialog(context);
             },
+            tooltip: 'Filtrar denúncia',
           ),
         ],
         backgroundColor: Colors.grey[100],
@@ -114,7 +115,10 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Pesquisar denúncia...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(
+                  Icons.search,
+                  semanticLabel: 'Pesquisar denúncia',
+                ),
                 border: OutlineInputBorder(),
               ),
               onSubmitted: (value) {

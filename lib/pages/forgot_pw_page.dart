@@ -149,6 +149,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             Navigator.of(context).pop();
           },
           color: Colors.white,
+          tooltip: 'Voltar',
         ),
       ),
       backgroundColor: Colors.grey[100],

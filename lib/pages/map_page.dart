@@ -380,7 +380,9 @@ class MapSampleState extends State<MapSample> {
                       },
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
-                              Colors.deepPurple)),
+                              Colors.deepPurple),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white)),
                       child: Text('Aplicar Filtros'),
                     ),
                   ],
@@ -517,6 +519,7 @@ class MapSampleState extends State<MapSample> {
             IconButton(
               icon: const Icon(Icons.filter_alt),
               onPressed: _openFilterModal,
+              tooltip: 'Filtrar denúncias',
             ),
             Container(
               padding: const EdgeInsets.all(6),
@@ -555,6 +558,7 @@ class MapSampleState extends State<MapSample> {
           ),
           shape: CircleBorder(),
           clipBehavior: Clip.antiAlias,
+          tooltip: 'Criar nova denúncia',
         ));
   }
 

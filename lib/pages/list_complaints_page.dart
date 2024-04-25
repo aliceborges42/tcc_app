@@ -99,6 +99,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
             onPressed: () {
               _showFilterDialog(context);
             },
+            tooltip: 'Filtrar denúncias',
           ),
         ],
         automaticallyImplyLeading: false,
@@ -115,7 +116,10 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Pesquisar denúncia...',
-                prefixIcon: Icon(Icons.search),
+                prefixIcon: Icon(
+                  Icons.search,
+                  semanticLabel: 'pesquisar denúncia',
+                ),
                 border: OutlineInputBorder(),
               ),
               onSubmitted: (value) {
@@ -296,7 +300,9 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
                   },
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.deepPurple)),
+                          MaterialStateProperty.all<Color>(Colors.deepPurple),
+                      foregroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white)),
                   child: Text('Aplicar Filtros'),
                 ),
               ],

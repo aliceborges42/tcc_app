@@ -35,6 +35,7 @@ class EditComplaintPage extends StatelessWidget {
             Navigator.of(context).pop();
           },
           color: Colors.black,
+          tooltip: 'Voltar',
         ),
       ),
       body: ComplaintEditForm(complaint: complaint),
