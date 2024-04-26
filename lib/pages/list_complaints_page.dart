@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tcc_app/components/datepicker.dart';
 import 'package:tcc_app/models/complaint_model.dart';
 import 'package:tcc_app/pages/complaint_page.dart';
 import 'package:tcc_app/resources/complaint_methods.dart';
@@ -12,14 +11,13 @@ class ComplaintListPage extends StatefulWidget {
 
 class _ComplaintListPageState extends State<ComplaintListPage> {
   late Future<List<Complaint>> _complaintsFuture;
-  List<Complaint> _complaints = [];
   DateTime? _startDateFilter;
   DateTime? _endDateFilter;
-  String? _selectedStatusFilter;
-  String? _selectedComplaintTypeFilter;
   TypeSpecification? _selectedTypeSpecification;
   List<TypeSpecification> _typeSpecifications = [];
   TextEditingController _searchController = TextEditingController();
+  String? _statusFilter;
+  String? _complaintTypeFilter;
 
   @override
   void initState() {
@@ -41,29 +39,22 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
     }
   }
 
-  void _applyFilters() {
-    setState(() {
-      _complaintsFuture = _loadComplaintsFiltered();
-    });
-  }
+  List<Complaint> _applyFilters(List<Complaint> complaints) {
+    return complaints.where((complaint) {
+      bool statusFilter = _statusFilter == null ||
+          _statusFilter == 'Todos' ||
+          complaint.status == _statusFilter;
 
-  Future<List<Complaint>> _loadComplaintsFiltered() async {
-    List<Complaint> complaints = await _loadComplaints();
-
-    complaints = complaints.where((complaint) {
-      bool statusFilter = _selectedStatusFilter == null ||
-          complaint.status == _selectedStatusFilter;
-
-      bool typeFilter = _selectedComplaintTypeFilter == null ||
-          complaint.complaintType.classification ==
-              _selectedComplaintTypeFilter;
-
-      bool typeSpecificationFilter = _selectedTypeSpecification == null ||
-          complaint.typeSpecification.id == _selectedTypeSpecification?.id;
+      bool typeFilter = _complaintTypeFilter == null ||
+          _complaintTypeFilter == 'Todos' ||
+          complaint.complaintType.classification == _complaintTypeFilter;
 
       bool startDateFilter = _startDateFilter == null ||
           (complaint.date.isAfter(_startDateFilter!) ||
               complaint.date.isAtSameMomentAs(_startDateFilter!));
+
+      bool typeSpecificationFilter = _selectedTypeSpecification == null ||
+          complaint.typeSpecification.id == _selectedTypeSpecification?.id;
 
       bool endDateFilter = _endDateFilter == null ||
           (complaint.date.isBefore(_endDateFilter!) ||
@@ -71,17 +62,176 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
 
       return statusFilter &&
           typeFilter &&
-          typeSpecificationFilter &&
           startDateFilter &&
-          endDateFilter;
+          endDateFilter &&
+          typeSpecificationFilter;
     }).toList();
+  }
 
-    return complaints;
+  void _openFilterModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled:
+          true, // Permite que o BottomSheet ocupe o tamanho completo da tela
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SingleChildScrollView(
+              child: Container(
+                padding: EdgeInsets.all(14.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('Filtros',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold)),
+
+                    DropdownButtonFormField<String>(
+                      value: _statusFilter,
+                      onChanged: (value) {
+                        setState(() {
+                          _statusFilter = value;
+                        });
+                      },
+                      items: ['Todos', 'Resolvido', 'Não Resolvido']
+                          .map((label) => DropdownMenuItem(
+                                child: Text(label),
+                                value: label,
+                              ))
+                          .toList(),
+                      decoration: InputDecoration(labelText: 'Status'),
+                    ),
+                    // SizedBox(height: 6.0),
+                    DropdownButtonFormField<String>(
+                      value: _complaintTypeFilter,
+                      onChanged: (value) {
+                        setState(() {
+                          _complaintTypeFilter = value;
+                        });
+                      },
+                      items: ['Todos', 'Episódio', 'Desordem']
+                          .map((label) => DropdownMenuItem(
+                                child: Text(label),
+                                value: label,
+                              ))
+                          .toList(),
+                      decoration:
+                          InputDecoration(labelText: 'Tipo de Denúncia'),
+                    ),
+                    // SizedBox(height: 8.0),
+                    DropdownButtonFormField<String>(
+                      value: _selectedTypeSpecification?.specification,
+                      onChanged: (value) {
+                        final selectedType = _typeSpecifications.firstWhere(
+                          (type) => type.specification == value,
+                          orElse: () => _typeSpecifications.first,
+                        );
+                        setState(() {
+                          _selectedTypeSpecification = selectedType;
+                        });
+                      },
+                      items: _typeSpecifications
+                          .map((label) => DropdownMenuItem(
+                                child: Text(label.specification),
+                                value: label.specification,
+                              ))
+                          .toList(),
+                      decoration: InputDecoration(
+                          labelText: 'Especificação da Denúncia'),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text('Data de Início'),
+                    SizedBox(height: 4.0),
+                    TextButton(
+                      onPressed: () async {
+                        DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: _startDateFilter ?? DateTime.now(),
+                          firstDate: DateTime(2015, 8),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _startDateFilter = picked;
+                          });
+                        }
+                      },
+                      style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              Colors.deepPurple)),
+                      child: Text(
+                        _startDateFilter != null
+                            ? DateFormat('dd/MM/yyyy').format(_startDateFilter!)
+                            : 'Selecionar Data',
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    Text('Data de Fim'),
+                    SizedBox(height: 4.0),
+                    TextButton(
+                      onPressed: () async {
+                        DateTime? picked = await showDatePicker(
+                          context: context,
+                          initialDate: _endDateFilter ?? DateTime.now(),
+                          firstDate: DateTime(2015, 8),
+                          lastDate: DateTime.now(),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _endDateFilter = picked;
+                          });
+                        }
+                      },
+                      style: ButtonStyle(
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              Colors.deepPurple)),
+                      child: Text(
+                        _endDateFilter != null
+                            ? DateFormat('dd/MM/yyyy').format(_endDateFilter!)
+                            : 'Selecionar Data',
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    ElevatedButton(
+                      onPressed: () {
+                        // _applyFilters();
+                        _loadComplaintsFiltered();
+                        Navigator.pop(context);
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.deepPurple),
+                          foregroundColor:
+                              MaterialStateProperty.all<Color>(Colors.white)),
+                      child: Text('Aplicar Filtros'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  Future<void> _loadComplaintsFiltered() async {
+    setState(() {
+      _complaintsFuture = _loadComplaints();
+    });
   }
 
   Future<List<Complaint>> _loadComplaints() async {
     try {
-      return await ComplaintMethods().getAllComplaints();
+      List<Complaint> complaints = await ComplaintMethods().getAllComplaints();
+
+      return _applyFilters(complaints);
     } catch (error) {
       print("Failed to load complaints: $error");
       return [];
@@ -97,7 +247,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
           IconButton(
             icon: Icon(Icons.filter_alt),
             onPressed: () {
-              _showFilterDialog(context);
+              _openFilterModal();
             },
             tooltip: 'Filtrar denúncias',
           ),
@@ -114,7 +264,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
             padding: EdgeInsets.all(8.0),
             child: TextField(
               controller: _searchController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 hintText: 'Pesquisar denúncia...',
                 prefixIcon: Icon(
                   Icons.search,
@@ -208,109 +358,6 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showFilterDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SingleChildScrollView(
-          child: Container(
-            padding: EdgeInsets.all(14.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text('Filtros',
-                    style:
-                        TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                DropdownButtonFormField<String>(
-                  value: _selectedStatusFilter,
-                  items: ['Todos', 'Resolvido', 'Não Resolvido']
-                      .map((label) => DropdownMenuItem(
-                            child: Text(label),
-                            value: label,
-                          ))
-                      .toList(),
-                  decoration: InputDecoration(labelText: 'Status'),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedStatusFilter = newValue;
-                    });
-                  },
-                ),
-                DropdownButtonFormField<String>(
-                  value: _selectedComplaintTypeFilter,
-                  items: ['Todos', 'Episódio', 'Desordem']
-                      .map((label) => DropdownMenuItem(
-                            child: Text(label),
-                            value: label,
-                          ))
-                      .toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedComplaintTypeFilter = newValue;
-                    });
-                  },
-                  decoration: InputDecoration(labelText: 'Tipo de Denúncia'),
-                ),
-                DropdownButtonFormField<String>(
-                  value: _selectedTypeSpecification?.specification,
-                  items: _typeSpecifications
-                      .map((label) => DropdownMenuItem(
-                            child: Text(label.specification),
-                            value: label.specification,
-                          ))
-                      .toList(),
-                  decoration:
-                      InputDecoration(labelText: 'Especificação da Denúncia'),
-                  onChanged: (value) {
-                    final selectedType = _typeSpecifications.firstWhere(
-                      (type) => type.specification == value,
-                      orElse: () => _typeSpecifications.first,
-                    );
-                    setState(() {
-                      _selectedTypeSpecification = selectedType;
-                    });
-                  },
-                ),
-                SizedBox(height: 8.0),
-                CustomDatePicker(
-                  initialDate: _startDateFilter,
-                  labelText: 'Data de Início',
-                  onChanged: (DateTime? newValue) {
-                    setState(() {
-                      _startDateFilter = newValue;
-                    });
-                  },
-                ),
-                CustomDatePicker(
-                  initialDate: _endDateFilter,
-                  labelText: 'Data de Fim',
-                  onChanged: (DateTime? newValue) {
-                    setState(() {
-                      _endDateFilter = newValue;
-                    });
-                  },
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    _applyFilters();
-                    Navigator.pop(context);
-                  },
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.deepPurple),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white)),
-                  child: Text('Aplicar Filtros'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 
