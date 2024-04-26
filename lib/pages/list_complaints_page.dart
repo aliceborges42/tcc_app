@@ -220,6 +220,7 @@ class _ComplaintListPageState extends State<ComplaintListPage> {
             padding: EdgeInsets.all(14.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text('Filtros',
                     style:

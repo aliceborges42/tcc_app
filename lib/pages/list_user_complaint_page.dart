@@ -165,18 +165,19 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
                               ],
                             ),
                             trailing: Chip(
-                              backgroundColor: complaint.status == 'Resolvido'
-                                  ? Colors.green[100]
-                                  : Colors.red[100],
-                              label: Text(complaint.status!),
-                              labelStyle: TextStyle(
-                                  color: complaint.status == 'Resolvido'
-                                      ? Colors.green[900]
-                                      : Colors.red[900]),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                            ),
+                                backgroundColor: complaint.status == 'Resolvido'
+                                    ? Colors.green[100]
+                                    : Colors.red[100],
+                                label: Text(complaint.status!),
+                                labelStyle: TextStyle(
+                                    color: complaint.status == 'Resolvido'
+                                        ? Colors.green[900]
+                                        : Colors.red[900]),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4.0),
+                                ),
+                                side: const BorderSide(
+                                    color: Colors.transparent)),
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -218,6 +219,7 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
             padding: EdgeInsets.all(14.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Text('Filtros',
                     style:

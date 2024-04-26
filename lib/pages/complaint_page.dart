@@ -350,18 +350,20 @@ class _ComplaintPageState extends State<ComplaintPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Chip(
-                                backgroundColor: complaint.status == 'Resolvido'
-                                    ? Colors.green[100]
-                                    : Colors.red[100],
-                                label: Text(complaint.status!),
-                                labelStyle: TextStyle(
-                                    color: complaint.status == 'Resolvido'
-                                        ? Colors.green[900]
-                                        : Colors.red[900]),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                              ),
+                                  backgroundColor:
+                                      complaint.status == 'Resolvido'
+                                          ? Colors.green[100]
+                                          : Colors.red[100],
+                                  label: Text(complaint.status!),
+                                  labelStyle: TextStyle(
+                                      color: complaint.status == 'Resolvido'
+                                          ? Colors.green[900]
+                                          : Colors.red[900]),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  side: const BorderSide(
+                                      color: Colors.transparent)),
                             ],
                           ),
                           // SizedBox(
