@@ -30,6 +30,7 @@ class AddComplaintPage extends StatelessWidget {
             Navigator.of(context).pop();
           },
           color: Colors.black,
+          tooltip: 'Voltar',
         ),
       ),
       body: const ComplaintForm(),

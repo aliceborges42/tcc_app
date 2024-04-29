@@ -185,10 +185,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       Column(
                         children: [
-                          Image.asset(
-                            'assets/images/Group 22 (1).png',
-                            height: 150,
-                            // width: 150,
+                          Semantics(
+                            label: 'Logotipo Atenta UnB',
+                            // 'Logotipo Atenta UnB' deve ser substituído por uma descrição mais apropriada, se necessário
+                            hint: 'Imagem do logotipo da Atenta UnB',
+                            child: Image.asset(
+                              'assets/images/Group 22 (1).png',
+                              height: 150,
+                            ),
+                            // O 'hint' é opcional e pode ser usado para fornecer informações adicionais sobre a ação ou contexto da imagem
                           ),
                           const SizedBox(height: 20),
                           const Text(
@@ -251,11 +256,14 @@ class _RegisterPageState extends State<RegisterPage> {
                         splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
                         onPressed: togglePasswordVisibility,
+                        tooltip: _isPasswordVisible
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha',
                       ),
                     ),
                     obscureText: !_isPasswordVisible,
@@ -273,10 +281,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         splashRadius: 1,
                         icon: Icon(
                           _isConfirmPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
+                        tooltip: _isPasswordVisible
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha',
                         onPressed: toggleConfirmPasswordVisibility,
                       ),
                     ),

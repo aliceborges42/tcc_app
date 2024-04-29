@@ -94,7 +94,7 @@ class _PerfilPageState extends State<PerfilPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perfil'),
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
         automaticallyImplyLeading: false,
@@ -102,6 +102,7 @@ class _PerfilPageState extends State<PerfilPage> {
           Builder(
             builder: (context) => IconButton(
               icon: Icon(Icons.edit),
+              tooltip: 'Editar perfil',
               onPressed: () {
                 // Navega para a página de edição de perfil
                 Navigator.push(
@@ -139,6 +140,7 @@ class _PerfilPageState extends State<PerfilPage> {
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: FutureBuilder(
           future: _currentUser,
@@ -170,160 +172,136 @@ class _PerfilPageState extends State<PerfilPage> {
 
   // Widget que exibe o perfil do usuário
   Widget _buildUserProfile(User user) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            user.avatar != null
-                ? CircleAvatar(
-                    radius: 75,
-                    backgroundImage: NetworkImage(
-                      user.avatar!,
+    return SingleChildScrollView(
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              user.avatar != null
+                  ? CircleAvatar(
+                      radius: 75,
+                      backgroundImage: NetworkImage(
+                        user.avatar!,
+                      ),
+                    )
+                  : Container(
+                      width: 155,
+                      height: 155,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey,
+                      ),
+                      child: Icon(
+                        Icons.person,
+                        size: 100,
+                        color: Colors.white,
+                      ),
                     ),
-                  )
-                : Container(
-                    width: 155,
-                    height: 155,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.grey,
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      size: 100,
-                      color: Colors.white,
-                    ),
-                  ),
-            SizedBox(height: 14),
-            Text(
-              user.name,
-              style: TextStyle(
-                fontSize: 24,
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              user.email,
-              style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-            ),
-            SizedBox(height: 20),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     // Navega para a página de edição de perfil
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => PerfilEditPage(user: user),
-            //       ),
-            //     );
-            //   },
-            //   child: Text('Editar Perfil'),
-            // ),
-            ElevatedButton(
-              onPressed: () {
-                // Navega para a página de edição de perfil
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ComplaintUserListPage(),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.white,
-                backgroundColor:
-                    Colors.deepPurple, // Define a cor do texto como preto
-                elevation: 0, // Define a elevação do botão
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      4.0), // Define o raio do canto do botão
-                  // s, // Define a cor da borda
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Text(
-                  'Minhas Denúncias',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.black,
-                backgroundColor:
-                    Colors.white, // Define a cor do texto como preto
-                elevation: 0, // Define a elevação do botão
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      4.0), // Define o raio do canto do botão
-                  side: BorderSide(
-                      color: Colors.black87), // Define a cor da borda
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Text(
-                  'Alterar Senha',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              onPressed: () {
-                // Navega para a página de edição de perfil
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => EditPassword(),
-                  ),
-                );
-              },
-            ),
-
-            SizedBox(
-              height: 35,
-            ),
-            OutlinedButton.icon(
-              onPressed: () {
-                signUserOut(context);
-              },
-              style: ButtonStyle(
-                side: MaterialStateProperty.all<BorderSide>(
-                  BorderSide(color: Colors.red),
-                ),
-                shape: MaterialStateProperty.all<OutlinedBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
-                  ),
-                ),
-              ),
-              icon: Icon(
-                Icons.logout,
-                color: Colors.red,
-              ),
-              label: Text(
-                'Sair',
+              SizedBox(height: 14),
+              Text(
+                user.name,
                 style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
                 ),
               ),
-            ),
-            ElevatedButton(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Text(
-                  'Deletar Conta',
+              SizedBox(height: 4),
+              Text(
+                user.email,
+                style: TextStyle(fontSize: 16, color: Colors.grey[700]),
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  // Navega para a página de edição de perfil
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ComplaintUserListPage(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor:
+                      Colors.deepPurple, // Define a cor do texto como preto
+                  elevation: 0, // Define a elevação do botão
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        4.0), // Define o raio do canto do botão
+                    // s, // Define a cor da borda
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    'Minhas Denúncias',
+                    style: TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.black,
+                  backgroundColor:
+                      Colors.white, // Define a cor do texto como preto
+                  elevation: 0, // Define a elevação do botão
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        4.0), // Define o raio do canto do botão
+                    side: BorderSide(
+                        color: Colors.black87), // Define a cor da borda
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Text(
+                    'Alterar Senha',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                onPressed: () {
+                  // Navega para a página de edição de perfil
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EditPassword(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(
+                height: 35,
+              ),
+              OutlinedButton.icon(
+                onPressed: () {
+                  signUserOut(context);
+                },
+                style: ButtonStyle(
+                  side: MaterialStateProperty.all<BorderSide>(
+                    BorderSide(color: Colors.red),
+                  ),
+                  shape: MaterialStateProperty.all<OutlinedBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4.0),
+                    ),
+                  ),
+                ),
+                icon: Icon(
+                  Icons.logout,
+                  color: Colors.red,
+                ),
+                label: Text(
+                  'Sair',
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 16,
@@ -331,46 +309,59 @@ class _PerfilPageState extends State<PerfilPage> {
                   ),
                 ),
               ),
-              style: ElevatedButton.styleFrom(
-                foregroundColor: Colors.red[800],
-                backgroundColor:
-                    Colors.red[100], // Define a cor do texto como preto
-                elevation: 0, // Define a elevação do botão
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                      4.0), // Define o raio do canto do botão
-                  // side: BorderSide(color: Colors.red), // Define a cor da borda
+              ElevatedButton(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    'Deletar Conta',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.red[800],
+                  backgroundColor:
+                      Colors.red[100], // Define a cor do texto como preto
+                  elevation: 0, // Define a elevação do botão
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(
+                        4.0), // Define o raio do canto do botão
+                    // side: BorderSide(color: Colors.red), // Define a cor da borda
+                  ),
+                ),
+                onPressed: () {
+                  // Exibe um diálogo de confirmação antes de deletar a conta
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text('Deletar Conta'),
+                        content: Text(
+                            'Tem certeza de que deseja deletar sua conta?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Text('Cancelar'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              deleteAccount(context);
+                            },
+                            child: Text('Confirmar'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                },
               ),
-              onPressed: () {
-                // Exibe um diálogo de confirmação antes de deletar a conta
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: Text('Deletar Conta'),
-                      content:
-                          Text('Tem certeza de que deseja deletar sua conta?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: Text('Cancelar'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            deleteAccount(context);
-                          },
-                          child: Text('Confirmar'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

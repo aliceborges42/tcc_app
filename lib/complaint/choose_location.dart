@@ -49,6 +49,7 @@ class _ChooseLocationMapState extends State<ChooseLocationMap> {
           Navigator.pop(context, _selectedLocation);
         },
         child: const Icon(Icons.check),
+        tooltip: 'Escolher essa localização',
       ),
     );
   }

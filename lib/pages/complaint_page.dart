@@ -246,7 +246,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Denúncia'),
-        backgroundColor: Colors.grey[100],
+        backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
         actions: [
@@ -263,6 +263,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () => _navigateToEditPage(complaint),
+                        tooltip: 'Editar denúncia',
                       ),
                       IconButton(
                         icon: Icon(Icons.delete),
@@ -270,6 +271,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           _showDeleteConfirmationDialog(
                               complaint.id.toString(), context);
                         },
+                        tooltip: 'Exluir denúncia',
                       ),
                     ],
                   );
@@ -280,6 +282,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: FutureBuilder(
@@ -347,18 +350,20 @@ class _ComplaintPageState extends State<ComplaintPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Chip(
-                                backgroundColor: complaint.status == 'Resolvido'
-                                    ? Colors.green[100]
-                                    : Colors.red[100],
-                                label: Text(complaint.status!),
-                                labelStyle: TextStyle(
-                                    color: complaint.status == 'Resolvido'
-                                        ? Colors.green[900]
-                                        : Colors.red[900]),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                              ),
+                                  backgroundColor:
+                                      complaint.status == 'Resolvido'
+                                          ? Colors.green[100]
+                                          : Colors.red[100],
+                                  label: Text(complaint.status!),
+                                  labelStyle: TextStyle(
+                                      color: complaint.status == 'Resolvido'
+                                          ? Colors.green[900]
+                                          : Colors.red[900]),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(4.0),
+                                  ),
+                                  side: const BorderSide(
+                                      color: Colors.transparent)),
                             ],
                           ),
                           // SizedBox(
@@ -448,6 +453,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                         ? Icons.thumb_up
                                         : Icons.thumb_up_outlined,
                                     color: _userLiked ? Colors.blue : null),
+                                tooltip: 'Curtir denúncia',
                               ),
                               Text('Likes: $_likes'),
                               IconButton(
@@ -457,6 +463,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                         ? Icons.thumb_down
                                         : Icons.thumb_down_outlined,
                                     color: _userDisliked ? Colors.blue : null),
+                                tooltip: 'Não gostei da denúncia (dislike)',
                               ),
                               Text('Deslikes: $_dislikes'),
                             ],

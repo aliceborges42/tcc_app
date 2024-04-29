@@ -238,6 +238,7 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                           child: Icon(
                             Icons.camera_alt,
                             color: Colors.grey[700],
+                            semanticLabel: 'Editar foto de perfil',
                           ),
                         ),
                       ),
@@ -300,10 +301,13 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                         splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
+                        tooltip: _isPasswordVisible
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha',
                         onPressed: togglePasswordVisibility,
                       ),
                       errorStyle: TextStyle(

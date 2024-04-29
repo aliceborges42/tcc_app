@@ -45,7 +45,6 @@ dependencies:
   provider: ^6.1.1
   carousel_slider: ^4.2.1
   dots_indicator: ^3.0.0
-  geocode: ^1.0.3
   geocoding: ^2.1.1
   http: ^1.1.0
   shared_preferences: ^2.2.2
@@ -53,7 +52,6 @@ dependencies:
   collection: ^1.17.2
   brasil_fields: ^1.14.1
   validadores: ^1.0.9
-  cpf_cnpj_validator: ^2.0.0
   permission_handler: ^11.0.1
   flutter_markdown: ^0.6.19
   flutter_launcher_icons: ^0.13.1

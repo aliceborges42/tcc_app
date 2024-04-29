@@ -76,10 +76,15 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 40),
 
                   // logo
-                  Image.asset(
-                    'assets/images/Group 22 (1).png',
-                    height: 150,
-                    // width: 150,
+                  Semantics(
+                    label: 'Logotipo Atenta UnB',
+                    // 'Logotipo Atenta UnB' deve ser substituído por uma descrição mais apropriada, se necessário
+                    hint: 'Imagem do logotipo da Atenta UnB',
+                    child: Image.asset(
+                      'assets/images/Group 22 (1).png',
+                      height: 150,
+                    ),
+                    // O 'hint' é opcional e pode ser usado para fornecer informações adicionais sobre a ação ou contexto da imagem
                   ),
                   const SizedBox(height: 20),
 
@@ -118,11 +123,14 @@ class _LoginPageState extends State<LoginPage> {
                         splashRadius: 1,
                         icon: Icon(
                           _isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           color: Colors.grey,
                         ),
                         onPressed: togglePasswordVisibility,
+                        tooltip: _isPasswordVisible
+                            ? 'Ocultar senha'
+                            : 'Mostrar senha',
                       ),
                     ),
                     obscureText: !_isPasswordVisible,
@@ -138,15 +146,19 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return const ForgotPasswordPage();
-                            }));
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const ForgotPasswordPage()));
                           },
-                          child: Text(
-                            'Esqueci minha senha',
-                            style: TextStyle(
-                              color: Colors.deepPurple[600],
+                          child: Semantics(
+                            label: 'Esqueceu a senha',
+                            child: Text(
+                              'Esqueci minha senha',
+                              style: TextStyle(
+                                color: Colors.deepPurple[600],
+                              ),
                             ),
                           ),
                         ),
@@ -175,15 +187,16 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(width: 4),
                       GestureDetector(
                         onTap: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => const RegisterPage(),
-                          ),
-                        ),
-                        child: const Text(
-                          'Cadastre-se!',
-                          style: TextStyle(
-                            color: Colors.deepPurple,
-                            fontWeight: FontWeight.bold,
+                            MaterialPageRoute(
+                                builder: (context) => const RegisterPage())),
+                        child: Semantics(
+                          label: 'Registre-se agora',
+                          child: const Text(
+                            'Cadastre-se!',
+                            style: TextStyle(
+                              color: Colors.deepPurple,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
