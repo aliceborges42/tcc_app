@@ -242,7 +242,7 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Denúncias'),
+        title: Text('Minhas Denúncias'),
         actions: [
           IconButton(
             icon: Icon(Icons.filter_alt),
@@ -252,7 +252,6 @@ class _ComplaintUserListPageState extends State<ComplaintUserListPage> {
             tooltip: 'Filtrar denúncias',
           ),
         ],
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.white,
         foregroundColor: Colors.black87,
         elevation: 1,
