@@ -56,5 +56,9 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Need photo access for selecting pictures</string>
 
+	<key>NSAppleMusicUsageDescription</key>
+<string>Este app requer acesso à sua biblioteca musical para criar playlists personalizadas.</string>
+
+
 </dict>
 </plist>

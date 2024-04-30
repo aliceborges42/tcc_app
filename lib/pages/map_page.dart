@@ -545,6 +545,7 @@ class MapSampleState extends State<MapSample> {
           },
           markers: _getAllMarkers(),
           polylines: _polyline,
+          myLocationEnabled: false,
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => Navigator.push(
