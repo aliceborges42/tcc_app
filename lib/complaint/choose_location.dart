@@ -25,6 +25,7 @@ class _ChooseLocationMapState extends State<ChooseLocationMap> {
               -15.762780851912703, -47.87026321271443), // Coordenadas iniciais
           zoom: 17,
         ),
+        myLocationEnabled: false,
         markers: _markers,
         onTap: (LatLng latLng) {
           setState(() {
