@@ -58,10 +58,9 @@
 
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Este app requer acesso à sua biblioteca musical para criar playlists personalizadas.</string>
+	
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app displays maps for planning routes and navigating areas. Location access is used to improve map accuracy and relevance.</string>
-
-
+	<string>Este aplicativo precisa acessar sua localização para converter endereços em coordenadas geográficas para melhorar a precisão do mapeamento e navegação.</string>
 
 </dict>
 </plist>
