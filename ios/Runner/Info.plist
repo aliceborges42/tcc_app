@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -50,17 +52,13 @@
 		<string>sms</string>
 		<string>tel</string>
 	</array>
-
 	<key>NSCameraUsageDescription</key>
 	<string>Need camera access for capturing pictures</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Need photo access for selecting pictures</string>
-
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Este app requer acesso à sua biblioteca musical para criar playlists personalizadas.</string>
-	
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Este aplicativo precisa acessar sua localização para converter endereços em coordenadas geográficas para melhorar a precisão do mapeamento e navegação.</string>
-
 </dict>
 </plist>
