@@ -68,9 +68,6 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
   }
 
   bool isValidCPF(String cpf) {
-    // Regex for CPF validation
-    // final RegExp cpfRegex = RegExp(
-    //     r'^([0-9]{3}\.?[0-9]{3}\.?[0-9]{3}\-?[0-9]{2})|([0-9]{11})$');
     return CPFValidator.isValid(cpf);
   }
 
@@ -99,10 +96,6 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
 
     Map<String, dynamic> formData = _formKey.currentState!.value;
     try {
-      if (!isValidCPF(formData['cpf'])) {
-        throw Exception('Invalid CPF');
-      }
-
       // Simulate an API call to update the user
       print('Updating user with new data');
       await AuthMethods().updateUser(
