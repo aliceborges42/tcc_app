@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:tcc_app/resources/auth_methods.dart';
 import 'package:tcc_app/utils/global_variable.dart';
 import 'package:tcc_app/components/my_button.dart';
@@ -101,7 +100,12 @@ class _EditPasswordState extends State<EditPassword> {
                       ),
                     ),
                     obscureText: !_isPasswordVisible,
-                    validator: FormBuilderValidators.required(),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Campo obrigatório.";
+                      }
+                      return null; // Retorna null se não houver erro
+                    },
                   ),
                   SizedBox(height: 12),
                   FormBuilderTextField(
@@ -126,9 +130,12 @@ class _EditPasswordState extends State<EditPassword> {
                       ),
                     ),
                     obscureText: !_isPasswordVisible,
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(),
-                    ]),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Campo obrigatório.";
+                      }
+                      return null; // Retorna null se não houver erro
+                    },
                   ),
                   SizedBox(height: 12),
                   FormBuilderTextField(
@@ -153,7 +160,12 @@ class _EditPasswordState extends State<EditPassword> {
                       ),
                     ),
                     obscureText: !_isPasswordVisible,
-                    validator: FormBuilderValidators.required(),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Campo obrigatório.";
+                      }
+                      return null; // Retorna null se não houver erro
+                    },
                   ),
                   SizedBox(height: 12),
                   MyButton(

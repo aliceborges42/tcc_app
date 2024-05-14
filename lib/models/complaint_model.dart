@@ -14,6 +14,7 @@ class Complaint {
   ComplaintType complaintType;
   TypeSpecification typeSpecification;
   List<CImage>? images;
+  DateTime? resolutionDate;
 
   Complaint({
     required this.id,
@@ -31,6 +32,7 @@ class Complaint {
     required this.typeSpecification,
     this.images,
     this.status,
+    this.resolutionDate,
   });
 
   factory Complaint.fromJson(Map<String, dynamic> json) {
@@ -52,6 +54,9 @@ class Complaint {
           ?.map((imageJson) => CImage.fromJson(imageJson))
           .toList(),
       status: json['status'] ?? 'Não Resolvido',
+      resolutionDate: json['resolution_date'] != null
+          ? DateTime.parse(json['resolution_date'])
+          : null,
     );
   }
 }

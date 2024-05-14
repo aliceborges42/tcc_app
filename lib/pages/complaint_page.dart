@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import 'package:tcc_app/components/carousel.dart';
 import 'package:tcc_app/models/deslike_model.dart';
 import 'package:tcc_app/models/like_model.dart';
@@ -444,6 +445,24 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                 fontSize: 16,
                               )),
                           const SizedBox(height: 16),
+                          if (complaint.resolutionDate != null) ...[
+                            const Text(
+                              'Data da Resolução:',
+                              style: TextStyle(
+                                  fontSize: 16, color: Colors.black54),
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              DateFormat.yMMMMd('pt_BR')
+                                  .format(complaint.resolutionDate!),
+                              style: TextStyle(
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
                           Row(
                             children: [
                               IconButton(

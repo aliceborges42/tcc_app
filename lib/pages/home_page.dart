@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tcc_app/pages/charts_page.dart';
 import 'package:tcc_app/pages/list_complaints_page.dart';
 import 'package:tcc_app/pages/map_page.dart';
 import 'package:tcc_app/pages/perfil_page.dart';
@@ -17,7 +18,8 @@ class HomePageState extends State<HomePage> {
   static final List<Widget> _widgetOptions = <Widget>[
     const MapSample(),
     ComplaintListPage(),
-    const PerfilPage()
+    const PerfilPage(),
+    ChartsPage(), // Adicionando a página DataChartsPage à lista de widgets
   ];
 
   void _onItemTapped(int index) {
@@ -27,46 +29,48 @@ class HomePageState extends State<HomePage> {
   }
 
   void signUserOut() async {
-    String? token =
-        await AuthMethods().getToken(); // Obtém o token do SharedPreferences
+    String? token = await AuthMethods().getToken();
     if (token != null) {
       try {
-        await AuthMethods()
-            .signOut(token); // Chama a função signOut passando o token
-        // Se o logout for bem-sucedido, você pode limpar o token do SharedPreferences ou realizar outras ações necessárias
+        await AuthMethods().signOut(token);
       } catch (error) {
         print('Erro durante o logout: $error');
-        // Lidar com erros durante o logout, se necessário
       }
     } else {
-      print(
-          'Nenhum token encontrado'); // Tratar caso não haja token no SharedPreferences
+      print('Nenhum token encontrado');
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
       body: _widgetOptions.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Mapa',
-          ),
+              icon: Icon(Icons.map),
+              label: 'Mapa',
+              backgroundColor: Colors.white),
           BottomNavigationBarItem(
-            icon: Icon(Icons.list),
-            label: 'Denúncias',
-          ),
+              icon: Icon(Icons.list),
+              label: 'Denúncias',
+              backgroundColor: Colors.white),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
+              icon: Icon(Icons.person),
+              label: 'Perfil',
+              backgroundColor: Colors.white),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.insert_chart),
+              label: 'Gráficos',
+              backgroundColor: Colors.white),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.deepPurple[600],
-        onTap: _onItemTapped,
+        unselectedItemColor: Colors.grey[700],
+        backgroundColor: Colors.white,
+        onTap: (index) {
+          _onItemTapped(index);
+        },
       ),
     );
   }

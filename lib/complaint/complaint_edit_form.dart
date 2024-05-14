@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -307,10 +306,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   decoration: myDecorationdois(
                     labelText: "Status",
                   ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Campo obrigatório.";
+                    }
+                    return null;
+                  },
                   items: ['Resolvido', 'Não Resolvido']
                       .map((tipo) => DropdownMenuItem(
                             value: tipo,
@@ -325,10 +326,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   decoration: myDecorationdois(
                     labelText: "Tipo de Denúncia",
                   ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Campo obrigatório.";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 12),
                 FormBuilderDropdown(
@@ -337,10 +340,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   decoration: myDecorationdois(
                     labelText: "Tipo de Denúncia",
                   ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Campo obrigatório.";
+                    }
+                    return null;
+                  },
                   items: ['Desordem', 'Episódio']
                       .map((tipo) => DropdownMenuItem(
                             value: tipo,
@@ -377,10 +382,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   decoration: myDecorationdois(
                     labelText: "Data do Ocorrido",
                   ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
+                  validator: (value) {
+                    if (value == null) {
+                      return "Campo obrigatório.";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 12),
                 FormBuilderDateTimePicker(
@@ -390,10 +397,12 @@ class _ComplaintEditFormState extends State<ComplaintEditForm> {
                   decoration: myDecorationdois(
                     labelText: "Hora do Ocorrido",
                   ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
+                  validator: (value) {
+                    if (value == null) {
+                      return "Campo obrigatório.";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 12),
                 Wrap(

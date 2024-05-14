@@ -3,7 +3,6 @@ import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tcc_app/models/user_model.dart';
@@ -142,6 +141,7 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
         foregroundColor: Colors.black87,
         elevation: 1,
       ),
+      backgroundColor: Colors.white,
       body: ListView(
         children: <Widget>[
           Padding(
@@ -244,10 +244,12 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                     decoration: myDecorationdois(
                       labelText: "Nome",
                     ),
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(
-                          errorText: "Campo obrigatório."),
-                    ]),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Campo obrigatório.";
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: 12),
                   FormBuilderTextField(
@@ -256,11 +258,17 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                     decoration: myDecorationdois(
                       labelText: "Email",
                     ),
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(
-                          errorText: "Campo obrigatório."),
-                      FormBuilderValidators.email(),
-                    ]),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obrigatório.';
+                      }
+                      final emailRegex =
+                          RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                      if (!emailRegex.hasMatch(value)) {
+                        return 'E-mail inválido.';
+                      }
+                      return null;
+                    },
                   ),
                   SizedBox(height: 12),
                   TextFormField(
@@ -312,10 +320,12 @@ class _PerfilEditPageState extends State<PerfilEditPage> {
                       ),
                     ),
                     obscureText: !_isPasswordVisible,
-                    validator: FormBuilderValidators.compose([
-                      FormBuilderValidators.required(
-                          errorText: "Campo obrigatório."),
-                    ]),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Campo obrigatório.";
+                      }
+                      return null; // Retorna null se não houver erro
+                    },
                   ),
                   SizedBox(height: 12),
                   MyButton(

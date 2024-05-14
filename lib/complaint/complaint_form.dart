@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -199,25 +198,28 @@ class _ComplaintFormState extends State<ComplaintForm> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 FormBuilderTextField(
-                  name: 'descricao',
-                  decoration: myDecorationdois(
-                    labelText: "Descrição",
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
-                ),
+                    name: 'descricao',
+                    decoration: myDecorationdois(
+                      labelText: "Descrição",
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Campo obrigatório.";
+                      }
+                      return null;
+                    }),
                 const SizedBox(height: 12),
                 FormBuilderDropdown(
                   name: 'tipoDenuncia',
                   decoration: myDecorationdois(
                     labelText: "Tipo de Denúncia",
                   ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Campo obrigatório.";
+                    }
+                    return null;
+                  },
                   items: ['Desordem', 'Episódio']
                       .map((tipo) => DropdownMenuItem(
                             value: tipo,
@@ -246,29 +248,31 @@ class _ComplaintFormState extends State<ComplaintForm> {
                 ),
                 const SizedBox(height: 12),
                 FormBuilderDateTimePicker(
-                  name: 'dataOcorrido',
-                  inputType: InputType.date,
-                  format: DateFormat('dd/MM/yyyy'),
-                  decoration: myDecorationdois(
-                    labelText: "Data do Ocorrido",
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
-                ),
+                    name: 'dataOcorrido',
+                    inputType: InputType.date,
+                    format: DateFormat('dd/MM/yyyy'),
+                    decoration: myDecorationdois(
+                      labelText: "Data do Ocorrido",
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Campo obrigatório.";
+                      }
+                      return null;
+                    }),
                 const SizedBox(height: 12),
                 FormBuilderDateTimePicker(
-                  name: 'horaOcorrido',
-                  inputType: InputType.time,
-                  decoration: myDecorationdois(
-                    labelText: "Hora do Ocorrido",
-                  ),
-                  validator: FormBuilderValidators.compose([
-                    FormBuilderValidators.required(
-                        errorText: "Campo obrigatório."),
-                  ]),
-                ),
+                    name: 'horaOcorrido',
+                    inputType: InputType.time,
+                    decoration: myDecorationdois(
+                      labelText: "Hora do Ocorrido",
+                    ),
+                    validator: (value) {
+                      if (value == null) {
+                        return "Campo obrigatório.";
+                      }
+                      return null;
+                    }),
                 const SizedBox(height: 20),
                 Wrap(
                   spacing: 8,
